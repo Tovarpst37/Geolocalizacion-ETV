@@ -4,7 +4,7 @@
       <form action="<?php echo getUrl('Tanque','Tanque','postUpdate'); ?>" method="POST" enctype="multipart/form-data">
         <div class="modal-header">
           <h5 class="modal-title">Editar Tanque</h5>
-          <button type="button" class="btn-close" onclick="window.location.href='index.php'"></button>
+          <a href="<?php echo getUrl('Tanque','Tanque','getConsultar')?>" class="btn btn-close"></a>
         </div>
         <div class="modal-body">
             <?php
