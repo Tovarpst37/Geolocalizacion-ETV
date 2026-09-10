@@ -125,12 +125,12 @@
           <div class="collapse" id="tanquesZoocriadero">
             <ul class="nav nav-collapse">
               <li>
-                <a href="<?php echo getUrl("Tanque","Tanque","getRegistrar")?>">
+                <a href="<?php echo getUrl("Tanque", "Tanque", "getRegistrar") ?>">
                   <span class="sub-item"> Registrar tanque</span>
                 </a>
               </li>
               <li>
-                <a href="<?php echo getUrl("Tanque","Tanque","getConsultar")?>">
+                <a href="<?php echo getUrl("Tanque", "Tanque", "getConsultar") ?>">
                   <span class="sub-item"> Consultar tanque</span>
                 </a>
               </li>
@@ -166,7 +166,7 @@
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("Sitios", "Sitios", "getConsultar") ?>">
                   <span class="sub-item"> Consultar sitio</span>
                 </a>
               </li>
@@ -216,7 +216,7 @@
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="">
                   <span class="sub-item">Consultar actividad</span>
                 </a>
               </li>
