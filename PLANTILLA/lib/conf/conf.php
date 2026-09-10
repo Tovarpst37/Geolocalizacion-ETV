@@ -1,7 +1,9 @@
 <?php
 
 $host = "localhost";
-$port = "5433";
-$database = "mi_proyecto";
+
+$port = "5432";
+$database = "PROYECTO";
 $user = "postgres";
-$password = "1234";
+$password = "kedin";
+?>
