@@ -10,7 +10,7 @@
         die(print_r($data));
     }
     function getUrl($modulo,$controlador,$funcion,$parametros=false){
-        $url = "inicio.php?modulo=$modulo&controlador=$controlador&funcion=$funcion";
+        $url = "index.php?modulo=$modulo&controlador=$controlador&funcion=$funcion";
 
         if($parametros != false){
             foreach($parametros as $key => $value){

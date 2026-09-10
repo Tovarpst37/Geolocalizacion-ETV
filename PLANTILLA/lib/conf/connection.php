@@ -15,6 +15,7 @@
 
 
         private function setConnect(){
+
             require_once 'conf.php';
 
             $this->host = $host;
@@ -25,16 +26,12 @@
         }
 
         private function connect(){
-            $this->link = mysqli_connect(
-                $this->host,
-                $this->user,
-                $this->password,
-                $this->database,
-                $this->port
-            );
+            $this->link = pg_connect("host={$this->host} port={$this->port} dbname={$this->database} user={$this->user} password={$this->password}");
 
             if(!$this->link){
-                die(mysqli_error($this->link));
+                 $error = error_get_last();
+                    die("Error de conexión: " . ($error['message'] ?? 'Error desconocido al conectar'));
+
             }
         }
 
@@ -44,7 +41,7 @@
 
         
         protected function close(){
-            mysqli_close( $this->link);
+            pg_close( $this->link);
         
         }
     }

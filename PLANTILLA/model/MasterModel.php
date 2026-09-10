@@ -11,7 +11,7 @@
         public function select($sql){
             $result = pg_query($this->getConnect(),$sql);
 
-            return $result;
+            return pg_fetch_all($result);
         }
         
         public function update($sql){
@@ -26,5 +26,7 @@
             return $result;
         }
     }
+
+    
 
 ?>
