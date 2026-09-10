@@ -3,12 +3,10 @@
     <!-- Logo Header -->
     <div class="logo-header" data-background-color="dark">
       <a href="index.php" class="logo">
-        <img
-          src="assets/img/kaiadmin/logo_light.svg"
-          alt="navbar brand"
-          class="navbar-brand"
-          height="20" />
-
+        <a href="index.php" class="logo">
+          <img src="assets/img/LogoProye.png" alt="navbar brand" class="navbar-brand"
+            style="width: 80px; height: 55px; border-radius: 50%; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast;" />
+        </a>
       </a>
       <div class="nav-toggle">
         <button class="btn btn-toggle toggle-sidebar">
@@ -31,11 +29,7 @@
     <div class="sidebar-content">
       <ul class="nav nav-secondary">
         <li class="nav-item active">
-          <a
-            data-bs-toggle="collapse"
-            href="#dashboard"
-            class="collapsed"
-            aria-expanded="false">
+          <a data-bs-toggle="collapse" href="#dashboard" class="collapsed" aria-expanded="false">
             <i class="fas fa-home"></i>
             <p>Inicio</p>
             <!--   <span class="caret"></span> -->
@@ -125,12 +119,12 @@
           <div class="collapse" id="tanquesZoocriadero">
             <ul class="nav nav-collapse">
               <li>
-                <a href="<?php echo getUrl("Tanque","Tanque","getRegistrar")?>">
+                <a href="<?php echo getUrl("Tanque", "Tanque", "getRegistrar") ?>">
                   <span class="sub-item"> Registrar tanque</span>
                 </a>
               </li>
               <li>
-                <a href="<?php echo getUrl("Tanque","Tanque","getConsultar")?>">
+                <a href="<?php echo getUrl("Tanque", "Tanque", "getConsultar") ?>">
                   <span class="sub-item"> Consultar tanque</span>
                 </a>
               </li>
