@@ -1,27 +1,5 @@
 <?php
 
-function redirect($url)
-{
-    echo "<script>";
-    echo "window.location.href='$url'";
-    echo "</script>";
-}
-function dd($data)
-{
-    echo "<pre>";
-    die(print_r($data));
-}
-function getUrl($modulo, $controlador, $funcion, $parametros = false)
-{
-    $url = "index.php?modulo=$modulo&controlador=$controlador&funcion=$funcion";
-
-    if ($parametros != false) {
-        foreach ($parametros as $key => $value) {
-            $url .= "&$key=$value";
-        }
-    }
-    return $url;
-}
 
 function resolve()
 {

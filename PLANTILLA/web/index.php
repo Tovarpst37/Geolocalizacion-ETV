@@ -7,7 +7,7 @@
     echo "<body>";
 
         echo "<div class='wrapper'>";
-            include_once '../view/partials/sidebarAdmi.php';
+
             echo "<div class='main-panel'>";
                 include_once '../view/partials/navbar.php';
                 echo "<div class='container'>";
