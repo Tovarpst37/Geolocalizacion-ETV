@@ -3,15 +3,81 @@ include_once '../model/Sitios/SitiosModel.php';
 class SitiosController
 {
 
-    private int $id;
-    private string $nombre_sitio = "";
-    private string  $direccion = "";
-    private string $barrio = "";
 
-    private string $estado = "";
 
+
+    public function setDelete()
+    {
+        $id = $_GET['id'];
+        include_once '../view/partials/Sitios/Eliminar.php';
+    }
+
+    public function posDelete()
+    {
+        $id = $_GET['id'];
+        $obj = new SitiosModel();
+        $sql = "UPDATE  sitio set id_estado = 2 WHERE id_sitio = $id";
+
+        $ejecutar = $obj->update($sql);
+        $sql2 = "SELECT id_estado from sitio WHERE id_sitio = $id";
+        $validacion =  $obj->select($sql2);
+        foreach ($validacion as $j) {
+
+            if ($j['id_estado'] == 2) {
+                echo '<script>alert("¡Este tanque ya esta inhabilitado!");</script>';
+                redirect(getUrl("Sitios", "Sitios", "getConsultar"));
+            } else {
+                if ($ejecutar) {
+                    redirect(getUrl("Sitios", "Sitios", "getConsultar"));
+                } else {
+                    echo "No se hinabilito el Sitio";
+                }
+            }
+        }
+    }
+
+
+
+    public function getCreate2()
+    {
+        $obj = new SitiosModel();
+
+        $sql2 = "SELECT * FROM barrio";
+        $barrios = $obj->select($sql2);
+
+        $sql3 = "SELECT * from estado";
+        $estados = $obj->select($sql3);
+
+        include_once '../view/partials/Sitios/Registrar.php';
+    }
+
+    public function postInsert()
+    {
+        $id = $_POST['id'];
+        $nombre = $_POST['nombre'];
+        $direccion = $_POST["direccion"];
+        $barrio = $_POST['barrio'];
+        $estado   = $_POST['estado'];
+
+        $obj = new SitiosModel();
+
+        $sql = "INSERT INTO sitio (nombre_sitio, direccion, id_barrio, id_estado) 
+        VALUES ('$nombre', '$direccion', $barrio, $estado)";
+
+        $ejecutar = $obj->insert($sql);
+        if ($ejecutar) {
+            redirect(getUrl("Sitios", "Sitios", "getConsultar"));
+        } else {
+            echo "No se registra un sitio";
+        }
+    }
 
     public function getConsultar()
+    {
+        include_once '../view/partials/Sitios/Consultar.php';
+    }
+
+    public function data()
 
     {
 
@@ -26,84 +92,48 @@ class SitiosController
         INNER JOIN barrio b ON s.id_barrio = b.id_barrio
         INNER JOIN estado e ON s.id_estado = e.id_estado";
         # $result = $obj->select($sql);
-        $resul = $obj->select($sql) ;
-
-        include_once '../view/partials/Sitios/Consultar.php';
+        $datos = $obj->select($sql);
+        return $datos;
     }
 
-    public function getCreate()
+    public function getEdit()
     {
-?>
-        <div class="col">
-            <div class="card p-3 h-100" style="width: 100% !important; min-width: 0 !important;">
-                <!--<img src="..." class="card-img-top" alt="..."> -->
-                <div class="card-body">
-                    <?php
-                    echo "<h6 class='card-title'>{$this->id}</h6>";
-                    echo "<h5 class='card-title'>Sitio</h5>";
-                    ?>
-                    <?php
-                    echo "<p class='card-text'>{$this->nombre_sitio}</p>"
-                    ?>
-                </div>
+        $id = $_GET['id'];
+        $obj = new SitiosModel();
+        $sql = "SELECT * from sitio WHERE id_sitio = $id";
+        $datos = $obj->select($sql);
 
+        $sql2 = "SELECT * FROM barrio";
+        $barrios = $obj->select($sql2);
 
-
-
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Direccion : <?php echo $this->direccion ?> </li>
-                    <li class="list-group-item">Barrio : <?php echo $this->barrio ?></li>
-                    <li class="list-group-item">Estado : <?php echo $this->estado ?></li>
-                </ul>
-
-
-                <div class="card-body">
-                    <a href="<?php echo getUrl("Sitios", "Sitios", "postUpdate") ?>">
-                        <Button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro">Editar</Button>
-                    </a>
-                    <a href="<?php echo getUrl("Sitios", "Sitios", "postUpdate") ?> " class="card-link">
-                        <Button class="btn btn-danger">Elimiar</Button>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-
-
-<?php
-
+        $sql3 = "SELECT * from estado";
+        $estados = $obj->select($sql3);
+        include_once '../view/partials/Sitios/Editar.php';
     }
 
     public function postUpdate()
     {
+        $id = $_POST['id'];
+        $nombre = $_POST['nombre'];
+        $direccion = $_POST["direccion"];
+        $barrio = $_POST['barrio'];
+        $estado = $_POST['estado'];
+        $obj = new SitiosModel();
 
-        include_once  '../view/partials/Sitios/Editar.php';
-    }
-    public function setId(int $id)
-    {
-        $this->id = $id;
-    }
 
-    public function setNombre_sitio(string $nombre_sitio)
-    {
-        $this->nombre_sitio = $nombre_sitio;
-    }
-    public function setDireccion(string $direccion)
-    {
-        $this->direccion = $direccion;
-    }
+        $sql = "UPDATE sitio SET 
+    nombre_sitio = '$nombre',
+    direccion = '$direccion',
+    id_barrio = $barrio,
+    id_estado = $estado
+    WHERE id_sitio = $id";
 
-    public function setBarrio(string $barrio)
-    {
-        $this->barrio = $barrio;
-    }
-    public function setEstado(string $estado)
-    {
-        $this->estado = $estado;
+        $ejecutar = $obj->update($sql);
+
+        if ($ejecutar) {
+            redirect(getUrl("Sitios", "Sitios", "getConsultar"));
+        } else {
+            echo "No se pudo Actualizar el Sitio";
+        };
     }
 }
-
-
-
-
-?>

@@ -3,23 +3,17 @@
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
 
     <?php
-
+    include_once '../controller/Sitios/SitiosController.php';
+    include_once '../model/Sitios/Sitios.php';
 
 
     $bj = [];
+    $ob2 =  new SitiosController();
+    $resul = $ob2->data();
 
 
     foreach ($resul as $j) {
-      $sitios = new SitiosController();
-      $sitios->setId((int)($j['id_sitio']));
-      $sitios->setNombre_sitio($j['nombre_sitio']);
-      $sitios->setDireccion($j['direccion']);
-      $sitios->setBarrio($j['barrio']);
-      $sitios->setEstado($j['estado']);
-
-
-
-
+      $sitios = new Sitios($j['id_sitio'], $j['nombre_sitio'], $j['direccion'], $j['barrio'], $j['estado']);
       $bj[] = $sitios;
     }
 

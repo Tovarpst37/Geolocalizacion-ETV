@@ -291,7 +291,7 @@
           <div class="collapse" id="sitiosTerreno">
             <ul class="nav nav-collapse">
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("Sitios", "Sitios", "getCreate2") ?>">
                   <span class="sub-item"> Registrar sitio</span>
                 </a>
               </li>
