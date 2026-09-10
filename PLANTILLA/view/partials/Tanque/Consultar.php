@@ -4,6 +4,7 @@
 
 
   include_once '../controller/Tanque/TanqueController.php';
+  include_once '../model/Tanque/Tanque.php';
 
   $array = [];
 
@@ -13,31 +14,14 @@
 
   foreach($result as $rs){
 
-    $obj = new TanqueController();
-    
-
-      $obj -> setId($rs['id_tanque']);
-
-      $obj -> setDireccion($rs['direcciom']);
-
-      $obj -> setEstado($rs['nombre_estado']);
-
-      $obj -> setTipo($rs['nombre_tipo_tanque']);
-
-      $obj -> setImg($rs['img']);
-
-      $obj -> setZoocriadero($rs['cod_zoocriadero']);
-
-      $obj -> setNombre($rs['codigo_tanque']);
-      
-
+    $obj = new Tanque($rs['id_tanque'],$rs['codigo_tanque'],$rs['img'],$rs['nombre_tipo_tanque'],$rs['cod_zoocriadero'],$rs['direcciom'],$rs['nombre_estado']);
     
     $array[] = $obj;
 
   }
 
-  foreach($array as $sr){
-    echo $sr->getCard();
+  foreach($array as $ob){
+    echo $ob->getCard();
 
   }
 

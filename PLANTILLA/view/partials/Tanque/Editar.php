@@ -28,11 +28,15 @@
             <label for="id_tipo_tanque" class="form-label">Tipo de tanque</label>
             <select class="form-select" id="id_tipo_tanque" name="id_tipo_tanque" required>
               <option value="" selected disabled>Selecciona un tipo</option>
-              <?php foreach($tiposTanque as $tipo): ?>
-                <option value="<?php echo $tipo['id_tipo_tanque']; ?>">
-                  <?php echo $tipo['nombre_tipo_tanque']; ?>
-                </option>
-              <?php endforeach; ?>
+              <?php foreach($tiposTanque as $tipo){ 
+                if($d['id_tipo_tanque'] == $tipo['id_tipo_tanque']){                
+                                $selected = "selected";
+                            }else{
+                                $selected = "";
+                            }
+                            print_r($d);
+                            echo "<option value='".$tipo['id_tipo_tanque']."' $selected>".$tipo['nombre_tipo_tanque']."</option>";
+               }?>
             </select>
           </div>
 
@@ -40,23 +44,31 @@
             <label for="id_zoocriadero" class="form-label">Zoocriadero</label>
             <select class="form-select" id="id_zoocriadero" name="id_zoocriadero" required>
               <option value="" selected disabled>Selecciona un zoocriadero</option>
-              <?php foreach($zoocriaderos as $zoo): ?>
-                <option value="<?php echo $zoo['id_zoocriadero']; ?>">
-                  <?php echo $zoo['cod_zoocriadero']; ?>
-                </option>
-              <?php endforeach; ?>
+              <?php foreach($zoocriaderos as $zoo){ 
+                if($d['id_zoocriadero'] == $zoo['id_zoocriadero']){                
+                                $selected = "selected";
+                            }else{
+                                $selected = "";
+                            }
+                            print_r($d);
+                            echo "<option value='".$zoo['id_zoocriadero']."' $selected>".$zoo['cod_zoocriadero']."</option>";
+               }; ?>
             </select>
           </div>
 
             <div class="mb-4">
             <label for="id_estado" class="form-label">Estado</label>
             <select class="form-select" id="id_estado" name="id_estado" required>
-              <option value="" selected disabled>Selecciona un estado</option>
-              <?php foreach($estados as $est): ?>
-                <option value="<?php echo $est['id_estado']; ?>">
-                  <?php echo $est['nombre_estado']; ?>
-                </option>
-              <?php endforeach; ?>
+              <option value="" >Selecciona un estado</option>
+              <?php foreach($estados as $est){  
+                if($d['id_estado'] == $est['id_estado']){                
+                                $selected = "selected";
+                            }else{
+                                $selected = "";
+                            }
+                            print_r($d);
+                            echo "<option value='".$est['id_estado']."' $selected>".$est['nombre_estado']."</option>";
+               }; ?>
             </select>
           </div>
 
