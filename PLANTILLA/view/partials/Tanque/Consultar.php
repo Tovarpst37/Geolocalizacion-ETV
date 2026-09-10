@@ -20,8 +20,8 @@
 
   }
 
-  foreach($array as $sr){
-    echo $sr->getCard();
+  foreach($array as $ob){
+    echo $ob->getCard();
 
   }
 
