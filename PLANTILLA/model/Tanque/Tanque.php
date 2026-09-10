@@ -4,7 +4,7 @@
 
 class Tanque{
 
-    public int $id;
+    private int $id;
     private String $nombre;
     private String $img;
     private String $tipo;
