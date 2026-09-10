@@ -25,6 +25,7 @@
   </div>
   <div class="sidebar-wrapper scrollbar scrollbar-inner">
     <div class="sidebar-content">
+      
       <ul class="nav nav-secondary">
         <li class="nav-item active">
           <a data-bs-toggle="collapse" href="#dashboard" class="collapsed" aria-expanded="false">

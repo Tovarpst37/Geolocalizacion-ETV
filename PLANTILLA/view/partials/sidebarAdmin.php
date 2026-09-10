@@ -161,7 +161,7 @@
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("Sitios", "Sitios", "getConsultar") ?>">
                   <span class="sub-item"> Consultar sitio</span>
                 </a>
               </li>
@@ -211,7 +211,7 @@
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="">
                   <span class="sub-item">Consultar actividad</span>
                 </a>
               </li>
