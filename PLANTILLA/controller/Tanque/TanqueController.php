@@ -5,13 +5,6 @@
 
     class TanqueController{
 
-    public int $id;
-    private String $nombre;
-    private String $img;
-    private String $tipo;
-    private String $zoocriadero;
-    private String $direccion;
-    private String $estado;
     
 
     public function getConsultar(){
@@ -227,88 +220,6 @@ public function postUpdate(){
     }
 
     
-
-
-    public function getCard(){ 
-        
-        ?>
-                <div class = "col">
-                
-                    <div class="card p-3 h-100" style="width: 100% !important; min-width: 0 !important; d-flex justify-content-center">
-        <img src="/Geolocalizacion/Geolocalizacion-ETV/PLANTILLA/web/assets/img/<?php echo $this->img;?>"
-            style="width: 15rem; height: auto; object-fit: contain;" 
-            class="card-img-top mx-auto d-block" 
-            alt="Tanque">            
-            <div class="card-body">
-                        <h5 class="card-title">Tanque</h5>
-                        <p class="card-text"><b>Codigo Tanque: </b> <?php echo $this->nombre; ?></p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><b>Tipo</b>:   <?php echo $this->tipo;?></li>
-                        <li class="list-group-item"><b>Zoocriadero</b>:   <?php echo $this->zoocriadero;?></li>
-                        <li class="list-group-item"><b>Direccion</b>:  <?php echo $this->direccion;?></li>
-                        <li class="list-group-item"><b>Estado</b>:  <?php echo $this->estado;?></li>
-                    </ul>
-                    <div class="card-body">
-                        <a href="<?php echo getUrl('Tanque','Tanque','getEdit', array('id'=>$this->id)); ?>" class="btn btn-primary">
-                            Editar
-                        </a>
-                            <a href="<?php echo getUrl("Tanque","Tanque","getDelete",array("id"=>$this->id ))?>" class="btn btn-danger">
-                                Eliminar
-                            </a>
-                                   
-                    </div>
-                    </div>
-                    
-                </div>
-                <?php
-
-                
-        
-    }
-
-    public function setId( $id2){
-
-        $this->id = $id2; 
-
-    }
-
-    
-    public function setDireccion( $direccion){
-
-        $this->direccion = $direccion; 
-
-    }
-
-    
-    public function setEstado($estado){
-
-        $this->estado = $estado; 
-
-    }
-
-    
-    public function setTipo($tipo){
-
-        $this->tipo = $tipo; 
-
-    }
-
-    public function setImg($img){
-
-        $this->img = $img; 
-
-    }
-
-    public function setZoocriadero($zoocriadero){
-
-        $this->zoocriadero = $zoocriadero; 
-
-    }
-
-    public function setNombre($nombre){
-        $this -> nombre = $nombre;
-    }
 
 
     }
