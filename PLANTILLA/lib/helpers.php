@@ -1,52 +1,53 @@
 <?php
 
-    function redirect($url){
-        echo "<script>";
-            echo "window.location.href='$url'";
-        echo "</script>";
-    }
-    function dd($data){
-        echo "<pre>";
-        die(print_r($data));
-    }
-    function getUrl($modulo,$controlador,$funcion,$parametros=false){
-        $url = "inicio.php?modulo=$modulo&controlador=$controlador&funcion=$funcion";
+function redirect($url)
+{
+    echo "<script>";
+    echo "window.location.href='$url'";
+    echo "</script>";
+}
+function dd($data)
+{
+    echo "<pre>";
+    die(print_r($data));
+}
+function getUrl($modulo, $controlador, $funcion, $parametros = false)
+{
+    $url = "index.php?modulo=$modulo&controlador=$controlador&funcion=$funcion";
 
-        if($parametros != false){
-            foreach($parametros as $key => $value){
-                $url.="&$key=$value";
-            }
-        }
-        return $url;
-    }
-
-    function resolve(){
-        $modulo = ucwords($_GET['modulo']); //Carpeta ej: Usuarios
-        $controlador = ucwords($_GET['controlador']);//Archivo ej: UsuarioController.php
-        $funcion = $_GET['funcion']; //Metodo en la clase: getUsers
-
-        //if_dir, si es una carpeta
-        if(is_dir("../controller/$modulo")){
-            if(is_file("../controller/$modulo/".$controlador."Controller.php")){
-
-                include_once "../controller/$modulo/".$controlador."Controller.php";
-                $nombreClase = $controlador."Controller";
-
-                $objeto = new $nombreClase();
-                //$objeto = new UsuarioController();
-
-                if(method_exists($objeto,$funcion)){
-                    $objeto->$funcion();
-                }else{
-                    echo "El metodo $funcion no existe en el controlador $controlador";
-                }
-                
-            }else{
-                echo "El controlador $controlador no existe en el modulo $modulo";
-            }
-        }else{
-            echo "El modulo $modulo no existe";
+    if ($parametros != false) {
+        foreach ($parametros as $key => $value) {
+            $url .= "&$key=$value";
         }
     }
+    return $url;
+}
 
-?>
+function resolve()
+{
+    $modulo = ucwords($_GET['modulo']); //Carpeta ej: Usuarios
+    $controlador = ucwords($_GET['controlador']); //Archivo ej: UsuarioController.php
+    $funcion = $_GET['funcion']; //Metodo en la clase: getUsers
+
+    //if_dir, si es una carpeta
+    if (is_dir("../controller/$modulo")) {
+        if (is_file("../controller/$modulo/" . $controlador . "Controller.php")) {
+
+            include_once "../controller/$modulo/" . $controlador . "Controller.php";
+            $nombreClase = $controlador . "Controller";
+
+            $objeto = new $nombreClase();
+            //$objeto = new UsuarioController();
+
+            if (method_exists($objeto, $funcion)) {
+                $objeto->$funcion();
+            } else {
+                echo "El metodo $funcion no existe en el controlador $controlador";
+            }
+        } else {
+            echo "El controlador $controlador no existe en el modulo $modulo";
+        }
+    } else {
+        echo "El modulo $modulo no existe";
+    }
+}

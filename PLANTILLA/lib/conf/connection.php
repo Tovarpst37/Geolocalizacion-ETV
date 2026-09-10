@@ -1,52 +1,51 @@
 <?php
 
-    class Connection{
-        private $host;
-        private $user;
-        private $password;
-        private $database;
-        private $port;
-        private $link;
+class Connection
+{
+    private $host;
+    private $user;
+    private $password;
+    private $database;
+    private $port;
+    private $link;
 
-        function __construct(){
-            $this->setConnect();
-            $this->connect();
-        }
+    function __construct()
+    {
+        $this->setConnect();
+        $this->connect();
+    }
 
 
-        private function setConnect(){
-            require_once 'conf.php';
+    private function setConnect()
+    {
 
-            $this->host = $host;
-            $this->user = $user;
-            $this->password = $password;
-            $this->database = $database;
-            $this->port = $port;
-        }
+        require_once 'conf.php';
 
-        private function connect(){
-            $this->link = mysqli_connect(
-                $this->host,
-                $this->user,
-                $this->password,
-                $this->database,
-                $this->port
-            );
+        $this->host = $host;
+        $this->user = $user;
+        $this->password = $password;
+        $this->database = $database;
+        $this->port = $port;
+    }
 
-            if(!$this->link){
-                die(mysqli_error($this->link));
-            }
-        }
+    private function connect()
+    {
+        $this->link = pg_connect("host={$this->host} port={$this->port} dbname={$this->database} user={$this->user} password={$this->password}");
 
-        protected function getConnect(){
-            return $this->link;
-        }
-
-        
-        protected function close(){
-            mysqli_close( $this->link);
-        
+        if (!$this->link) {
+            $error = error_get_last();
+            die("Error de conexión: " . ($error['message'] ?? 'Error desconocido al conectar'));
         }
     }
 
-?>
+    protected function getConnect()
+    {
+        return $this->link;
+    }
+
+
+    protected function close()
+    {
+        pg_close($this->link);
+    }
+}
