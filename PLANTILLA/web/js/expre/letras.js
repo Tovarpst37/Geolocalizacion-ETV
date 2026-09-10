@@ -1,0 +1,1 @@
+const expreL = /^[a-zA-Z]$/;
