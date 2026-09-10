@@ -25,15 +25,9 @@ class SitiosController
         FROM sitio s
         INNER JOIN barrio b ON s.id_barrio = b.id_barrio
         INNER JOIN estado e ON s.id_estado = e.id_estado";
-        $result = $obj->select($sql);
+        # $result = $obj->select($sql);
+        $resul = $obj->select($sql) ;
 
-        // Convertimos el resultado a un array de filas
-        $resul = [];
-        if ($result instanceof \PgSql\Result) {
-            while ($row = pg_fetch_assoc($result)) {
-                $resul[] = $row;
-            }
-        }
         include_once '../view/partials/Sitios/Consultar.php';
     }
 
