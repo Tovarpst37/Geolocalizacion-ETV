@@ -151,22 +151,38 @@ public function postUpdate(){
         $estado = $_POST['id_estado'];
         $id = $_POST['id'];
         $obj = new TanqueModel();
+        
 
-         $sql = "UPDATE tanque SET 
-            codigo_tanque = '$codigo', 
-            img = '$nombreArchivo', 
-            id_tipo_tanque = '$tipo', 
-            id_zoocriadero = '$zoocriadero', 
-            id_estado = '$estado'
-        WHERE id_tanque = '$id'";
+        if($_FILES['img']['error'] === UPLOAD_ERR_OK){
+            
+            $sql2 = "UPDATE tanque SET 
+                        codigo_tanque = '$codigo', 
+                        img = '$nombreArchivo', 
+                        id_tipo_tanque = '$tipo', 
+                        id_zoocriadero = '$zoocriadero', 
+                        id_estado = '$estado'
+                    WHERE id_tanque = '$id'";
+            
+            $ejecutar = $obj->update($sql2);
 
-        $ejecutar = $obj->update($sql);
+            } else {
+        
+            $sql = "UPDATE tanque SET 
+                        codigo_tanque = '$codigo', 
+                        id_tipo_tanque = '$tipo', 
+                        id_zoocriadero = '$zoocriadero', 
+                        id_estado = '$estado'
+                    WHERE id_tanque = '$id'";
+            
+            $ejecutar = $obj->update($sql);
+            }
+                
 
             if($ejecutar){
                 redirect(getUrl("Tanque","Tanque","getConsultar"));
             }else{
                 echo "No se pudo registrar la ciudad";
-            }
+            };
 
         
 
