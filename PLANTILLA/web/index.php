@@ -30,3 +30,5 @@ include_once '../view/partials/scripts.php';
 
 echo "</body>";
 echo "</html>";
+
+
