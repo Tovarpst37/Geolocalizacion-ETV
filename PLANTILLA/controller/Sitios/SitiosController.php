@@ -9,7 +9,7 @@ class SitiosController
     public function setDelete()
     {
         $id = $_GET['id'];
-        include_once '../view/partials/Sitios/Eliminar.php';
+        include_once '../view/partials/Sitios/Inhabilitar.php';
     }
 
     public function posDelete()
@@ -50,6 +50,28 @@ class SitiosController
 
         include_once '../view/partials/Sitios/Registrar.php';
     }
+
+
+
+    public function validarRegistrar()
+    {
+        $id = $_POST['id'];
+        $nombre = $_POST['nombre'];
+        $direccion = $_POST["direccion"];
+        $barrio = $_POST['barrio'];
+        $estado   = $_POST['estado'];
+
+        $nombre_validar = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u';
+
+            if(preg_match($nombre_validar,$nombre)){
+
+            }else{
+
+            }
+
+            if
+
+        }
 
     public function postInsert()
     {
