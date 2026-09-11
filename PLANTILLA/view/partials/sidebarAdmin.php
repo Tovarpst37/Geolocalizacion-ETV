@@ -177,7 +177,7 @@
         </li>
 
 
-        
+
 
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#fomularioZoocriadero">
@@ -185,22 +185,23 @@
             <p>Fomularios</p>
             <span class="caret"></span>
           </a>
+
           <div class="collapse" id="fomularioZoocriadero">
             <ul class="nav nav-collapse">
               <li>
-                <a href="components/avatars.html">
-                  <span class="sub-item"> Registrar formulario</span>
+                <a href="<?php echo getUrl("FormularioZ", "FormularioZ", "getRegistrar") ?>">
+                  <span class="sub-item"> Registrar Formulario</span>
                 </a>
               </li>
               <li>
-                <a href="components/buttons.html">
-                  <span class="sub-item">Consultar formulario</span>
+                <a href="<?php echo getUrl("FormularioZ", "FormularioZ", "getConsultar") ?>">
+                  <span class="sub-item"> Consultar Formulario</span>
                 </a>
               </li>
 
-
             </ul>
           </div>
+
         </li>
 
         <li class="nav-item">
