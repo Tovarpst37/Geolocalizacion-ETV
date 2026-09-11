@@ -28,23 +28,32 @@ class Tanque{
 
     public function getCard(){ 
         
+        $badgeClass = strtolower($this->estado) === 'activo' ? 'bg-success' : 'bg-danger';
+
         ?>
+
+        
                 <div class = "col">
                 
                     <div class="card p-3 h-100" style="width: 100% !important; min-width: 0 !important; d-flex justify-content-center">
         <img src="/Geolocalizacion/Geolocalizacion-ETV/PLANTILLA/web/assets/img/<?php echo $this->img;?>"
-            style="width: 15rem; height: auto; object-fit: contain;" 
+            style="width: 15rem; height: 12rem; object-fit: contain;" 
             class="card-img-top mx-auto d-block" 
             alt="Tanque">            
             <div class="card-body">
-                        <h5 class="card-title">Tanque</h5>
-                        <p class="card-text"><b>Codigo Tanque: </b> <?php echo $this->nombre; ?></p>
+
+                <ul class="list-group-item">
+                    <li class="badge  <?php echo $badgeClass ?> rounded-pill">Tanque <?php echo $this->estado;?></li>
+                </ul>
+                        
+                        
                     </div>
                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Codigo Tanque </b>:   <?php echo $this->nombre; ?></li>
                         <li class="list-group-item"><b>Tipo</b>:   <?php echo $this->tipo;?></li>
                         <li class="list-group-item"><b>Zoocriadero</b>:   <?php echo $this->zoocriadero;?></li>
                         <li class="list-group-item"><b>Direccion</b>:  <?php echo $this->direccion;?></li>
-                        <li class="list-group-item"><b>Estado</b>:  <?php echo $this->estado;?></li>
+                       
                     </ul>
                     <div class="card-body">
                         <a href="<?php echo getUrl('Tanque','Tanque','getEdit', array('id'=>$this->id)); ?>" class="btn btn-primary">
@@ -57,7 +66,7 @@ class Tanque{
                     </div>
                     </div>
                     
-                </div>
+            </div>
                 <?php
 
                 
