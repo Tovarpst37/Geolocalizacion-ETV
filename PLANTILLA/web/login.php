@@ -13,9 +13,9 @@ include_once '../view/partials/head.php';
         <div class="col-12 col-md-6 d-flex align-items-center justify-content-center bg-white">
             <div class="w-100 px-4 px-md-5" style="max-width: 420px;">
 
-                <h4 class="title text-center mb-4">
+                <h2 class="title text-center mb-4">
                     Login
-                </h4>
+                </h2>
 
                 <form action="<?php echo getUrl("Acceso","Acceso","login",false,"ajax");?>" method="POST">
 
@@ -76,10 +76,10 @@ include_once '../view/partials/head.php';
                     </div>
 
                     <?php
-                    if(isset($_SESSION['error'])){
-                        echo "<div class='alert alert-danger'>".$_SESSION['error']."</div>";
-                        unset($_SESSION['error']);
-                    }
+                        if(isset($_SESSION['error'])){
+                            echo "<div class='alert alert-danger'>".$_SESSION['error']."</div>";
+                            unset($_SESSION['error']);
+                        }
                     ?>
 
                     <div class="d-grid mb-3">

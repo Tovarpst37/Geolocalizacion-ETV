@@ -5,23 +5,27 @@ include_once '../model/Acceso/AccesoModel.php';
 class AccesoController{
 
     public function login(){
+
         $obj = new AccesoModel();
+
         $documento = $_POST['documento'];
         $password = $_POST['password'];
-        echo $documento;
-        echo $password;
-        $data = "todo melo";
-        echo "<script>console.log('$data');</script>";
-        /*$sql = "SELECT * FROM usuarios WHERE documento = '$documento' AND contrasena = '$password'";
+        
+        $sql = "SELECT * FROM usuarios WHERE documento = '$documento' AND contrasena = '$password'";
         $usuario = $obj-> select($sql);
+
         if(pg_num_rows($usuario) > 0){
-            echo "excelente socio";
-            $_SESSION[''] = $usu[''];
+            while(pg_num_rows($usuario)){
+                $_SESSION[''] = $usu[''];
+                $_SESSION[''] = $usu[''];
+                $_SESSION[''] = $usu[''];
+            }
+            redirect("index.php");
         }else{
-            $SESSION['error'] = "usuario o contrasena incorrectos";
-            echo "paila socio";
+            $_SESSION['error'] = "Usuario o contrasena incorrectos";
+            redirect("login.php");
         }
-        */
+        
     }
 
     public function logout(){
