@@ -1,13 +1,43 @@
 const loginForm = document.getElementById('loginForm');
+const contenedor = document.getElementById('sessionError');
 
 loginForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+    let mensaje = "";
+    e.preventDefault();//detiene el envio normal por PHP
 
     const documentoValido = validarDocumento();
     const passwordValido = validarPassword();
 
-    if (!documentoValido || !passwordValido) return;
+    if (!documentoValido && documento.value.length > 7) {
+        mensaje += "* Formato de documento invalido\n"; 
+    }
 
+    if (!passwordValido) {
+        mensaje += "* Formato de contrasena invalido"; 
+    }
+
+    if (mensaje !== "") { 
+        mostrarErrorLogin(mensaje);
+        return;
+    }
+
+    const formData = new FormData(this);
+    const url = this.getAttribute('action');
+
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        window.location.href = "index.php"; 
+    })
+    .catch(error => {
+        console.error('Error en la petición:', error);
+    });
+});
+
+/*
     fetch(loginForm.action, {
         method: 'POST',
         body: new FormData(loginForm)
@@ -23,15 +53,18 @@ loginForm.addEventListener('submit', function (e) {
         .catch(() => {
             mostrarErrorLogin('Ocurrió un error al iniciar sesión, intenta de nuevo');
         });
-});
+*/
 
 function mostrarErrorLogin(mensaje) {
-    let errorBox = document.getElementById('loginError');
-    if (!errorBox) {
-        errorBox = document.createElement('div');
-        errorBox.id = 'loginError';
-        errorBox.className = 'alert alert-danger mt-3';
-        loginForm.appendChild(errorBox);
+    if (!contenedor) return;
+
+    let alertBox = contenedor.querySelector('.alert-danger');
+
+    if (!alertBox) {
+        alertBox = document.createElement('div');
+        alertBox.className = 'alert alert-danger';
+        contenedor.appendChild(alertBox);
     }
-    errorBox.textContent = mensaje;
+
+    alertBox.innerText = mensaje;
 }

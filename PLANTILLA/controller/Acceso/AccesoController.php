@@ -6,11 +6,22 @@ class AccesoController{
 
     public function login(){
 
-        $obj = new AccesoModel();
+        //$obj = new AccesoModel();
 
         $documento = $_POST['documento'];
         $password = $_POST['password'];
-        
+
+        echo "Documento:".$documento." Contrasena:".$password;
+        /*
+        if (strlen($documento) > 7 && strlen($password) > 7) {
+            echo "bien por ahora";
+        } else {
+            $_SESSION['error'] = "Usuario o contrasena incorrectos";
+            redirect("login.php");
+        }*/
+    }
+
+      /*
         $sql = "SELECT * FROM usuarios WHERE documento = '$documento' AND contrasena = '$password'";
         $usuario = $obj-> select($sql);
 
@@ -25,8 +36,7 @@ class AccesoController{
             $_SESSION['error'] = "Usuario o contrasena incorrectos";
             redirect("login.php");
         }
-        
-    }
+        */
 
     public function logout(){
 

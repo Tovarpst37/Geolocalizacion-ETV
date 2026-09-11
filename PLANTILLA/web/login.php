@@ -75,14 +75,16 @@ include_once '../view/partials/head.php';
                             ¿Olvidaste tu contrasena?
                         </a>
                     </div>
-
-                    <?php
-                        if(isset($_SESSION['error'])){
-                            echo "<div class='alert alert-danger'>".$_SESSION['error']."</div>";
-                            unset($_SESSION['error']);
-                        }
-                    ?>
-
+                    
+                   <div id="sessionError">
+                        <?php
+                            if(isset($_SESSION['error'])){
+                                echo "<div class='alert alert-danger'>".$_SESSION['error']."</div>";
+                                unset($_SESSION['error']);
+                            }
+                        ?>
+                    </div>
+                    
                     <div class="d-grid mb-3">
                         <button type="submit" class="btn btn-primary">
                             Iniciar sesion
