@@ -14,6 +14,13 @@
                             placeholder="Ingrese el codigo del seguimiento" required>
                     </div>
 
+
+                    <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Codigo</label>
+                        <input type="text" class="form-control" id="formularioz" name="formularioz"
+                            placeholder="Ingrese el codigo del seguimiento" required>
+                    </div>
+
                     <div class="d-flex justify-content-end gap-2">
                         <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
                         <button type="submit" class="btn btn-primary">Guardar Sitio</button>
@@ -24,5 +31,3 @@
         </div>
     </div>
 </div>
-
-fomularioZoocriadero
