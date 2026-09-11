@@ -17,35 +17,36 @@ include_once '../view/partials/head.php';
                     Login
                 </h2>
 
-                <form action="<?php echo getUrl("Acceso","Acceso","login",false,"ajax");?>" method="POST">
+                <form action="<?php echo getUrl("Acceso","Acceso","login",false,"ajax");?>" method="POST" id="loginForm">
 
-                    <div class="input-group mb-3">
-                        <span class="input-group-text bg-white"><i class="fa fa-id-card"></i></span>
-                        <input
-                            type="text"
-                            onpaste="return false;"
-                            inputmode="numeric"
-                            class="form-control"
-                            id="documento"
-                            name="documento"
-                            placeholder="Numero de identificacion"
-                            tabindex="1"
-                            required
-                        >
-                    </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-white"><i class="fa fa-id-card"></i></span>
+                    <input
+                        type="text"
+                        onpaste="return false;"
+                        inputmode="numeric"
+                        class="form-control"
+                        id="documento"
+                        name="documento"
+                        placeholder="Numero de identificacion"
+                        tabindex="1"
+                        required
+                    >
+                </div>
+                <small id="documentoError" class="text-danger d-none mb-3 d-block"></small>
 
-                    <div class="input-group mb-3">
-                        <span class="input-group-text bg-white"><i class="fa fa-lock"></i></span>
-                        <input
-                            type="password"
-                            class="form-control"
-                            id="password"
-                            name="password"
-                            placeholder="Contraseña"
-                            tabindex="2"
-                            required
-                        >
-                    </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-white"><i class="fa fa-lock"></i></span>
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        placeholder="Contraseña"
+                        tabindex="2"
+                        required
+                    >
+                </div>
 
                     <div class="password-requirements shadow-sm rounded-3 p-3 mb-3 bg-light d-none" id="passwordRequirements">
                         <p class="mb-2 small text-muted">La contraseña debe cumplir con:</p>
@@ -120,5 +121,6 @@ include_once '../view/partials/head.php';
     <script src="js/document.js"></script>
     <script src="js/password.js"></script>
     <script src="js/checkbox.js"></script>
+    <script src="js/login.js"></script>
 </body>
 </html>

@@ -1,19 +1,35 @@
 const password = document.getElementById('password');
 const requirementsBox = document.getElementById('passwordRequirements');
 
-//funcion para cambiar el valor para ver o no ver contrasena
-function cambiar(valor){
-    password.type = valor;
-} 
-//evento para contrasena 
-password.addEventListener('keypress',(e)=>{
-    if ((!expreL.test(e.key) && !expreN.test(e.key) && !expreS.test(e.key)) || password.value.length > 14)e.preventDefault();
+password.addEventListener('keypress', (e) => {
+    if ((!expreL.test(e.key) && !expreN.test(e.key) && !expreS.test(e.key)) || password.value.length > 14) e.preventDefault();
 });
-//evento para aparecer el contenedor con las caracteristicas de la contrasena 
+
 password.addEventListener('focus', function () {
     requirementsBox.classList.remove('d-none');
 });
-////evento para desaparecer el contenedor con las caracteristicas de la contrasena 
-password.addEventListener('blur', function () {
-    requirementsBox.classList.add('d-none');
+
+password.addEventListener('input', function () {
+    const valor = password.value;
+
+    actualizarRequisito('req-length', valor.length >= 8 && valor.length <= 15);
+    actualizarRequisito('req-mayuscula', expreMayuscula.test(valor));
+    actualizarRequisito('req-numero', expreN.test(valor));
+    actualizarRequisito('req-simbolo', expreSimbolo.test(valor));
 });
+
+function actualizarRequisito(id, cumple) {
+    const icono = document.querySelector(`#${id} i`);
+    icono.classList.toggle('fa-circle', !cumple);
+    icono.classList.toggle('text-secondary', !cumple);
+    icono.classList.toggle('fa-check-circle', cumple);
+    icono.classList.toggle('text-success', cumple);
+}
+
+function validarPassword() {
+    const valor = password.value;
+    return valor.length >= 8 && valor.length <= 15
+        && expreMayuscula.test(valor)
+        && expreN.test(valor)
+        && expreSimbolo.test(valor);
+}
