@@ -1,5 +1,5 @@
 <div class="modal show" id="modalEditar" tabindex="-1" style="display:block;">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalRegistroLabel">Editar Sitio</h5>
@@ -9,58 +9,117 @@
             </div>
             <div class="modal-body">
                 <?php foreach ($datos as $d) { ?>
-                    <form action="<?php echo getUrl("Sitios", "Sitios", "postUpdate") ?>" method="post">
+                    <form action="<?php echo getUrl("Sitios", "Sitios", "validarUpdate") ?>" method="post">
 
                         <input type="hidden" name="id" value="<?php echo $d['id_sitio']; ?>">
 
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese su nombre completo" required value="<?php echo $d['nombre_sitio']; ?>">
-                            <div class="invalid-feedback">Por favor ingrese el nombre.</div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese el nombre del sitio" required value="<?php echo $d['nombre_sitio']; ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Dirección actual</label>
+                                <input type="text" class="form-control" value="<?php echo $d['direccion']; ?>" disabled readonly>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="direccion" class="form-label">Dirección</label>
-                            <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Ej: Calle 10 # 5-20" required value="<?php echo $d['direccion']; ?>">
-                            <div class="invalid-feedback">Por favor ingrese la dirección.</div>
+                        <label class="form-label">Nueva dirección</label>
+                        <div class="row g-2 mb-3 align-items-center">
+                            <div class="col-md-3">
+                                <select class="form-select" id="via_principal" name="via_principal" required>
+                                    <option value="" selected disabled>Vía principal *</option>
+                                    <?php
+                                    include_once '../controller/Sitios/direcciones.php';
+                                    foreach (VIA_PRINCIPAL as $v): ?>
+                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="numero_via" name="numero_via" required>
+                                    <option value="" selected disabled>Número *</option>
+                                    <?php foreach ($numero_de_via as $v): ?>
+                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="sufijo_via" name="sufijo_via">
+                                    <option value="" selected disabled>Sufijo</option>
+                                    <?php foreach (SUFIJO_VIA as $key => $label): ?>
+                                        <option value="<?php echo $key; ?>"><?php echo $key; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-1 text-center">
+                                <span class="fs-4 fw-bold">#</span>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="cruce_prefijo" name="cruce_prefijo">
+                                    <option value="" selected disabled>Prefijo</option>
+                                    <?php foreach (CRUCE_PREFIJO as $key => $label): ?>
+                                        <option value="<?php echo $key; ?>"><?php echo $label; ?> (<?php echo $key; ?>)</option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="barrio" class="form-label">Barrio</label>
-                            <select class="form-select" id="barrio" name="barrio" required>
-                                <option value="" selected disabled>Seleccione un barrio</option>
-                                <?php foreach ($barrios as $b) {
-                                    if ($d['id_barrio'] == $b['id_barrio']) {
-                                        $selected = "selected";
-                                    } else {
-                                        $selected = "";
-                                    }
-                                    echo "<option value='" . $b['id_barrio'] . "' $selected>" . $b['nombre_barrio'] . "</option>";
-                                } ?>
-                            </select>
-                            <div class="invalid-feedback">Por favor seleccione un barrio.</div>
+                        <div class="row g-2 mb-3 align-items-center">
+                            <div class="col-md-4">
+                                <select class="form-select" id="via_generadora" name="via_generadora" required>
+                                    <option value="" selected disabled>Vía generadora *</option>
+                                    <?php foreach ($numero_de_la_via_generadora as $v): ?>
+                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="sufijo_generadora" name="sufijo_generadora">
+                                    <option value="" selected disabled>Sufijo</option>
+                                    <?php foreach (SUFIJO_VIA as $key => $label): ?>
+                                        <option value="<?php echo $key; ?>"><?php echo $key; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-1 text-center">
+                                <span class="fs-4 fw-bold">-</span>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select" id="placa" name="placa" required>
+                                    <option value="" selected disabled>Placa *</option>
+                                    <?php foreach ($numero_de_placa as $v): ?>
+                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="estado" class="form-label">Estado</label>
-                            <select class="form-select" id="estado" name="estado" required>
-                                <option value="" selected disabled>Seleccione un estado</option>
-                                <?php foreach ($estados as $est) {
-                                    if ($d['id_estado'] == $est['id_estado']) {
-                                        $selected = "selected";
-                                    } else {
-                                        $selected = "";
-                                    }
-                                    echo "<option value='" . $est['id_estado'] . "' $selected>" . $est['nombre_estado'] . "</option>";
-                                } ?>
-                            </select>
-                            <div class="invalid-feedback">Por favor seleccione un estado.</div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <select class="form-select" id="barrio" name="barrio" required>
+                                    <option value="" selected disabled>Barrio *</option>
+                                    <?php foreach ($barrios as $b) {
+                                        $selected = ($d['id_barrio'] == $b['id_barrio']) ? "selected" : "";
+                                        echo "<option value='" . $b['id_barrio'] . "' $selected>" . $b['nombre_barrio'] . "</option>";
+                                    } ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-select" id="estado" name="estado" required>
+                                    <option value="" selected disabled>Estado *</option>
+                                    <?php foreach ($estados as $est) {
+                                        $selected = ($d['id_estado'] == $est['id_estado']) ? "selected" : "";
+                                        echo "<option value='" . $est['id_estado'] . "' $selected>" . $est['nombre_estado'] . "</option>";
+                                    } ?>
+                                </select>
+                            </div>
                         </div>
+
+                        <div class="text-muted small mb-3"><span class="text-danger">*</span> Campos obligatorios</div>
 
                         <div class="d-grid">
-                            <a href="<?php echo getUrl('Sitio', 'Sitio', 'postUpdate') ?>">
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                            </a>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
                         </div>
 
                     </form>
@@ -69,4 +128,3 @@
         </div>
     </div>
 </div>
-
