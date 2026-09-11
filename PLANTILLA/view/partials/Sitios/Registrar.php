@@ -1,49 +1,50 @@
-<div class="container-fluid px-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card p-4">
-                <h5 class="card-title mb-3">Registrar Sitio</h5>
+<div class="container mt-4">
+    <div class="d-flex justify-content-center">
+        <div class="card shadow" style="width: 100%; max-width: 700px;">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Sitio</h4>
+            </div>
 
-                <form action="<?php echo getUrl("Sitios", "Sitios", "postInsert") ?>" method="post">
+            <div class="card-body p-4">
+                <form action="<?php echo getUrl("Sitios", "Sitios", "postInsert") ?>" method="POST">
 
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
                         <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese el nombre del sitio" required>
-                        <div class="invalid-feedback">Por favor ingrese el nombre.</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="direccion" class="form-label">Dirección</label>
                         <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Ej: Calle 10 # 5-20" required>
-                        <div class="invalid-feedback">Por favor ingrese la dirección.</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="barrio" class="form-label">Barrio</label>
                         <select class="form-select" id="barrio" name="barrio" required>
-                            <option value="" selected disabled>Seleccione un barrio</option>
-                            <?php foreach ($barrios as $b) {
-                                echo "<option value='" . $b['id_barrio'] . "'>" . $b['nombre_barrio'] . "</option>";
-                            } ?>
+                            <option value="" selected disabled>Selecciona un barrio</option>
+                            <?php foreach ($barrios as $b): ?>
+                                <option value="<?php echo $b['id_barrio']; ?>">
+                                    <?php echo $b['nombre_barrio']; ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
-                        <div class="invalid-feedback">Por favor seleccione un barrio.</div>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label for="estado" class="form-label">Estado</label>
                         <select class="form-select" id="estado" name="estado" required>
-                            <option value="" selected disabled>Seleccione un estado</option>
-                            <?php foreach ($estados as $est) {
-                                echo "<option value='" . $est['id_estado'] . "'>" . $est['nombre_estado'] . "</option>";
-                            } ?>
+                            <option value="" selected disabled>Selecciona un estado</option>
+                            <?php foreach ($estados as $est): ?>
+                                <option value="<?php echo $est['id_estado']; ?>">
+                                    <?php echo $est['nombre_estado']; ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
-                        <div class="invalid-feedback">Por favor seleccione un estado.</div>
                     </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="<?php echo getUrl('Sitios', 'Sitios', 'getConsultar') ?>" class="btn btn-secondary">Cancelar</a>
-                        
-                        <a href="<?php echo getUrl('Sitios', 'Sitios', 'postInsert') ?>"><button type="submit" class="btn btn-primary">Guardar</button></a>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Sitio</button>
                     </div>
 
                 </form>

@@ -468,4 +468,6 @@
     </div>
   </div>
 </div>
+
+<!-- Prectica git flow maria paz -->
 <!-- End Sidebar -->
