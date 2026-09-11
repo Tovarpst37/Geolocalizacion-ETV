@@ -2,9 +2,8 @@
 
 $host = "localhost";
 $port = "5432";
-$database = "PROYECTO";
+$database = "geolocalizacion_ETV";
 $user = "postgres";
-$password = "kedin";
-
+$password = "";
 
 ?>

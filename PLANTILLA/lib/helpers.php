@@ -1,5 +1,6 @@
 <?php
 
+    session_start();
     function redirect($url){
         echo "<script>";
             echo "window.location.href='$url'";
@@ -9,8 +10,13 @@
         echo "<pre>";
         die(print_r($data));
     }
-    function getUrl($modulo,$controlador,$funcion,$parametros=false){
-        $url = "index.php?modulo=$modulo&controlador=$controlador&funcion=$funcion";
+
+    function getUrl($modulo,$controlador,$funcion,$parametros=false,$pagina=false){
+        if($pagina==false){
+            $pagina = "index";
+        }
+
+        $url = "$pagina.php?modulo=$modulo&controlador=$controlador&funcion=$funcion";
 
         if($parametros != false){
             foreach($parametros as $key => $value){
