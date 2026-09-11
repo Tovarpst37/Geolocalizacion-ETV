@@ -55,31 +55,99 @@ class SitiosController
 
     public function validarRegistrar()
     {
-        $id = $_POST['id'];
-        $nombre = $_POST['nombre'];
-        $direccion = $_POST["direccion"];
-        $barrio = $_POST['barrio'];
-        $estado   = $_POST['estado'];
+        $cont = 0;
+        $nombre = $_POST['nombre'] ?? '';
+        $via_principal = $_POST['via_principal'] ?? '';
+        $numero_via = $_POST['numero_via'] ?? '';
+        $via_generadora = $_POST['via_generadora'] ?? '';
+        $placa = $_POST['placa'] ?? '';
+        $barrio = $_POST['barrio'] ?? '';
+        $estado = $_POST['estado'] ?? '';
+
+        $sufijo_via = trim($_POST['sufijo_via'] ?? '');
+        $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
+        $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
+
+        //validacion 
+
+        //por si llega vacio
+        if (empty(trim($sufijo_via))) {
+            $sufijo_via = '';
+        }
+
+        if (empty(trim($cruce_prefijo))) {
+            $cruce_prefijo = '';
+        }
+
+        if (empty(trim($sufijo_generadora))) {
+            $sufijo_generadora = '';
+        }
+
+
+        $errores = [];
+
+        if (empty($nombre)) {
+            $errores[] = "El nombre es obligatorio.";
+        }
+        if (empty($via_principal)) {
+            $errores[] = "Debe seleccionar la vía principal.";
+        }
+        if (empty($numero_via)) {
+            $errores[] = "Debe seleccionar el número de la vía.";
+        }
+        if (empty($via_generadora)) {
+            $errores[] = "Debe seleccionar el número de la vía generadora.";
+        }
+        if (empty($placa)) {
+            $errores[] = "Debe seleccionar el número de placa.";
+        }
+        if (empty($barrio)) {
+            $errores[] = "Debe seleccionar un barrio.";
+        }
+        if (empty($estado)) {
+            $errores[] = "Debe seleccionar un estado.";
+        }
+
 
         $nombre_validar = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u';
 
-            if(preg_match($nombre_validar,$nombre)){
-
-            }else{
-
-            }
-
-            if
-
+        if (!empty($nombre) && !preg_match($nombre_validar, $nombre)) {
+            $errores[] = "El nombre solo puede contener letras y espacios.";
         }
 
-    public function postInsert()
+
+        if (!empty($errores)) {
+            $obj = new SitiosModel();
+            $sql2 = "SELECT * FROM barrio";
+            $barrios = $obj->select($sql2);
+
+            $sql3 = "SELECT * from estado";
+            $estados = $obj->select($sql3);
+
+            include_once '../model/Errores/ErrorModal.php';
+
+
+            ErrorModal::verError($errores, getUrl('Sitios', 'Sitios', 'getCreate2'));
+
+            return;
+        } else {
+            $cont = 1;
+        }
+        if ($cont == 1) {
+            $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
+            $this->postInsert($nombre, $direccion, $barrio, $estado);
+        }
+    }
+
+
+
+    public function postInsert(String $nombre1, String $direccion1, int $barrio1, int $estado1)
     {
-        $id = $_POST['id'];
-        $nombre = $_POST['nombre'];
-        $direccion = $_POST["direccion"];
-        $barrio = $_POST['barrio'];
-        $estado   = $_POST['estado'];
+
+        $nombre = $nombre1;
+        $direccion = $direccion1;
+        $barrio = $barrio1;
+        $estado = $estado1;
 
         $obj = new SitiosModel();
 
@@ -87,7 +155,9 @@ class SitiosController
         VALUES ('$nombre', '$direccion', $barrio, $estado)";
 
         $ejecutar = $obj->insert($sql);
+
         if ($ejecutar) {
+            $_SESSION['mensaje_exito'] = "El sitio se registró correctamente.";
             redirect(getUrl("Sitios", "Sitios", "getConsultar"));
         } else {
             echo "No se registra un sitio";
@@ -120,7 +190,13 @@ class SitiosController
 
     public function getEdit()
     {
-        $id = $_GET['id'];
+        $id = $_GET['id'] ?? null;
+
+        if (empty($id)) {
+            redirect(getUrl("Sitios", "Sitios", "getConsultar"));
+            return;
+        }
+
         $obj = new SitiosModel();
         $sql = "SELECT * from sitio WHERE id_sitio = $id";
         $datos = $obj->select($sql);
@@ -133,29 +209,98 @@ class SitiosController
         include_once '../view/partials/Sitios/Editar.php';
     }
 
-    public function postUpdate()
+
+    public function validarUpdate()
     {
-        $id = $_POST['id'];
-        $nombre = $_POST['nombre'];
-        $direccion = $_POST["direccion"];
-        $barrio = $_POST['barrio'];
-        $estado = $_POST['estado'];
+        $cont = 0;
+        $id = $_POST['id'] ?? '';
+        $nombre = $_POST['nombre'] ?? '';
+        $via_principal = $_POST['via_principal'] ?? '';
+        $numero_via = $_POST['numero_via'] ?? '';
+        $via_generadora = $_POST['via_generadora'] ?? '';
+        $placa = $_POST['placa'] ?? '';
+        $barrio = $_POST['barrio'] ?? '';
+        $estado = $_POST['estado'] ?? '';
+
+        $sufijo_via = trim($_POST['sufijo_via'] ?? '');
+        $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
+        $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
+
+        $errores = [];
+
+        if (empty($id)) {
+            $errores[] = "No se identificó el sitio a editar.";
+        }
+        if (empty($nombre)) {
+            $errores[] = "El nombre es obligatorio.";
+        }
+        if (empty($via_principal)) {
+            $errores[] = "Debe seleccionar la vía principal.";
+        }
+        if (empty($numero_via)) {
+            $errores[] = "Debe seleccionar el número de la vía.";
+        }
+        if (empty($via_generadora)) {
+            $errores[] = "Debe seleccionar el número de la vía generadora.";
+        }
+        if (empty($placa)) {
+            $errores[] = "Debe seleccionar el número de placa.";
+        }
+        if (empty($barrio)) {
+            $errores[] = "Debe seleccionar un barrio.";
+        }
+        if (empty($estado)) {
+            $errores[] = "Debe seleccionar un estado.";
+        }
+
+        $nombre_validar = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u';
+        if (!empty($nombre) && !preg_match($nombre_validar, $nombre)) {
+            $errores[] = "El nombre solo puede contener letras y espacios.";
+        }
+
+        if (!empty($errores)) {
+            $obj = new SitiosModel();
+
+            $sql = "SELECT * from sitio WHERE id_sitio = $id";
+            $datos = $obj->select($sql);
+
+            $sql2 = "SELECT * FROM barrio";
+            $barrios = $obj->select($sql2);
+
+            $sql3 = "SELECT * from estado";
+            $estados = $obj->select($sql3);
+
+            include_once '../model/Errores/ErrorModal.php';
+            ErrorModal::verError($errores, getUrl('Sitios', 'Sitios', 'getEdit', array('id' => $id)));
+
+            return;
+        } else {
+            $cont = 1;
+        }
+
+        if ($cont == 1) {
+            $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
+            $this->postUpdate($id, $nombre, $direccion, $barrio, $estado);
+        }
+    }
+    public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado)
+    {
         $obj = new SitiosModel();
 
-
         $sql = "UPDATE sitio SET 
-    nombre_sitio = '$nombre',
-    direccion = '$direccion',
-    id_barrio = $barrio,
-    id_estado = $estado
+        nombre_sitio = '$nombre',
+        direccion = '$direccion',
+        id_barrio = $barrio,
+        id_estado = $estado
     WHERE id_sitio = $id";
 
         $ejecutar = $obj->update($sql);
 
         if ($ejecutar) {
+            $_SESSION['mensaje_exito'] = "El sitio se actualizó correctamente.";
             redirect(getUrl("Sitios", "Sitios", "getConsultar"));
         } else {
-            echo "No se pudo Actualizar el Sitio";
-        };
+            echo "No se pudo actualizar el sitio";
+        }
     }
 }
