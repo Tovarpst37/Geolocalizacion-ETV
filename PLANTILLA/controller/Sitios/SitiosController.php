@@ -200,7 +200,8 @@ class SitiosController
         $obj = new SitiosModel();
         $sql = "SELECT * from sitio WHERE id_sitio = $id";
         $datos = $obj->select($sql);
-
+        include_once '../controller/Sitios/direcciones.php';
+        $partes = parsearDireccion($datos[0]['direccion']);
         $sql2 = "SELECT * FROM barrio";
         $barrios = $obj->select($sql2);
 
