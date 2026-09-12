@@ -67,11 +67,11 @@ class Tanque{
                         <div class="modal-dialog">
                             <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Eliminar Tanque</h5>
-                                <button type="button" class="btn-close" onclick="window.location.href='index.php'"></button>
+                                <h5 class="modal-title">Inhabilitar Tanque</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <p>¿Estás seguro de eliminar este tanque?</p>
+                                <p>¿Estás seguro de Inhabilitar este tanque?</p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
