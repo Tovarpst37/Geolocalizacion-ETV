@@ -1,28 +1,3 @@
-<?php if (!empty($_SESSION['mensaje_exito'])): ?>
-  <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm" role="alert" style="border-left: 5px solid #198754 !important; background-color: #fff;">
-    <svg class="bi flex-shrink-0 me-2" width="24" height="24" style="color:#198754;" role="img" aria-label="Success:">
-      <use xlink:href="#check-circle-fill" />
-    </svg>
-    <div>
-      <?php echo $_SESSION['mensaje_exito']; ?>
-    </div>
-  </div>
-  <?php unset($_SESSION['mensaje_exito']); ?>
-
-  <script>
-    setTimeout(function() {
-      var alerta = document.getElementById('alertaExito');
-      if (alerta) {
-        alerta.style.transition = "opacity 0.5s ease";
-        alerta.style.opacity = "0";
-        setTimeout(function() {
-          alerta.remove();
-        }, 500); // espera a que termine el fade antes de quitarlo del DOM
-      }
-    }, 5000); // 5 segundos visible
-  </script>
-<?php endif; ?>
-
 
 
 
@@ -57,16 +32,16 @@
 
     $bj = [];
     $ob2 =  new SitiosController();
-    $resul = $ob2->data();
+ 
 
 
-    foreach ($resul as $j) {
+    foreach ($datos as $j) {
       $sitios = new Sitios($j['id_sitio'], $j['nombre_sitio'], $j['direccion'], $j['barrio'], $j['estado']);
       $bj[] = $sitios;
     }
 
 
-
+if(!empty($bj)){ 
     foreach ($bj as $i) {
       
         $badgeClass = strtolower($i->getEstado()) === 'activo' ? 'bg-success' : 'bg-danger';
@@ -124,3 +99,16 @@
     ?>
   </div>
 </div>
+
+<?php
+    }else { ?>
+    <div class="w-100 d-flex flex-column align-items-center justify-content-center text-muted py-5 mt-5">
+        <i class="fa fa-search fa-2x mb-3"></i>
+        <p class="mb-3">No se encontraron resultados</p>
+    </div>
+</div>
+</div>
+
+<?php } ?>
+
+    

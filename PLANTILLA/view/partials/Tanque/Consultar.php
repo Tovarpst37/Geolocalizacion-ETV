@@ -120,10 +120,10 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <p>¿Estás seguro de Inhabilitar este tanque?</p>
+                                <p>¿Estás seguro de Inhabilitar <?php echo $ob->getNombre() ?>?</p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
                                 <a href="<?php echo getUrl('Tanque','Tanque','postDelete', array('id'=>$ob->getId())); ?>"class="btn btn-danger" type="button">Inhabilitar</a>
                             </div>
                             </div>

@@ -28,8 +28,8 @@
 <div class="d-flex justify-content-end w-100">
     <div class="input-group" style="max-width: 350px;">
 <form class="input-group" action="index.php" method="GET">
-    <input type="hidden" name="modulo" value="Tanque">
-    <input type="hidden" name="controlador" value="Tanque">
+    <input type="hidden" name="modulo" value="Zoocriadero">
+    <input type="hidden" name="controlador" value="Zoocriadero">
     <input type="hidden" name="funcion" value="getBuscar">
     
     <input type="text" name="busqueda" placeholder="Search ..." class="form-control" />
@@ -47,6 +47,7 @@
 
 <div class="list-group mt-4">
     <?php foreach($zoocriaderos as $z){ ?>
+    
         <div class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-0 mb-4 border rounded">
             
             <div>
@@ -55,7 +56,7 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <span class="badge <?php echo $z['id_estado'] == 1 ? 'bg-success' : 'bg-secondary'; ?>">
+                <span class="badge <?php echo $z['id_estado'] == 1 ? 'bg-success' : 'bg-danger'; ?>">
                     <?php echo $z['id_estado'] == 1 ? 'Activo' : 'Inactivo'; ?>
                 </span>
                 <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-primary">Editar</a>
@@ -69,14 +70,14 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Inhabilitar Tanque</h5>
+                                <h5 class="modal-title">Inhabilitar Zoocriadero</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <p>¿Estás seguro de Inhabilitar este tanque?</p>
+                                <p>¿Estás seguro de Inhabilitar <?php echo $z['cod_zoocriadero'] ?>?</p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
                                 <a href="<?php echo getUrl('Zoocriadero','Zoocriadero','postDelete', array('id'=>$z['id_zoocriadero'])); ?>"class="btn btn-danger" type="button">Inhabilitar</a>
                             </div>
                             </div>
