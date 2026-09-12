@@ -86,7 +86,7 @@ class ZoocriaderoController
             include_once '../model/Direcciones/direcciones.php';
             include_once '../model/Errores/ErrorModal.php';
 
-
+            ErrorModal::verError($errores, getUrl('Zoocriadero', 'Zoocriadero', 'getRegistrar'));
 
             return;
         } else {
@@ -121,17 +121,20 @@ class ZoocriaderoController
     {
 
         $obj = new ZoocriaderoModel();
-
+        $sql = "SELECT * from zoocriadero";
+        $zoocriaderos = $obj->select($sql);
 
         include_once '../view/partials/Zoocriadero/Consultar.php';
     }
 
-
+    public function getEditar()
+    {
 
         include_once '../view/partials/Zoocriadero/Editar.php';
     }
 
-
+    public function postDelete()
+    {
 
         $obj = new ZoocriaderoModel();
         $id = $_GET['id'];
@@ -157,6 +160,5 @@ class ZoocriaderoController
                 }
             }
         }
-
     }
 }
