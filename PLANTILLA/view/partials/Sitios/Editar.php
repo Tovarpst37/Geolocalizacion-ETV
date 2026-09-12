@@ -28,27 +28,27 @@
                         <div class="row g-2 mb-3 align-items-center">
                             <div class="col-md-3">
                                 <select class="form-select" id="via_principal" name="via_principal" required>
-                                    <option value="" selected disabled>Vía principal *</option>
+                                    <option value="" disabled <?php echo empty($partes['via_principal']) ? 'selected' : ''; ?>>Vía principal *</option>
                                     <?php
                                     include_once '../controller/Sitios/direcciones.php';
                                     foreach (VIA_PRINCIPAL as $v): ?>
-                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                        <option value="<?php echo $v; ?>" <?php echo ($partes['via_principal'] == $v) ? 'selected' : ''; ?>><?php echo $v; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <select class="form-select" id="numero_via" name="numero_via" required>
-                                    <option value="" selected disabled>Número *</option>
+                                    <option value="" disabled <?php echo empty($partes['numero_via']) ? 'selected' : ''; ?>>Número *</option>
                                     <?php foreach ($numero_de_via as $v): ?>
-                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                        <option value="<?php echo $v; ?>" <?php echo ($partes['numero_via'] == $v) ? 'selected' : ''; ?>><?php echo $v; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" id="sufijo_via" name="sufijo_via">
-                                    <option value="" selected disabled>Sufijo</option>
+                                    <option value="" disabled <?php echo empty($partes['sufijo_via']) ? 'selected' : ''; ?>>Sufijo</option>
                                     <?php foreach (SUFIJO_VIA as $key => $label): ?>
-                                        <option value="<?php echo $key; ?>"><?php echo $key; ?></option>
+                                        <option value="<?php echo $key; ?>" <?php echo ($partes['sufijo_via'] == $key) ? 'selected' : ''; ?>><?php echo $key; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -57,28 +57,29 @@
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" id="cruce_prefijo" name="cruce_prefijo">
-                                    <option value="" selected disabled>Prefijo</option>
+                                    <option value="" disabled <?php echo empty($partes['cruce_prefijo']) ? 'selected' : ''; ?>>Prefijo</option>
                                     <?php foreach (CRUCE_PREFIJO as $key => $label): ?>
-                                        <option value="<?php echo $key; ?>"><?php echo $label; ?> (<?php echo $key; ?>)</option>
+                                        <option value="<?php echo $key; ?>" <?php echo ($partes['cruce_prefijo'] == $key) ? 'selected' : ''; ?>><?php echo $label; ?> (<?php echo $key; ?>)</option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="row g-2 mb-3 align-items-center">
+
+                          <div class="row g-2 mb-3 align-items-center">
                             <div class="col-md-4">
                                 <select class="form-select" id="via_generadora" name="via_generadora" required>
-                                    <option value="" selected disabled>Vía generadora *</option>
+                                    <option value="" disabled <?php echo empty($partes['via_generadora']) ? 'selected' : ''; ?>>Vía generadora *</option>
                                     <?php foreach ($numero_de_la_via_generadora as $v): ?>
-                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                        <option value="<?php echo $v; ?>" <?php echo ($partes['via_generadora'] == $v) ? 'selected' : ''; ?>><?php echo $v; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <select class="form-select" id="sufijo_generadora" name="sufijo_generadora">
-                                    <option value="" selected disabled>Sufijo</option>
+                                    <option value="" disabled <?php echo empty($partes['sufijo_generadora']) ? 'selected' : ''; ?>>Sufijo</option>
                                     <?php foreach (SUFIJO_VIA as $key => $label): ?>
-                                        <option value="<?php echo $key; ?>"><?php echo $key; ?></option>
+                                        <option value="<?php echo $key; ?>" <?php echo ($partes['sufijo_generadora'] == $key) ? 'selected' : ''; ?>><?php echo $key; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -87,9 +88,9 @@
                             </div>
                             <div class="col-md-4">
                                 <select class="form-select" id="placa" name="placa" required>
-                                    <option value="" selected disabled>Placa *</option>
+                                    <option value="" disabled <?php echo empty($partes['placa']) ? 'selected' : ''; ?>>Placa *</option>
                                     <?php foreach ($numero_de_placa as $v): ?>
-                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                        <option value="<?php echo $v; ?>" <?php echo ($partes['placa'] == $v) ? 'selected' : ''; ?>><?php echo $v; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
