@@ -11,7 +11,7 @@
                 <p>Estas seguro que quieres Inhabilitar este sitio</p>
             </div>
             <div class="modal-footer">
-                <a href="<?php echo getUrl('Sitio', 'Sitio', 'getConsultar') ?>">
+                <a href="<?php echo getUrl('Sitios', 'Sitios', 'getConsultar') ?>">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
                     <a href="<?php echo getUrl('Sitios', 'Sitios', 'posDelete', array('id' => $id)); ?>">
