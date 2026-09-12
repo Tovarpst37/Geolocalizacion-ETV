@@ -8,6 +8,7 @@ class SitiosController
 
 
 
+
     public function posDelete()
     {
         $id = $_GET['id'];
