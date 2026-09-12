@@ -6,23 +6,23 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="<?php echo getUrl("FormularioZ", "FormularioZ", "postInsert") ?>" method="POST">
+                <form action="<?php echo getUrl("FormularioLa", "FormularioLa", "postInsert") ?>" method="POST">
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Codigo</label>
-                        <input type="text" class="form-control" id="formularioM" name="formularioM"
+                        <input type="text" class="form-control" id="formulariomLa" name="formulariomLa"
                             placeholder="Ingrese el codigo del seguimiento" required>
                     </div>
 
 
                     <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Fecha</label>
-                        <input type="text" class="form-control" id="formularioM" name="formularioM"
-                            placeholder="Ingrese la fecha" required>
+                        <label for="formulariocod" class="form-label">Lavado</label>
+                        <input type="text" class="form-control" id="formularioz" name="formularioz"
+                            placeholder="Ingrese el codigo del seguimiento" required>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
-                        <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
+                        <button type="reset" class="btn btn-outline-secondary">Lavado</button>
                         <button type="submit" class="btn btn-primary">Guardar Sitio</button>
                     </div>
 

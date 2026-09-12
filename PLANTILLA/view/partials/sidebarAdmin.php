@@ -194,22 +194,22 @@
                 </a>
               </li>
               <li>
-                <a href="<?php echo getUrl("FormularioZ", "FormularioZ", "getRegistrar") ?>">
+                <a href="<?php echo getUrl("FormularioM", "FormularioM", "getRegistrar") ?>">
                   <span class="sub-item"> Registrar Peces Muertos y nacidos</span>
                 </a>
               </li>
               <li>
-                <a href="<?php echo getUrl("FormularioZ", "FormularioZ", "getRegistrar") ?>">
+                <a href="<?php echo getUrl("FormularioLi", "FormularioLi", "getRegistrar") ?>">
                   <span class="sub-item"> Registrar Limpieza</span>
                 </a>
               </li>
               <li>
-                <a href="<?php echo getUrl("FormularioZ", "FormularioZ", "getRegistrar") ?>">
+                <a href="<?php echo getUrl("FormularioAj", "FormularioAj", "getRegistrar") ?>">
                   <span class="sub-item"> Registrar Ajuste de Nivel</span>
                 </a>
               </li>
               <li>
-                <a href="<?php echo getUrl("FormularioZ", "FormularioZ", "getRegistrar") ?>">
+                <a href="<?php echo getUrl("FormularioLa", "FormularioLa", "getRegistrar") ?>">
                   <span class="sub-item"> Registrar Lavado</span>
                 </a>
               </li>

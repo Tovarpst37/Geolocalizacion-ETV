@@ -6,19 +6,19 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="<?php echo getUrl("FormularioZ", "FormularioZ", "postInsert") ?>" method="POST">
+                <form action="<?php echo getUrl("FormularioLi", "FormularioLi", "postInsert") ?>" method="POST">
 
                     <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Codigo</label>
-                        <input type="text" class="form-control" id="formularioM" name="formularioM"
+                        <label for="formulariocod" class="form-label">Eminen</label>
+                        <input type="text" class="form-control" id="formularioLi" name="formularioLi"
                             placeholder="Ingrese el codigo del seguimiento" required>
                     </div>
 
 
                     <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Fecha</label>
-                        <input type="text" class="form-control" id="formularioM" name="formularioM"
-                            placeholder="Ingrese la fecha" required>
+                        <label for="formulariocod" class="form-label">Limpieza</label>
+                        <input type="text" class="form-control" id="formularioz" name="formularioz"
+                            placeholder="Ingrese el codigo del seguimiento" required>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
