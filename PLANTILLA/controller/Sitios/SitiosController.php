@@ -27,6 +27,7 @@ class SitiosController
             $ejecutar = $obj->update($sql);
 
             if ($ejecutar) {
+                $_SESSION['mensaje_exito'] = "El sitio se inhabilito correctamente.";
                 redirect(getUrl("Sitios", "Sitios", "getConsultar"));
             } else {
                 echo "No se hinabilito el Sitio";
@@ -310,10 +311,11 @@ class SitiosController
     }
 
 
-    public function getBuscar(){
+    public function getBuscar()
+    {
 
-    $obj = new SitiosModel();
-    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        $obj = new SitiosModel();
+        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
 
         $sql = "SELECT 
             s.id_sitio,
@@ -327,18 +329,13 @@ class SitiosController
         WHERE s.nombre_sitio ILIKE '%$busqueda%'";
         # $result = $obj->select($sql);
         $datos = $obj->select($sql);
-        
-
-   
-    
-
-       
-
-    include_once "../view/partials/Sitios/Busqueda.php";
 
 
-            
 
+
+
+
+
+        include_once "../view/partials/Sitios/Busqueda.php";
     }
-
 }
