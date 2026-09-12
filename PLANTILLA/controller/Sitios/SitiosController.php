@@ -6,11 +6,7 @@ class SitiosController
 
 
 
-    public function setDelete()
-    {
-        $id = $_GET['id'];
-        include_once '../view/partials/Sitios/Inhabilitar.php';
-    }
+
 
     public function posDelete()
     {

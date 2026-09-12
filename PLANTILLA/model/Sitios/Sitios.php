@@ -39,9 +39,29 @@ class Sitios
                     <a href="<?php echo getUrl('Sitios', 'Sitios', 'getEdit', array('id' => $this->id)); ?>" class="btn btn-primary btn-sm flex-fill">
                         Editar
                     </a>
-                    <a href="<?php echo getUrl('Sitios', 'Sitios', 'setDelete', array('id' => $this->id)); ?>" class="btn btn-danger btn-sm flex-fill">
+                    <button type="button" class="btn btn-danger btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $this->id ?>">
                         Inhabilitar
-                    </a>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalInhabilitar<?php echo $this->id ?>" tabindex="-1" aria-labelledby="modalInhabilitarLabel<?php echo $this->id ?>" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalInhabilitarLabel<?php echo $this->id ?>">Inhabilitar sitio</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Estás seguro que quieres inhabilitar <strong><?php echo $this->nombre_sitio ?></strong>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <a href="<?php echo getUrl('Sitios', 'Sitios', 'posDelete', array('id' => $this->id)); ?>" class="btn btn-danger">
+                                Inhabilitar
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -75,8 +95,3 @@ class Sitios
         $this->estado = $estado;
     }
 }
-
-
-
-
-?>
