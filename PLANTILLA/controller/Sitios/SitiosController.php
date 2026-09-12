@@ -284,6 +284,7 @@ class SitiosController
             $this->postUpdate($id, $nombre, $direccion, $barrio, $estado);
         }
     }
+    
     public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado)
     {
         $obj = new SitiosModel();

@@ -94,6 +94,7 @@
 
         $ejecutar = $obj->delete($sql);
          if ($ejecutar){
+            $_SESSION['mensaje_exito'] = "El Tanque se inhabilito correctamente.";
                 redirect(getUrl("Tanque","Tanque","getConsultar"));
             }else{
                 echo "No se pudo inhabilitar el tanque";
@@ -170,8 +171,9 @@ public function postUpdate(){
             $ejecutar = $obj->update($sql);
             }
                 
-
+           
             if($ejecutar){
+                 $_SESSION['mensaje_exito'] = "El Tanque se actualizó correctamente.";
                 redirect(getUrl("Tanque","Tanque","getConsultar"));
             }else{
                 echo "No se pudo registrar la ciudad";
