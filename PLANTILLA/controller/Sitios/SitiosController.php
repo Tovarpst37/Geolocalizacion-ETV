@@ -63,7 +63,7 @@ class SitiosController
         $sufijo_via = trim($_POST['sufijo_via'] ?? '');
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
-
+    
         //validacion 
 
         //por si llega vacio
