@@ -68,11 +68,7 @@
 
     }
 
-    public function getDelete(){
 
-        $id = $_GET['id'];
-            include_once '../view/partials/Tanque/Eliminar.php';
-        }
 
     public function postDelete(){
 
@@ -94,6 +90,7 @@
 
         $ejecutar = $obj->delete($sql);
          if ($ejecutar){
+            $_SESSION['mensaje_exito'] = "El Tanque se inhabilito correctamente.";
                 redirect(getUrl("Tanque","Tanque","getConsultar"));
             }else{
                 echo "No se pudo inhabilitar el tanque";
@@ -170,8 +167,9 @@ public function postUpdate(){
             $ejecutar = $obj->update($sql);
             }
                 
-
+           
             if($ejecutar){
+                 $_SESSION['mensaje_exito'] = "El Tanque se actualizó correctamente.";
                 redirect(getUrl("Tanque","Tanque","getConsultar"));
             }else{
                 echo "No se pudo registrar la ciudad";
@@ -190,6 +188,9 @@ public function postUpdate(){
 
         $obj = new TanqueModel();
 
+       
+
+        
         $sql = "SELECT 
                 t.id_tanque,
                 t.codigo_tanque,
@@ -205,6 +206,37 @@ public function postUpdate(){
         $tanque = $obj ->select($sql);
 
             return $tanque;
+        
+
+    }
+
+
+
+    public function getBuscar(){
+
+    $obj = new TanqueModel();
+    $busqueda = $_GET['busqueda'] ?? '';
+
+        $sql = "SELECT 
+            t.id_tanque,
+            t.codigo_tanque,
+            t.img,
+            ti.nombre_tipo_tanque,
+            z.cod_zoocriadero,
+            z.direcciom,
+            est.nombre_estado
+            FROM tanque t
+            INNER JOIN tipo_tanque ti ON t.id_tipo_tanque = ti.id_tipo_tanque
+            INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
+            INNER JOIN estado est ON t.id_estado = est.id_estado
+            WHERE t.codigo_tanque ILIKE '%$busqueda%'";
+
+        $tanque2 = $obj ->select($sql);
+
+    include_once "../view/partials/Tanque/Busqueda.php";
+
+
+            
 
     }
 

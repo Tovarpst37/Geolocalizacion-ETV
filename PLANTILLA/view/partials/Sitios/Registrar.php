@@ -22,7 +22,7 @@
                                 <select class="form-select col mb-3" id="via_principal" name="via_principal" required>
                                     <option value="" selected disabled>Seleccione la vía principal</option>
                                     <?php
-                                    include_once '../controller/Sitios/direcciones.php';
+                                    include_once '../model/Direcciones/direcciones.php';
                                     foreach (VIA_PRINCIPAL as $v): ?>
                                         <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
                                     <?php endforeach; ?>

@@ -26,48 +26,9 @@ class Tanque{
     
 
 
-    public function getCard(){ 
+    public function getCard($id){ 
         
-        $badgeClass = strtolower($this->estado) === 'activo' ? 'bg-success' : 'bg-danger';
-
-        ?>
-
-        
-                <div class = "col">
-                
-                    <div class="card p-3 h-100" style="width: 100% !important; min-width: 0 !important; d-flex justify-content-center">
-        <img src="/Geolocalizacion/Geolocalizacion-ETV/PLANTILLA/web/assets/img/<?php echo $this->img;?>"
-            style="width: 15rem; height: 12rem; object-fit: contain;" 
-            class="card-img-top mx-auto d-block" 
-            alt="Tanque">            
-            <div class="card-body">
-
-                <ul class="list-group-item">
-                    <li class="badge  <?php echo $badgeClass ?> rounded-pill">Tanque <?php echo $this->estado;?></li>
-                </ul>
-                        
-                        
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><b>Codigo Tanque </b>:   <?php echo $this->nombre; ?></li>
-                        <li class="list-group-item"><b>Tipo</b>:   <?php echo $this->tipo;?></li>
-                        <li class="list-group-item"><b>Zoocriadero</b>:   <?php echo $this->zoocriadero;?></li>
-                        <li class="list-group-item"><b>Direccion</b>:  <?php echo $this->direccion;?></li>
-                       
-                    </ul>
-                    <div class="card-body">
-                        <a href="<?php echo getUrl('Tanque','Tanque','getEdit', array('id'=>$this->id)); ?>" class="btn btn-primary">
-                            Editar
-                        </a>
-                            <a href="<?php echo getUrl("Tanque","Tanque","getDelete",array("id"=>$this->id ))?>" class="btn btn-danger">
-                                Eliminar
-                            </a>
-                                   
-                    </div>
-                    </div>
-                    
-            </div>
-                <?php
+       
 
                 
         
@@ -80,6 +41,7 @@ class Tanque{
         $this->id = $id2; 
 
     }
+
 
     
     public function setDireccion( $direccion){
@@ -116,6 +78,50 @@ class Tanque{
 
     public function setNombre($nombre){
         $this -> nombre = $nombre;
+    }
+
+
+        public function getId( ){
+
+        return $this->id; 
+
+    }
+
+
+    public function getDireccion(){
+
+        return $this->direccion; 
+
+    }
+
+    
+    public function getEstado(){
+
+        return $this->estado; 
+
+    }
+
+    
+    public function getTipo(){
+
+        return $this->tipo; 
+
+    }
+
+    public function getImg(){
+
+        return $this->img; 
+
+    }
+
+    public function getZoocriadero(){
+
+        return $this->zoocriadero; 
+
+    }
+
+    public function getNombre(){
+        return $this -> nombre;
     }
 
 }
