@@ -16,4 +16,3 @@
   </div>
 </div>
 
-<?php include_once '../view/partials/Tanque/Consultar.php';?>

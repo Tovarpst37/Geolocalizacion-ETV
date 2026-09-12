@@ -35,13 +35,28 @@
         $ejecutar  = $obj -> update($sql);
 
         if($ejecutar){
-                redirect(getUrl("Tanque","Tanque","getConsultar"));
+                redirect(getUrl("Zoocriadero","Zoocriadero","getConsultar"));
             }else{
                 echo "No se pudo registrar la ciudad";
             };
 
         
 
+    }
+
+    public function getConsultar(){
+
+        $obj = new ZoocriaderoModel();
+        $sql = "SELECT * from zoocriadero";
+        $zoocriaderos = $obj -> select($sql);
+
+        include_once '../view/partials/Zoocriadero/Consultar.php';
+    
+    }
+
+    public function getEditar(){
+
+        include_once '../view/partials/Zoocriadero/Editar.php';
     }
 
     }

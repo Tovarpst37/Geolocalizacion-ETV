@@ -26,7 +26,7 @@ class Tanque{
     
 
 
-    public function getCard(){ 
+    public function getCard($id){ 
         
         $badgeClass = strtolower($this->estado) === 'activo' ? 'bg-success' : 'bg-danger';
 
@@ -59,9 +59,28 @@ class Tanque{
                         <a href="<?php echo getUrl('Tanque','Tanque','getEdit', array('id'=>$this->id)); ?>" class="btn btn-primary">
                             Editar
                         </a>
-                            <a href="<?php echo getUrl("Tanque","Tanque","getDelete",array("id"=>$this->id ))?>" class="btn btn-danger">
-                                Eliminar
-                            </a>
+                          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $id?>">
+                            Inhabilitar
+                            </button>
+
+                     <div class="modal fade" id="exampleModal<?php echo $id?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Eliminar Tanque</h5>
+                                <button type="button" class="btn-close" onclick="window.location.href='index.php'"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>¿Estás seguro de eliminar este tanque?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <a href="<?php echo getUrl('Tanque','Tanque','postDelete', array('id'=>$id)); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                            
                                    
                     </div>
                     </div>
@@ -78,6 +97,12 @@ class Tanque{
     public function setId( $id2){
 
         $this->id = $id2; 
+
+    }
+
+    public function getId( ){
+
+        return $this->id; 
 
     }
 
