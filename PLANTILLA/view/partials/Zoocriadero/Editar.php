@@ -24,23 +24,24 @@
             </div>
 
 
-            
-
-            <div class="mb-3">  
-              <label for="id_zoocriadero" class="form-label">Zoocriadero</label>
-              <select class="form-select" id="id_zoocriadero" name="id_zoocriadero" required>
-                <option value="" selected disabled>Selecciona un zoocriadero</option>
-                <?php foreach ($zoocriaderos as $zoo) {
-                  if ($d['id_zoocriadero'] == $zoo['id_zoocriadero']) {
+            <div class="mb-4">
+              <label for="id_estado" class="form-label">Encargado</label>
+              <select class="form-select" id="id_usuario" name="id_usuario" required>
+                <option value="">Selecciona un estado</option>
+                <?php foreach ($usuario as $usu) {
+                  if ($d['id_usuario'] == $usu['id_usuario']) {
                     $selected = "selected";
                   } else {
                     $selected = "";
                   }
                   print_r($d);
-                  echo "<option value='" . $zoo['id_zoocriadero'] . "' $selected>" . $zoo['cod_zoocriadero'] . "</option>";
+                  echo "<option value='" . $usu['id_usuario'] . "' $selected>" .$usu['primer_nombre']." ".$usu['segundo_nombre']." ".$usu['primer_apellido']." ".$usu['segundo_apellido'] . "</option>";
                 }; ?>
               </select>
             </div>
+            
+
+            
 
             <div class="mb-4">
               <label for="id_estado" class="form-label">Estado</label>

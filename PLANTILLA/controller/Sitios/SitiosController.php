@@ -140,7 +140,7 @@ class SitiosController
     public function postInsert(String $nombre1, String $direccion1, int $barrio1, int $estado1)
     {
 
-        $nombre = $nombre1;
+        $nombre = mb_strtoupper($nombre1);
         $direccion = $direccion1;
         $barrio = $barrio1;
         $estado = $estado1;
@@ -301,4 +301,37 @@ class SitiosController
             echo "No se pudo actualizar el sitio";
         }
     }
+
+
+    public function getBuscar(){
+
+    $obj = new SitiosModel();
+    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+
+        $sql = "SELECT 
+            s.id_sitio,
+            s.nombre_sitio,
+            s.direccion,
+            b.nombre_barrio AS barrio,
+            e.nombre_estado AS estado
+        FROM sitio s
+        INNER JOIN barrio b ON s.id_barrio = b.id_barrio
+        INNER JOIN estado e ON s.id_estado = e.id_estado 
+        WHERE s.nombre_sitio ILIKE '%$busqueda%'";
+        # $result = $obj->select($sql);
+        $datos = $obj->select($sql);
+        
+
+   
+    
+
+       
+
+    include_once "../view/partials/Sitios/Busqueda.php";
+
+
+            
+
+    }
+
 }
