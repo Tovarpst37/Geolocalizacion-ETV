@@ -107,7 +107,7 @@
                         <a href="<?php echo getUrl('Tanque','Tanque','getEdit', array('id'=>$ob->getId())); ?>" class="btn btn-primary">
                             Editar
                         </a>
-                          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $ob->getId() ?>">
+                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $ob->getId() ?>">
                             Inhabilitar
                             </button>
 
