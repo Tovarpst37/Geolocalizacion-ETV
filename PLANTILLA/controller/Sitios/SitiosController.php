@@ -196,7 +196,7 @@ class SitiosController
         $obj = new SitiosModel();
         $sql = "SELECT * from sitio WHERE id_sitio = $id";
         $datos = $obj->select($sql);
-        include_once '../controller/Sitios/direcciones.php';
+        include_once '../model/Direcciones/direcciones.php';
         $partes = parsearDireccion($datos[0]['direccion']);
         $sql2 = "SELECT * FROM barrio";
         $barrios = $obj->select($sql2);
@@ -280,7 +280,7 @@ class SitiosController
             $this->postUpdate($id, $nombre, $direccion, $barrio, $estado);
         }
     }
-    
+
     public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado)
     {
         $obj = new SitiosModel();
