@@ -101,7 +101,7 @@ class TanqueController
         move_uploaded_file($_FILES['img']['tmp_name'], $rutaCompleta);
 
         $tipo = $_POST['id_tipo_tanque'];
-        $codigo = $_POST['codigo_tanque'];
+        $codigo = mb_strtoupper($_POST['codigo_tanque']);
         $zoocriadero = $_POST['id_zoocriadero'];
         $estado = $_POST['id_estado'];
 
@@ -249,7 +249,7 @@ class TanqueController
         move_uploaded_file($_FILES['img']['tmp_name'], $rutaCompleta);
 
         $tipo = $_POST['id_tipo_tanque'];
-        $codigo = $_POST['codigo_tanque'];
+        $codigo = mb_strtoupper($_POST['codigo_tanque']);
         $zoocriadero = $_POST['id_zoocriadero'];
         $estado = $_POST['id_estado'];
         $id = $_POST['id'];
@@ -320,8 +320,11 @@ class TanqueController
     public function getBuscar()
     {
 
-        $obj = new TanqueModel();
-        $busqueda = $_GET['busqueda'] ?? '';
+
+
+    $obj = new TanqueModel();
+    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+
 
         $sql = "SELECT 
             t.id_tanque,
