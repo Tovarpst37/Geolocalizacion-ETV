@@ -55,7 +55,7 @@
           <div class="collapse" id="gestionUsuario">
             <ul class="nav nav-collapse">
               <li>
-                <a href="<?php echo getUrl("Usuario","Usuario","getCreate"); ?>">
+                <a href="<?php echo getUrl("Usuario", "Usuario", "getCreate"); ?>">
                   <span class="sub-item">Registrar Usuario</span>
                 </a>
               </li>
