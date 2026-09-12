@@ -12,9 +12,7 @@ class SitiosController
     {
         $id = $_GET['id'];
         $obj = new SitiosModel();
-        $sql = "UPDATE  sitio set id_estado = 2 WHERE id_sitio = $id";
 
-        $ejecutar = $obj->update($sql);
         $sql2 = "SELECT id_estado from sitio WHERE id_sitio = $id";
         $validacion =  $obj->select($sql2);
         foreach ($validacion as $j) {
@@ -22,15 +20,21 @@ class SitiosController
             if ($j['id_estado'] == 2) {
                 echo '<script>alert("¡Este tanque ya esta inhabilitado!");</script>';
                 redirect(getUrl("Sitios", "Sitios", "getConsultar"));
+            }
+
+
+            $sql = "UPDATE  sitio set id_estado = 2 WHERE id_sitio = $id";
+            $ejecutar = $obj->update($sql);
+
+            if ($ejecutar) {
+                $_SESSION['mensaje_exito'] = "El sitio se inhabilito correctamente.";
+                redirect(getUrl("Sitios", "Sitios", "getConsultar"));
             } else {
-                if ($ejecutar) {
-                    redirect(getUrl("Sitios", "Sitios", "getConsultar"));
-                } else {
-                    echo "No se hinabilito el Sitio";
-                }
+                echo "No se hinabilito el Sitio";
             }
         }
     }
+
 
 
 
@@ -44,6 +48,11 @@ class SitiosController
         $sql3 = "SELECT * from estado";
         $estados = $obj->select($sql3);
 
+        include_once '../model/Direcciones/direcciones.php';
+
+        $old = $_SESSION['old_input'] ?? [];
+        unset($_SESSION['old_input']);
+
         include_once '../view/partials/Sitios/Registrar.php';
     }
 
@@ -51,6 +60,7 @@ class SitiosController
 
     public function validarRegistrar()
     {
+        $_SESSION['old_input'] = $_POST;
         $cont = 0;
         $nombre = $_POST['nombre'] ?? '';
         $via_principal = $_POST['via_principal'] ?? '';
@@ -140,7 +150,7 @@ class SitiosController
     public function postInsert(String $nombre1, String $direccion1, int $barrio1, int $estado1)
     {
 
-        $nombre = $nombre1;
+        $nombre = mb_strtoupper($nombre1);
         $direccion = $direccion1;
         $barrio = $barrio1;
         $estado = $estado1;
@@ -166,20 +176,18 @@ class SitiosController
     }
 
     public function data()
-
     {
-
         $obj = new SitiosModel();
         $sql = "SELECT 
-            s.id_sitio,
-            s.nombre_sitio,
-            s.direccion,
-            b.nombre_barrio AS barrio,
-            e.nombre_estado AS estado
-        FROM sitio s
-        INNER JOIN barrio b ON s.id_barrio = b.id_barrio
-        INNER JOIN estado e ON s.id_estado = e.id_estado";
-        # $result = $obj->select($sql);
+        s.id_sitio,
+        s.nombre_sitio,
+        s.direccion,
+        b.nombre_barrio AS barrio,
+        e.nombre_estado AS estado
+    FROM sitio s
+    INNER JOIN barrio b ON s.id_barrio = b.id_barrio
+    INNER JOIN estado e ON s.id_estado = e.id_estado
+    ORDER BY s.id_sitio";
         $datos = $obj->select($sql);
         return $datos;
     }
@@ -300,5 +308,34 @@ class SitiosController
         } else {
             echo "No se pudo actualizar el sitio";
         }
+    }
+
+
+    public function getBuscar()
+    {
+
+        $obj = new SitiosModel();
+        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+
+        $sql = "SELECT 
+            s.id_sitio,
+            s.nombre_sitio,
+            s.direccion,
+            b.nombre_barrio AS barrio,
+            e.nombre_estado AS estado
+        FROM sitio s
+        INNER JOIN barrio b ON s.id_barrio = b.id_barrio
+        INNER JOIN estado e ON s.id_estado = e.id_estado 
+        WHERE s.nombre_sitio ILIKE '%$busqueda%'";
+        # $result = $obj->select($sql);
+        $datos = $obj->select($sql);
+
+
+
+
+
+
+
+        include_once "../view/partials/Sitios/Busqueda.php";
     }
 }
