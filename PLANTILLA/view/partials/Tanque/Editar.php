@@ -1,7 +1,7 @@
 <div class="modal show" tabindex="-1" style="display:block;">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <form action="<?php echo getUrl('Tanque', 'Tanque', 'postUpdate'); ?>" method="POST" enctype="multipart/form-data">
+      <form action="<?php echo getUrl('Tanque', 'Tanque', 'validarUpdate'); ?>" method="POST" enctype="multipart/form-data">
         <div class="modal-header">
           <h5 class="modal-title">Editar Tanque</h5>
           <a href="<?php echo getUrl('Tanque', 'Tanque', 'getConsultar') ?>" class="btn btn-close"></a>
