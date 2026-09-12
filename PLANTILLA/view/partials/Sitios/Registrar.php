@@ -10,7 +10,7 @@
 
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese el nombre del sitio" required>
+                        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingresa el nombre del sitio " value="<?php echo $old['nombre'] ?? ''; ?>" required>
                     </div>
 
                     <div class="mb-3">
@@ -24,7 +24,7 @@
                                     <?php
                                     include_once '../model/Direcciones/direcciones.php';
                                     foreach (VIA_PRINCIPAL as $v): ?>
-                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                        <option value="<?php echo $v; ?>" <?php echo (($old['via_principal'] ?? '') == $v) ? 'selected' : ''; ?>><?php echo $v; ?></option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -32,7 +32,8 @@
                                 <select class="form-select col mb-3" id="numero_via" name="numero_via" required>
                                     <option value="" selected disabled>Seleccione el número</option>
                                     <?php foreach ($numero_de_via as $v): ?>
-                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                        <option value="<?php echo $v; ?>" <?php echo (($old['numero_via'] ?? '') == $v) ? 'selected' : ''; ?>><?php echo $v; ?></option>
+
                                     <?php endforeach; ?>
                                 </select>
 
@@ -40,7 +41,7 @@
                                 <select class="form-select col mb-3" id="sufijo_via" name="sufijo_via">
                                     <option value="" selected disabled>Sin sufijo</option>
                                     <?php foreach (SUFIJO_VIA as $key => $label): ?>
-                                        <option value="<?php echo $key; ?>"><?php echo $label; ?> (<?php echo $key; ?>)</option>
+                                        <option value="<?php echo $key; ?>" <?php echo (($old['sufijo_via'] ?? '') == $key) ? 'selected' : ''; ?>><?php echo $label; ?> (<?php echo $key; ?>)</option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -48,7 +49,7 @@
                                 <select class="form-select col mb-3" id="cruce_prefijo" name="cruce_prefijo">
                                     <option value="" selected disabled>Sin prefijo</option>
                                     <?php foreach (CRUCE_PREFIJO as $key => $label): ?>
-                                        <option value="<?php echo $key; ?>"><?php echo $label; ?> (<?php echo $key; ?>)</option>
+                                        <option value="<?php echo $key; ?>" <?php echo (($old['cruce_prefijo'] ?? '') == $key) ? 'selected' : ''; ?>><?php echo $label; ?> (<?php echo $key; ?>)</option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -56,7 +57,7 @@
                                 <select class="form-select col mb-3" id="via_generadora" name="via_generadora" required>
                                     <option value="" selected disabled>Seleccione el número</option>
                                     <?php foreach ($numero_de_la_via_generadora as $v): ?>
-                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                        <option value="<?php echo $v; ?>" <?php echo (($old['via_generadora'] ?? '') == $v) ? 'selected' : ''; ?>><?php echo $v; ?></option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -64,7 +65,7 @@
                                 <select class="form-select col mb-3" id="sufijo_generadora" name="sufijo_generadora">
                                     <option value="" selected disabled>Sin sufijo</option>
                                     <?php foreach (SUFIJO_VIA as $key => $label): ?>
-                                        <option value="<?php echo $key; ?>"><?php echo $label; ?> (<?php echo $key; ?>)</option>
+                                        <option value="<?php echo $key; ?>" <?php echo (($old['sufijo_generadora'] ?? '') == $key) ? 'selected' : ''; ?>><?php echo $label; ?> (<?php echo $key; ?>)</option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -72,7 +73,7 @@
                                 <select class="form-select col" id="placa" name="placa" required>
                                     <option value="" selected disabled>Seleccione la placa</option>
                                     <?php foreach ($numero_de_placa as $v): ?>
-                                        <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                                        <option value="<?php echo $v; ?>" <?php echo (($old['placa'] ?? '') == $v) ? 'selected' : ''; ?>><?php echo $v; ?></option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -86,9 +87,9 @@
                         <select class="form-select" id="barrio" name="barrio" required>
                             <option value="" selected disabled>Selecciona un barrio</option>
                             <?php foreach ($barrios as $b): ?>
-                                <option value="<?php echo $b['id_barrio']; ?>">
-                                    <?php echo $b['nombre_barrio']; ?>
-                                </option>
+
+                                <option value="<?php echo $b['id_barrio']; ?>" <?php echo (($old['barrio'] ?? '') == $b['id_barrio']) ? 'selected' : ''; ?>><?php echo $b['nombre_barrio']; ?></option>
+
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -98,9 +99,7 @@
                         <select class="form-select" id="estado" name="estado" required>
                             <option value="" selected disabled>Selecciona un estado</option>
                             <?php foreach ($estados as $est): ?>
-                                <option value="<?php echo $est['id_estado']; ?>">
-                                    <?php echo $est['nombre_estado']; ?>
-                                </option>
+                                <option value="<?php echo $est['id_estado']; ?>" <?php echo (($old['estado'] ?? '') == $est['id_estado']) ? 'selected' : ''; ?>><?php echo $est['nombre_estado']; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
