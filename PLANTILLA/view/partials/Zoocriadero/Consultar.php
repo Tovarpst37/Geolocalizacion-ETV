@@ -45,9 +45,9 @@
 
 
 
-<div class="list-group">
+<div class="list-group mt-4">
     <?php foreach($zoocriaderos as $z){ ?>
-        <div class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-5 mb-200 border rounded">
+        <div class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-0 mb-4 border rounded">
             
             <div>
                 <h6 class="mb-1"><?php echo $z['cod_zoocriadero']; ?></h6>
@@ -58,9 +58,30 @@
                 <span class="badge <?php echo $z['id_estado'] == 1 ? 'bg-success' : 'bg-secondary'; ?>">
                     <?php echo $z['id_estado'] == 1 ? 'Activo' : 'Inactivo'; ?>
                 </span>
-                <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-sm btn-primary">Editar</a>
-                <a href="#" class="btn btn-sm btn-danger">Inhabilitar</a>
+                <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-primary">Editar</a>
+                          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#zoo<?php echo $z['id_zoocriadero'] ?>">
+                            Inhabilitar
+                            </button>
+               
             </div>
+
+            <div class="modal fade" id="zoo<?php echo $z['id_zoocriadero']?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Inhabilitar Tanque</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>¿Estás seguro de Inhabilitar este tanque?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <a href="<?php echo getUrl('Zoocriadero','Zoocriadero','postDelete', array('id'=>$z['id_zoocriadero'])); ?>"class="btn btn-danger" type="button">Inhabilitar</a>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
 
         </div>
     <?php } ?>

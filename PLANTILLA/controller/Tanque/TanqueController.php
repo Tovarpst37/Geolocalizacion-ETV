@@ -68,11 +68,7 @@
 
     }
 
-    public function getDelete(){
 
-        $id = $_GET['id'];
-            include_once '../view/partials/Tanque/Eliminar.php';
-        }
 
     public function postDelete(){
 
