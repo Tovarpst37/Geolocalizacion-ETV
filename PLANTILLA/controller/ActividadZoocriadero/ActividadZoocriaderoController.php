@@ -37,8 +37,31 @@ public function postRegistrar(){
 
 }
 
+public function getConsultar(){
+    
+include_once'../view/partials/ActividadZoocriadero/Consultar.php';
+
+}
 
 
+public function getDatos(){
+
+$obj=new ActividadZoocriaderoModel();
+
+$sql="SELECT a.id_actividad_zoo,
+            a.cod_actividad,
+            a.nombre_actividad,
+            e.nombre_estado
+            
+            FROM actividad_zoocriadero a
+            INNER JOIN estado e 
+            ON a.id_estado=e.id_estado";
+
+$datos= $obj ->select($sql);
+
+return $datos;
+
+}
 
 
 }
