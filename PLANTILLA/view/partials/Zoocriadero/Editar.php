@@ -27,8 +27,8 @@
             <div class="mb-4">
               <label for="id_estado" class="form-label">Encargado</label>
               <select class="form-select" id="id_usuario" name="id_usuario" required>
-                <option value="">Selecciona un estado</option>
-                <?php foreach ($usuario as $usu) {
+                <option value="">Selecciona un coordinador</option>
+                <?php foreach ($usuarios as $usu) {
                   if ($d['id_usuario'] == $usu['id_usuario']) {
                     $selected = "selected";
                   } else {

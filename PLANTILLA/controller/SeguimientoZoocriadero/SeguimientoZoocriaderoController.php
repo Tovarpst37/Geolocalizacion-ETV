@@ -11,7 +11,7 @@
     public function getConsultar(){
 
      $obj = new SeguimientoZoocriaderoModel();
-
+    
      $sql = "SELECT 
                 s.id_seguimiento_zoo,
                 s.hora_inicio,
@@ -120,7 +120,7 @@
                     $obj->insert($sql2);
                 }
 
-                $_SESSION['mensaje_exito'] = "El Zoocriadero se registro correctamente.";
+                $_SESSION['mensaje_exito'] = "El Seguimiento de Zoocriadero se registro correctamente.";
                 redirect(getUrl("SeguimientoZoocriadero","SeguimientoZoocriadero","getConsultar"));
             } else {
                 echo "No se pudo registrar el seguimiento";
@@ -128,6 +128,82 @@
         }
 
 }
+
+
+public function getEditar()
+    {
+        $id = $_GET['id'];
+        $obj = new SeguimientoZoocriaderoModel();
+
+        $sql = "SELECT id_seguimiento_zoo, fecha, hora_inicio, hora_fin, id_estado, id_tanque, id_usuario
+                FROM seguimiento_zoocriadero
+                WHERE id_seguimiento_zoo = '$id'";
+        $datos = $obj->select($sql);
+
+        $sql3 = "SELECT * from estado";
+            $estados = $obj->select($sql3);
+
+
+        include_once '../view/partials/SeguimientoZoocriadero/Editar.php';
+
+    }
+
+    public function postUpdate(){
+
+        $obj = new SeguimientoZoocriaderoModel();
+        $id = $_POST['id'];
+        $fecha = $_POST['fecha'];
+        $horario = $_POST['horario'];
+         $estado = $_POST['id_estado'];
+        list($hora_inicio, $hora_fin) = explode('-', $horario);
+
+        $sql = "UPDATE seguimiento_zoocriadero SET 
+            fecha = '$fecha',
+            hora_inicio = '$hora_inicio',
+            hora_fin = '$hora_fin',
+            id_estado = '$estado'
+        WHERE id_seguimiento_zoo = '$id'";
+
+        $ejecutar = $obj->update($sql); 
+
+        if ($ejecutar) {
+            $_SESSION['mensaje_exito'] = "El Seguimiento de zoocriadero se actualizó correctamente.";
+            redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
+        } else {
+            echo "No se pudo actualizar el seguimiento";
+        };
+
+    }
+
+
+    public function postDelete()
+    {
+
+        $obj = new SeguimientoZoocriaderoModel();
+        $id = $_GET['id'];
+
+        $sql2 = "SELECT id_estado from seguimiento_zoocriadero WHERE id_seguimiento_zoo = $id";
+        $ejecutar2 = $obj->select($sql2);
+        foreach ($ejecutar2 as $s) {
+
+
+            if ($s['id_estado'] == 2) {
+
+                echo '<script>alert("¡Este Seguimiento ya esta inhabilitado!");</script>';
+                redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
+            } else if ($s['id_estado'] == 1) {
+                $sql = "UPDATE seguimiento_zoocriadero SET id_estado = 2 WHERE id_seguimiento_zoo = $id";
+
+                $ejecutar = $obj->delete($sql);
+                if ($ejecutar) {
+                    $_SESSION['mensaje_exito'] = "El seguimiento de zoocriadero se inhabilito correctamente.";
+                    redirect(getUrl("seguimientozoocriadero", "seguimientozoocriadero", "getConsultar"));
+                } else {
+                    echo "No se pudo inhabilitar el seguimientozoocriadero";
+                }
+            }
+        }
+    }
 
 public function getBuscar(){
 
