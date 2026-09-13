@@ -81,7 +81,7 @@ class ZoocriaderoController
             $sql3 = "SELECT * from estado";
             $estados = $obj->select($sql3);
 
-            $sql = "SELECT * from usuarios WHERE id_rol = 3";
+            $sql = "SELECT * from usuarios WHERE id_rol = 2";
             $usuarios = $obj->select($sql);
 
             include_once '../model/Direcciones/direcciones.php';
@@ -98,18 +98,6 @@ class ZoocriaderoController
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
             $this->postRegistrar($codigo, $direccion, $usuario, $estado);
         }
-    }
-
-    public function getBuscar()
-    {
-
-    $palabra = $_GET['busqueda'] ?? '';
-        $obj = new ZoocriaderoModel();
-        $sql = "SELECT * from zoocriadero";
-        $zoocriaderos = $obj->select($sql);
-
-
-        include_once "../view/partials/Zoocriadero/Busqueda.php";
     }
 
 
@@ -142,8 +130,33 @@ class ZoocriaderoController
 
     public function getEditar()
     {
-        
+        $id = $_GET['id'];
+        $obj = new ZoocriaderoModel();
+
+        $sql = "SELECT * from zoocriadero WHERE id_zoocriadero = '$id'";
+        $datos = $obj->select($sql);
+
+        $sql3 = "SELECT * from estado";
+            $estados = $obj->select($sql3);
+
+        $sql2 = "SELECT * from usuarios WHERE id_rol = 2";
+        $usuarios = $obj->select($sql2);
+
         include_once '../view/partials/Zoocriadero/Editar.php';
+
+    }
+
+
+    public function getBuscar()
+    {
+
+    $palabra = $_GET['busqueda'] ?? '';
+        $obj = new ZoocriaderoModel();
+        $sql = "SELECT * from zoocriadero";
+        $zoocriaderos = $obj->select($sql);
+
+
+        include_once "../view/partials/Zoocriadero/Busqueda.php";
     }
 
     public function postDelete()

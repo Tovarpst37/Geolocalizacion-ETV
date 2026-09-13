@@ -11,7 +11,7 @@
     public function getConsultar(){
 
      $obj = new SeguimientoZoocriaderoModel();
-
+    
      $sql = "SELECT 
                 s.id_seguimiento_zoo,
                 s.hora_inicio,
