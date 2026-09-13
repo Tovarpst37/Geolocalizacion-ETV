@@ -100,6 +100,18 @@ class ZoocriaderoController
         }
     }
 
+    public function getBuscar()
+    {
+
+    $palabra = $_GET['busqueda'] ?? '';
+        $obj = new ZoocriaderoModel();
+        $sql = "SELECT * from zoocriadero";
+        $zoocriaderos = $obj->select($sql);
+
+
+        include_once "../view/partials/Zoocriadero/Busqueda.php";
+    }
+
 
 
     public function postRegistrar(string $codigo, string $direccion, int $usuario, int $estado)
@@ -130,7 +142,7 @@ class ZoocriaderoController
 
     public function getEditar()
     {
-
+        
         include_once '../view/partials/Zoocriadero/Editar.php';
     }
 
