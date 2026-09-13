@@ -80,11 +80,19 @@
     $tanque = $_POST['selectTanques'] ?? '';
     $horario = $_POST['horario'] ?? '';
     $actividades = $_POST['actividades'] ?? [];
+    $sql_validar = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = '$codigo'";
+    $existe = $obj->select($sql_validar);
+
+
 
     list($hora_inicio, $hora_fin) = explode('-', $horario);
 
      $errores = [];
 
+        if(!empty($existe)){
+            $errores[] = "Ya existe un seguimiento con ese código";
+            
+        } 
         if (empty($codigo)) {
             $errores[] = "Debe ingresar el codigo del seguimiento";
         }
@@ -118,7 +126,7 @@
         }else{ 
 
    
-            $sql = "INSERT INTO seguimiento_zoocriadero (cod_zoocriadero, fecha, id_tanque, id_usuario, id_estado, hora_inicio, hora_fin)
+            $sql = "INSERT INTO seguimiento_zoocriadero (cod_seguimiento, fecha, id_tanque, id_usuario, id_estado, hora_inicio, hora_fin)
                     VALUES ('$codigo', CURRENT_DATE, '$tanque', '$usuario', '$estado', '$hora_inicio', '$hora_fin')
                     RETURNING id_seguimiento_zoo";
 
