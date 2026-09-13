@@ -314,7 +314,7 @@ class SitiosController
 
     public function getBuscar()
     {
-
+        $palabra = $_GET['busqueda'];
         $obj = new SitiosModel();
         $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
 

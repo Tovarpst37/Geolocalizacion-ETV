@@ -321,7 +321,7 @@ class TanqueController
     {
 
 
-
+    $palabra = $_GET['busqueda'];
     $obj = new TanqueModel();
     $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
 
