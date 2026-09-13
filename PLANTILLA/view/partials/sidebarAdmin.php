@@ -316,12 +316,12 @@
           <div class="collapse" id="depositoTerrono">
             <ul class="nav nav-collapse">
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getRegistrar") ?>">
                   <span class="sub-item"> Registrar tipo de depósito</span>
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getConsultar") ?>">
                   <span class="sub-item"> Consultar tipo de depósito</span>
                 </a>
               </li>
