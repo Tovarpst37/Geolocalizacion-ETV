@@ -27,6 +27,8 @@ class ZoocriaderoController
 
     public function validarRegistrar()
     {
+
+    $obj = new ZoocriaderoModel();
         $cont = 0;
         $codigo = $_POST['codigo_zoocriadero'] ?? '';
         $via_principal = $_POST['via_principal'] ?? '';
@@ -53,6 +55,14 @@ class ZoocriaderoController
 
         $errores = [];
 
+        $sql_validar = "SELECT id_zoocriadero FROM zoocriadero WHERE cod_zoocriadero = '$codigo'";
+        $existe = $obj->select($sql_validar);
+
+        if(!empty($existe)){
+            $errores[] = "Ya existe un seguimiento con ese código";
+            
+        } 
+
         if (empty($codigo)) {
             $errores[] = "El código del zoocriadero es obligatorio.";
         }
@@ -76,7 +86,7 @@ class ZoocriaderoController
         }
 
         if (!empty($errores)) {
-            $obj = new ZoocriaderoModel();
+            
 
             $sql3 = "SELECT * from estado";
             $estados = $obj->select($sql3);

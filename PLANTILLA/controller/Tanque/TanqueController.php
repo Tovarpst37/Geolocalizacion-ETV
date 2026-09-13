@@ -35,6 +35,7 @@ class TanqueController
 
     public function validarRegistrar()
     {
+        $obj = new TanqueModel();
         $cont = 0;
         $codigo = $_POST['codigo_tanque'] ?? '';
         $tipo = $_POST['id_tipo_tanque'] ?? '';
@@ -42,6 +43,14 @@ class TanqueController
         $estado = $_POST['id_estado'] ?? '';
 
         $errores = [];
+
+        $sql_validar = "SELECT id_tanque FROM tanque WHERE codigo_tanque = '$codigo'";
+        $existe = $obj->select($sql_validar);
+
+        if(!empty($existe)){
+            $errores[] = "Ya existe un tanque con ese código";
+            
+        } 
 
         if (empty($codigo)) {
             $errores[] = "El código del tanque es obligatorio.";
@@ -71,7 +80,7 @@ class TanqueController
         if (!empty($errores)) {
             $_SESSION['old_input'] = $_POST;
 
-            $obj = new TanqueModel();
+            
             $sql = "SELECT * from tipo_tanque";
             $tiposTanque = $obj->select($sql);
             $sql2 = "SELECT * from zoocriadero";
@@ -175,15 +184,23 @@ class TanqueController
 
     public function validarUpdate()
     {
+        $obj = new TanqueModel();
         $cont = 0;
         $id = $_POST['id'] ?? '';
-        $codigo = $_POST['codigo_tanque'] ?? '';
+        $codigo = mb_strtoupper($_POST['codigo_tanque'] ?? '');
         $tipo = $_POST['id_tipo_tanque'] ?? '';
         $zoocriadero = $_POST['id_zoocriadero'] ?? '';
         $estado = $_POST['id_estado'] ?? '';
 
         $errores = [];
 
+        $sql_validar = "SELECT id_tanque FROM tanque WHERE codigo_tanque = '$codigo'";
+        $existe = $obj->select($sql_validar);
+
+        if(!empty($existe)){
+            $errores[] = "Ya existe un tanque con ese código";
+            
+        } 
         if (empty($id)) {
             $errores[] = "No se identificó el tanque a editar.";
         }
@@ -213,7 +230,7 @@ class TanqueController
         }
 
         if (!empty($errores)) {
-            $obj = new TanqueModel();
+            
 
             $sql = "SELECT * from tanque WHERE id_tanque = $id";
             $datos = $obj->select($sql);
