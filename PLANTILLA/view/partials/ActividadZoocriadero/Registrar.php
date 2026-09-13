@@ -6,18 +6,18 @@
       </div>
 
       <div class="card-body p-4">
-        <form action="<?php echo getUrl<("ActividadZoocriadero","ActividadZoocriadero","postRegistrar")?>" method="POST">
+        <form action="<?php echo getUrl("ActividadZoocriadero","ActividadZoocriadero","postRegistrar")?>" method="POST">
 
           <div class="mb-3">
-            <label for="codigo_tanque" class="form-label">Codigo de la actividad</label>
-            <input type="text" class="form-control" id="codigo_zoocriadero" name="codigo_zoocriadero" placeholder="Ej: ZOO-MELENDEZ-02" required>
+            <label for="Codigo Actividad" class="form-label">Codigo de la actividad</label>
+            <input type="text" class="form-control" id="Codigo Actividad" name="cod_actividad" placeholder="Ej: AZ-001" required>
           </div>
 
           
 
           <div class="mb-3">
-            <label for="id_tipo_tanque" class="form-label">Nombre de la actividad</label>
-            <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Ingrese una actividad nueva" required>
+            <label for="Nombre Actividad" class="form-label">Nombre de la actividad</label>
+            <input type="text" class="form-control" id="Nombre Actividad" name="nombre_actividad" placeholder="Ingrese una actividad nueva" required>
           </div>
 
           

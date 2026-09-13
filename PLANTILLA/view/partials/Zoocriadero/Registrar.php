@@ -6,7 +6,7 @@
       </div>
 
       <div class="card-body p-4">
-        <form action="<?php echo getUrl("Zoocriadero","Zoocriadero","postRegistrar")?>" method="POST" enctype="multipart/form-data">
+        <form action="<?php echo getUrl("ActividadZoocriadero","ActividadZoocriadero","postRegistrar")?>" method="POST" enctype="multipart/form-data">
 
           <div class="mb-3">
             <label for="codigo_tanque" class="form-label">Codigo del zoocriadero</label>
