@@ -232,7 +232,7 @@ class SitiosController
         $obj = new SitiosModel();
         $cont = 0;
         $id = $_POST['id'] ?? '';
-        $nombre = $_POST['nombre'] ?? '';
+        $nombre = mb_strtoupper($_POST['nombre'] ?? '');
         $via_principal = $_POST['via_principal'] ?? '';
         $numero_via = $_POST['numero_via'] ?? '';
         $via_generadora = $_POST['via_generadora'] ?? '';
