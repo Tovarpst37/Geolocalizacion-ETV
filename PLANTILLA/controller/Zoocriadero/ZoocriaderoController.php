@@ -14,7 +14,7 @@
 
          $estados = $obj ->select($sql3);
 
-         $sql = "SELECT * from usuarios WHERE id_rol = 3";
+         $sql = "SELECT * from usuarios WHERE id_rol = 2";
 
          $usuarios = $obj -> select($sql);
          
