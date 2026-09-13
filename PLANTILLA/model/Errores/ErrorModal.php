@@ -15,7 +15,9 @@ class ErrorModal
                         <h5 class="modal-title" id="modalErroresLabel">
                             <span class="fs-4">⚠️</span> Errores en el formulario
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <a href="<?php echo $urlRegreso; ?>">
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </a>
                     </div>
                     <div class="modal-body">
                         <p class="text-muted">Por favor corrige los siguientes campos antes de continuar:</p>
