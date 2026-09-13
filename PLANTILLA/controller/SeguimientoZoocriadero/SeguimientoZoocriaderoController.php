@@ -13,31 +13,45 @@
      $obj = new SeguimientoZoocriaderoModel();
     
      $sql = "SELECT 
-                s.id_seguimiento_zoo,
-                s.hora_inicio,
-                s.hora_fin,
-                s.id_estado,
-                z.cod_zoocriadero,
-                t.codigo_tanque,
-                u.primer_nombre,
-                u.primer_apellido,
-                STRING_AGG(az.nombre_actividad, ', ') AS actividades
-            FROM seguimiento_zoocriadero s
-            INNER JOIN tanque t ON s.id_tanque = t.id_tanque
-            INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
-            INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
-            LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
-            LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
-            GROUP BY s.id_seguimiento_zoo, s.hora_inicio, s.hora_fin, s.id_estado, 
-                    z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
-            ORDER BY s.id_seguimiento_zoo";
+            s.id_seguimiento_zoo,
+            s.fecha,
+            s.hora_inicio,
+            s.hora_fin,
+            s.id_estado,
+            z.cod_zoocriadero,
+            t.codigo_tanque,
+            u.primer_nombre,
+            u.primer_apellido,
+            STRING_AGG(az.nombre_actividad, ', ') AS actividades
+        FROM seguimiento_zoocriadero s
+        INNER JOIN tanque t ON s.id_tanque = t.id_tanque
+        INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
+        INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
+        LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
+        LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
+        GROUP BY s.id_seguimiento_zoo, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
+                z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
+        ORDER BY s.id_seguimiento_zoo";
 
     $seguimientos = $obj->select($sql);
+
+    
+        $sql2 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 2 
+                WHERE fecha = CURRENT_DATE 
+                AND hora_fin < LOCALTIME 
+                AND id_estado = 1";
+
+        $ejecutar = $obj->update($sql2);
+        
+    
 
     include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
 
 
     }
+
+
     public function getRegistrar(){
 
         $obj = new SeguimientoZoocriaderoModel();
@@ -168,6 +182,15 @@ public function getEditar()
 
         if ($ejecutar) {
             $_SESSION['mensaje_exito'] = "El Seguimiento de zoocriadero se actualizó correctamente.";
+            $sql2 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 2 
+                WHERE fecha = CURRENT_DATE 
+                AND hora_fin < LOCALTIME 
+                AND id_estado = 1";
+
+        $ejecutar = $obj->update($sql2);
+
+            
             redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
         } else {
             echo "No se pudo actualizar el seguimiento";
