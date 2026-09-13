@@ -6,6 +6,7 @@
         private string $segundo_nombre;
         private string $primer_apellido;
         private string $segundo_apellido;
+        private int $tipo_documento;
         private string $documento;
         private DateTime $fecha_nacimiento;
         private string $correo;
@@ -17,7 +18,7 @@
 
         public function __construct(int $id_usuario,
         String $primer_nombre,String $segundo_nombre,String $primer_apellido,
-        String $segundo_apellido,String $documento,DateTime $fecha_nacimiento,
+        String $segundo_apellido,int $tipo_documento,String $documento,DateTime $fecha_nacimiento,
         String $correo,String $hash,int $id_genero,int $id_rol,int $id_estado,
         int $id_rh){
             this->$id_usuario = $id_usuario;
@@ -25,6 +26,7 @@
             this->$segundo_nombre = $segundo_nombre;
             this->$primer_apellido = $primer_apellido;
             this->$segundo_apellido = $segundo_apellido;
+            this->$tipo_documento = $tipo_documento;
             this->$documento = $documento;
             this->$fecha_nacimiento = $fecha_nacimiento;
             this->$correo = $correo;
@@ -73,6 +75,14 @@
 
         public function getSegundo_apellido(){
             return $segundo_apellido;
+        }
+
+        public function setTipo_Documento(int $tipo_documento){
+            this->$tipo_documento = $tipo_documento;
+        }
+
+        public function getTipo_Documento(){
+            return $tipo_documento;    
         }
 
         public function setDocumento(String $documento){

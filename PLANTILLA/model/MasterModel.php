@@ -25,6 +25,13 @@
 
             return $result;
         }
+
+        public function autoincrement($table,$field){
+            $sql = "SELECT MAX($field) FROM $table";
+            $result = pg_query($this->getConnect(),$sql);
+            $max_id = pg_fetch_array($result);
+            return $max_id[0]+1;
+        }
     }
 
     
