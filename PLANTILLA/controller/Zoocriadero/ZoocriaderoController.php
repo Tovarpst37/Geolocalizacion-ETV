@@ -142,7 +142,7 @@ class ZoocriaderoController
         $sql2 = "SELECT * from usuarios WHERE id_rol = 2";
         $usuarios = $obj->select($sql2);
 
-        include_once '../view/partials/Zoocriadero/Editar.php';
+        include_once '../view/partials/SeguimientoZoocriadero/Editar.php';
 
     }
 
