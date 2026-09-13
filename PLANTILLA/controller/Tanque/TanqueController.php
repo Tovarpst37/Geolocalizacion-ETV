@@ -351,8 +351,9 @@ class TanqueController
         $obj = new TanqueModel();
 
         $sql = "SELECT * from tanque";
-        $tanque = $obj->select($sql);
 
+        $tanque = $obj ->select($sql);
+        
         return count($tanque);
+
     }
-}
