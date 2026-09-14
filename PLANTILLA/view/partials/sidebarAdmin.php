@@ -4,8 +4,8 @@
     <div class="logo-header" data-background-color="dark">
       <a href="index.php" class="logo">
         <a href="index.php" class="logo">
-          <img src="assets/img/LogoProye.png" alt="navbar brand" class="navbar-brand"
-            style="width: 80px; height: 55px; border-radius: 50%; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast;" />
+          <img src="assets/img/LogoProye-removebg-preview.png" alt="navbar brand" class="navbar-brand"
+            style="width: 80px; height: 55px; border-radius: 100%; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast;" />
 
         </a>
       </a>
