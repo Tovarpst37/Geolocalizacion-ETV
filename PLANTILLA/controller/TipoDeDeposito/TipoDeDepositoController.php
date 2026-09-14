@@ -44,7 +44,7 @@
             $ejecutar = $obj->insert($sql);
 
                 if ($ejecutar) {
-                    $_SESSION['mensaje_exito'] = "El tipo de deposito de registro con exito.";
+                    $_SESSION['mensaje_exito'] = "El tipo de deposito se registro con exito.";
                     redirect(getUrl("TipoDeDeposito", "TipoDeDeposito", "getConsultar"));
                 } else {
                     echo "No se pudo registrar el tipo de deposito correctamente";
