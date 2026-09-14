@@ -32,6 +32,7 @@ class TanqueController
 
         include_once '../view/partials/Tanque/Registrar.php';
     }
+               
 
     public function validarRegistrar()
     {
@@ -44,8 +45,8 @@ class TanqueController
 
         $errores = [];
 
-        $sql_validar = "SELECT id_tanque FROM tanque WHERE codigo_tanque = '$codigo'";
-        $existe = $obj->select($sql_validar);
+        $sql_validar = "SELECT id_tanque FROM tanque WHERE codigo_tanque = $1 ";
+        $existe = $obj->select($sql_validar,[$codigo]);
 
         if (!empty($existe)) {
             $errores[] = "Ya existe un tanque con ese código";
@@ -97,11 +98,11 @@ class TanqueController
         }
 
         if ($cont == 1) {
-            $this->postRegistrar();
+            $this->postRegistrar($obj);
         }
     }
 
-    public function postRegistrar()
+    public function postRegistrar(TanqueModel $obj)
     {
 
         $nombreArchivo = 'tanque_' . uniqid() . '.' . pathinfo($_FILES['img']['name'], PATHINFO_EXTENSION);
@@ -114,13 +115,11 @@ class TanqueController
         $zoocriadero = $_POST['id_zoocriadero'];
         $estado = $_POST['id_estado'];
 
-        $obj = new TanqueModel();
-
         $sql = "INSERT INTO tanque (codigo_tanque, img, id_tipo_tanque, id_zoocriadero, id_estado)
                 VALUES 
-                ('$codigo', '$nombreArchivo', '$tipo', '$zoocriadero', '$estado')";
+                ($1, $2, $3, $4, $5)";
 
-        $ejecutar = $obj->insert($sql);
+        $ejecutar = $obj->insert($sql,[$codigo,$nombreArchivo,$tipo,$zoocriadero,$estado]);
 
         if ($ejecutar) {
             redirect(getUrl("Tanque", "Tanque", "getConsultar"));
@@ -137,8 +136,8 @@ class TanqueController
         $obj = new TanqueModel();
         $id = $_GET['id'];
 
-        $sql2 = "SELECT id_estado from tanque WHERE id_tanque = $id";
-        $ejecutar2 = $obj->select($sql2);
+        $sql2 = "SELECT id_estado from tanque WHERE id_tanque = $1";
+        $ejecutar2 = $obj->select($sql2,$id);
         foreach ($ejecutar2 as $s) {
 
 
@@ -147,9 +146,9 @@ class TanqueController
                 echo '<script>alert("¡Este tanque ya esta inhabilitado!");</script>';
                 redirect(getUrl("Tanque", "Tanque", "getConsultar"));
             } else if ($s['id_estado'] == 1) {
-                $sql = "UPDATE tanque SET id_estado = 2 WHERE id_tanque = $id";
+                $sql = "UPDATE tanque SET id_estado = 2 WHERE id_tanque = $1";
 
-                $ejecutar = $obj->delete($sql);
+                $ejecutar = $obj->delete($sql,[$id]);
                 if ($ejecutar) {
                     $_SESSION['mensaje_exito'] = "El Tanque se inhabilito correctamente.";
                     redirect(getUrl("Tanque", "Tanque", "getConsultar"));
@@ -166,8 +165,8 @@ class TanqueController
         $id = $_GET['id'];
         $obj = new TanqueModel();
 
-        $sql = "SELECT * from tanque WHERE id_tanque = $id";
-        $datos = $obj->select($sql);
+        $sql = "SELECT * from tanque WHERE id_tanque = $1";
+        $datos = $obj->select($sql,[$id]);
 
         $sql1 = "SELECT * from tipo_tanque";
         $tiposTanque = $obj->select($sql1);
@@ -194,10 +193,12 @@ class TanqueController
 
         $errores = [];
 
-        $sql_validar = "SELECT id_tanque FROM tanque WHERE codigo_tanque = '$codigo'";
-        $existe = $obj->select($sql_validar);
+        $sql_validar = "SELECT id_tanque FROM tanque WHERE codigo_tanque = $1 AND id_tanque != $2";
+        $existe = $obj->select($sql_validar,[$codigo,$id]);
 
-        if (!empty($existe)) {
+
+        if(count($existe) > 0){
+
             $errores[] = "Ya existe un tanque con ese código";
 
         }
@@ -253,11 +254,11 @@ class TanqueController
         }
 
         if ($cont == 1) {
-            $this->postUpdate();
+            $this->postUpdate($obj);
         }
     }
 
-    public function postUpdate()
+    public function postUpdate(TanqueModel $obj)
     {
 
         $nombreArchivo = 'tanque_' . uniqid() . '.' . pathinfo($_FILES['img']['name'], PATHINFO_EXTENSION);
@@ -270,7 +271,7 @@ class TanqueController
         $zoocriadero = $_POST['id_zoocriadero'];
         $estado = $_POST['id_estado'];
         $id = $_POST['id'];
-        $obj = new TanqueModel();
+        
 
 
         if ($_FILES['img']['error'] === UPLOAD_ERR_OK) {
@@ -356,9 +357,9 @@ class TanqueController
             INNER JOIN tipo_tanque ti ON t.id_tipo_tanque = ti.id_tipo_tanque
             INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
             INNER JOIN estado est ON t.id_estado = est.id_estado
-            WHERE t.codigo_tanque ILIKE '%$busqueda%'";
+            WHERE t.codigo_tanque ILIKE %$1%";
 
-        $tanque2 = $obj->select($sql);
+        $tanque2 = $obj->select($sql,[$busqueda]);
 
         include_once "../view/partials/Tanque/Busqueda.php";
     }

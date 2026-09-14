@@ -107,15 +107,15 @@ class ZoocriaderoController
 
         if ($cont == 1) {
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
-            $this->postRegistrar($codigo, $direccion, $usuario, $estado);
+            $this->postRegistrar($codigo, $direccion, $usuario, $estado,$obj);
         }
     }
 
 
 
-    public function postRegistrar(string $codigo, string $direccion, int $usuario, int $estado)
+    public function postRegistrar(string $codigo, string $direccion, int $usuario, int $estado, ZoocriaderoModel $obj)
     {
-        $obj = new ZoocriaderoModel();
+        
 
         $sql = "INSERT into zoocriadero (cod_zoocriadero, direcciom, id_usuario, id_estado) VALUES ('$codigo', '$direccion', $usuario, $estado)";
         $ejecutar = $obj->update($sql);
