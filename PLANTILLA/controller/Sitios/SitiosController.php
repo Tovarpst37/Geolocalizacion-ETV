@@ -233,16 +233,16 @@ class SitiosController
         $cont = 0;
         $id = $_POST['id'] ?? '';
         $nombre = mb_strtoupper($_POST['nombre'] ?? '');
-        $via_principal = $_POST['via_principal'] ?? '';
-        $numero_via = $_POST['numero_via'] ?? '';
-        $via_generadora = $_POST['via_generadora'] ?? '';
-        $placa = $_POST['placa'] ?? '';
+            $via_principal = $_POST['via_principal'] ?? '';
+            $numero_via = $_POST['numero_via'] ?? '';
+            $via_generadora = $_POST['via_generadora'] ?? '';
+            $placa = $_POST['placa'] ?? '';
         $barrio = $_POST['barrio'] ?? '';
         $estado = $_POST['estado'] ?? '';
 
-        $sufijo_via = trim($_POST['sufijo_via'] ?? '');
-        $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
-        $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
+         $sufijo_via = trim($_POST['sufijo_via'] ?? '');
+            $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
+            $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
         $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre'";
         $existe = $obj->select($sql_validar);
