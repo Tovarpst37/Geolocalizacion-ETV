@@ -19,7 +19,7 @@ class ZoocriaderoController
 
          $sql = "SELECT * from usuarios WHERE id_rol = 2";
 
-        $usuarios = $obj->select($sql);
+        
 
         include_once '../model/Direcciones/direcciones.php';
         include_once '../view/partials/Zoocriadero/Registrar.php';
@@ -35,7 +35,7 @@ class ZoocriaderoController
         $numero_via = $_POST['numero_via'] ?? '';
         $via_generadora = $_POST['via_generadora'] ?? '';
         $placa = $_POST['placa'] ?? '';
-        $usuario = $_POST['id_usuario'] ?? '';
+        
         $estado = $_POST['id_estado'] ?? '';
 
         $sufijo_via = trim($_POST['sufijo_via'] ?? '');
@@ -78,9 +78,7 @@ class ZoocriaderoController
         if (empty($placa)) {
             $errores[] = "Debe seleccionar el número de placa.";
         }
-        if (empty($usuario)) {
-            $errores[] = "Debe seleccionar un coordinador.";
-        }
+       
         if (empty($estado)) {
             $errores[] = "Debe seleccionar un estado.";
         }
@@ -106,18 +104,18 @@ class ZoocriaderoController
 
         if ($cont == 1) {
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
-            $this->postRegistrar($codigo, $direccion, $usuario, $estado,$obj);
+            $this->postRegistrar($codigo, $direccion, $estado,$obj);
         }
     }
 
 
 
-    public function postRegistrar(string $codigo, string $direccion, int $usuario, int $estado, ZoocriaderoModel $obj)
+    public function postRegistrar(string $codigo, string $direccion, int $estado, ZoocriaderoModel $obj)
     {
         
 
-        $sql = "INSERT into zoocriadero (cod_zoocriadero, direcciom, id_usuario, id_estado) VALUES ('$codigo', '$direccion', $usuario, $estado)";
-        $ejecutar = $obj->update($sql);
+        $sql = "INSERT into zoocriadero (cod_zoocriadero, direcciom, id_estado) VALUES ($1, $2, $3)";
+        $ejecutar = $obj->update($sql,[$codigo,$direccion,$estado]);
 
         if ($ejecutar) {
             $_SESSION['mensaje_exito'] = "El zoocriadero se registró correctamente.";
@@ -152,7 +150,7 @@ class ZoocriaderoController
         $sql2 = "SELECT * from usuarios WHERE id_rol = 2";
         $usuarios = $obj->select($sql2);
 
-        include_once '../view/partials/SeguimientoZoocriadero/Editar.php';
+        include_once '../view/partials/Zoocriadero/Editar.php';
 
     }
 

@@ -81,17 +81,6 @@
             </div>
           </div>
 
-          <div class="mb-4">
-            <label for="id_usuario" class="form-label">Coordinador Asignado <span class="text-danger">*</span></label>
-            <select class="form-select" id="id_usuario" name="id_usuario" required>
-              <option value="" selected disabled>Selecciona un Coordinador</option>
-              <?php foreach ($usuarios as $usu): ?>
-                <option value="<?php echo $usu['id_usuario']; ?>">
-                  <?php echo $usu['primer_nombre'] . " " . $usu['segundo_nombre'] . " " . $usu['primer_apellido'] . " " . $usu['segundo_apellido']; ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
 
           <div class="mb-4">
             <label for="id_estado" class="form-label">Estado <span class="text-danger">*</span></label>

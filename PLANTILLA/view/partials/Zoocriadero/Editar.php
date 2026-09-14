@@ -24,21 +24,6 @@
             </div>
 
 
-            <div class="mb-4">
-              <label for="id_estado" class="form-label">Encargado</label>
-              <select class="form-select" id="id_usuario" name="id_usuario" required>
-                <option value="">Selecciona un coordinador</option>
-                <?php foreach ($usuarios as $usu) {
-                  if ($d['id_usuario'] == $usu['id_usuario']) {
-                    $selected = "selected";
-                  } else {
-                    $selected = "";
-                  }
-                  print_r($d);
-                  echo "<option value='" . $usu['id_usuario'] . "' $selected>" .$usu['primer_nombre']." ".$usu['segundo_nombre']." ".$usu['primer_apellido']." ".$usu['segundo_apellido'] . "</option>";
-                }; ?>
-              </select>
-            </div>
             
 
             
