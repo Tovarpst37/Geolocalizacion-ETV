@@ -8,6 +8,7 @@ class ZoocriaderoController
 
 
     public function getRegistrar()
+    
     {
 
         $obj = new ZoocriaderoModel();

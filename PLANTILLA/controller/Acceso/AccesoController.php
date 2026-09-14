@@ -7,27 +7,27 @@ include_once '../model/LogicaNegocio/Hash.php';
 class AccesoController {
 
     public function login() {
-        header('Content-Type: application/json');
+        //header('Content-Type: application/json');
 
-        if (session_status() === PHP_SESSION_NONE) {
+       /* if (session_status() === PHP_SESSION_NONE) {
             session_start();
-        }
+        }*/
 
-        $obj = new AccesoModel();
+        /*$obj = new AccesoModel();
         $documento = trim($_POST['documento'] ?? '');
-        $password  = $_POST['password'] ?? '';
+        $password  = $_POST['password'] ?? '';*/
 
-        if (strlen($documento) <= 7 || strlen($password) <= 7) {
+       /* if (strlen($documento) <= 7 || strlen($password) <= 7) {
             echo json_encode([
                 'success' => false,
                 'message' => 'Usuario o contrasena incorrectos'
             ]);
             return;
-        }
+        }*/
 
-        $usuario = $obj->buscarPorDocumento($documento);
+       // $usuario = $obj->buscarPorDocumento($documento);
 
-        if ($usuario === null || !Hash::validarHash($password, $usuario['contraseña'])) {
+       /* if ($usuario === null || !Hash::validarHash($password, $usuario['contraseña'])) {
             echo json_encode([
                 'success' => false,
                 'message' => 'Usuario o contrasena incorrectos'
@@ -41,7 +41,8 @@ class AccesoController {
         $_SESSION['id_usuario'] = $usuario['id_usuario'];
         $_SESSION['documento']  = $usuario['documento'];
 
-        echo json_encode(['success' => true]);
+        echo json_encode(['success' => true]);*/
+        echo "hola";
     }
 
     public function logout() {
