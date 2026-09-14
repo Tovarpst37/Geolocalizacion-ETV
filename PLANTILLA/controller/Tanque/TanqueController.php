@@ -47,10 +47,10 @@ class TanqueController
         $sql_validar = "SELECT id_tanque FROM tanque WHERE codigo_tanque = '$codigo'";
         $existe = $obj->select($sql_validar);
 
-        if(!empty($existe)){
+        if (!empty($existe)) {
             $errores[] = "Ya existe un tanque con ese código";
-            
-        } 
+
+        }
 
         if (empty($codigo)) {
             $errores[] = "El código del tanque es obligatorio.";
@@ -80,7 +80,7 @@ class TanqueController
         if (!empty($errores)) {
             $_SESSION['old_input'] = $_POST;
 
-            
+
             $sql = "SELECT * from tipo_tanque";
             $tiposTanque = $obj->select($sql);
             $sql2 = "SELECT * from zoocriadero";
@@ -197,10 +197,10 @@ class TanqueController
         $sql_validar = "SELECT id_tanque FROM tanque WHERE codigo_tanque = '$codigo'";
         $existe = $obj->select($sql_validar);
 
-        if(!empty($existe)){
+        if (!empty($existe)) {
             $errores[] = "Ya existe un tanque con ese código";
-            
-        } 
+
+        }
         if (empty($id)) {
             $errores[] = "No se identificó el tanque a editar.";
         }
@@ -230,7 +230,7 @@ class TanqueController
         }
 
         if (!empty($errores)) {
-            
+
 
             $sql = "SELECT * from tanque WHERE id_tanque = $id";
             $datos = $obj->select($sql);
@@ -302,7 +302,8 @@ class TanqueController
             redirect(getUrl("Tanque", "Tanque", "getConsultar"));
         } else {
             echo "No se pudo registrar la ciudad";
-        };
+        }
+        ;
     }
 
 
@@ -338,9 +339,9 @@ class TanqueController
     {
 
 
-    $palabra = $_GET['busqueda'];
-    $obj = new TanqueModel();
-    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        $palabra = $_GET['busqueda'];
+        $obj = new TanqueModel();
+        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
 
 
         $sql = "SELECT 
@@ -369,8 +370,8 @@ class TanqueController
 
         $sql = "SELECT * from tanque";
 
-        $tanque = $obj ->select($sql);
-        
+        $tanque = $obj->select($sql);
+
         return count($tanque);
 
     }

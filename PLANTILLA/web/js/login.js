@@ -21,7 +21,7 @@ loginForm.addEventListener('submit', function (e) {
         return;
     }
 
-    fetch(loginForm.getAttribute('action'), {
+    /*fetch(loginForm.getAttribute('action'), {
         method: 'POST',
         body: new FormData(loginForm)
     })
@@ -36,7 +36,8 @@ loginForm.addEventListener('submit', function (e) {
     .catch(error => {
         console.error('Error en la peticion:', error);
         mostrarErrorLogin("Ocurrio un error al iniciar sesion. Intenta de nuevo.");
-    });
+    });*/
+    loginForm.submit();
 });
 
 function mostrarErrorLogin(mensaje) {
