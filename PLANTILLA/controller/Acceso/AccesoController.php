@@ -1,44 +1,50 @@
-<?php 
+<?php
 
 include_once '../model/Acceso/AccesoModel.php';
+include_once '../model//';
+include_once '../model/LogicaNegocio/Hash.php';
 
-class AccesoController{
+class AccesoController {
 
-    public function login(){
+    public function login() {
+        header('Content-Type: application/json');
 
-        //$obj = new AccesoModel();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
-        $documento = $_POST['documento'];
-        $password = $_POST['password'];
+        $obj = new AccesoModel();
+        $documento = trim($_POST['documento'] ?? '');
+        $password  = $_POST['password'] ?? '';
 
-        echo "Documento:".$documento." Contrasena:".$password;
-        /*
-        if (strlen($documento) > 7 && strlen($password) > 7) {
-            echo "bien por ahora";
-        } else {
-            $_SESSION['error'] = "Usuario o contrasena incorrectos";
-            redirect("login.php");
-        }*/
+        if (strlen($documento) <= 7 || strlen($password) <= 7) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Usuario o contrasena incorrectos'
+            ]);
+            return;
+        }
+
+        $usuario = $obj->buscarPorDocumento($documento);
+
+        if ($usuario === null || !Hash::validarHash($password, $usuario['contraseña'])) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Usuario o contrasena incorrectos'
+            ]);
+            return;
+        }
+
+        session_regenerate_id(true);
+
+        $_SESSION['auth']       = "ok";
+        $_SESSION['id_usuario'] = $usuario['id_usuario'];
+        $_SESSION['documento']  = $usuario['documento'];
+
+        echo json_encode(['success' => true]);
     }
 
-      /*
-        $sql = "SELECT * FROM usuarios WHERE documento = '$documento' AND contrasena = '$password'";
-        $usuario = $obj-> select($sql);
-
-        if(pg_num_rows($usuario) > 0){
-            while(pg_num_rows($usuario)){
-                $_SESSION[''] = $usu[''];
-                $_SESSION[''] = $usu[''];
-                $_SESSION[''] = $usu[''];
-            }
-            redirect("index.php");
-        }else{
-            $_SESSION['error'] = "Usuario o contrasena incorrectos";
-            redirect("login.php");
-        }
-        */
-
-    public function logout(){
+    public function logout() {
 
     }
 

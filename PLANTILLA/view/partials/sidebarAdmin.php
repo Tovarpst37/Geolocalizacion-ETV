@@ -60,7 +60,7 @@
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("Usuario", "Usuario", "getUsuario"); ?>">
                   <span class="sub-item">Consultar Usuario</span>
                 </a>
               </li>

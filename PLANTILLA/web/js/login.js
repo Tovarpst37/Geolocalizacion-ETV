@@ -3,57 +3,41 @@ const contenedor = document.getElementById('sessionError');
 
 loginForm.addEventListener('submit', function (e) {
     let mensaje = "";
-    e.preventDefault();//detiene el envio normal por PHP
+    e.preventDefault();
 
     const documentoValido = validarDocumento();
     const passwordValido = validarPassword();
 
     if (!documentoValido && documento.value.length > 7) {
-        mensaje += "* Formato de documento invalido\n"; 
+        mensaje += "* Formato de documento invalido\n";
     }
 
     if (!passwordValido) {
-        mensaje += "* Formato de contrasena invalido"; 
+        mensaje += "* Formato de contrasena invalido";
     }
 
-    if (mensaje !== "") { 
+    if (mensaje !== "") {
         mostrarErrorLogin(mensaje);
         return;
     }
 
-    const formData = new FormData(this);
-    const url = this.getAttribute('action');
-
-    fetch(url, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        window.location.href = "index.php"; 
-    })
-    .catch(error => {
-        console.error('Error en la petición:', error);
-    });
-});
-
-/*
-    fetch(loginForm.action, {
+    fetch(loginForm.getAttribute('action'), {
         method: 'POST',
         body: new FormData(loginForm)
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = data.redirect;
-            } else {
-                mostrarErrorLogin(data.message);
-            }
-        })
-        .catch(() => {
-            mostrarErrorLogin('Ocurrió un error al iniciar sesión, intenta de nuevo');
-        });
-*/
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = "index.php";
+        } else {
+            mostrarErrorLogin(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error en la peticion:', error);
+        mostrarErrorLogin("Ocurrio un error al iniciar sesion. Intenta de nuevo.");
+    });
+});
 
 function mostrarErrorLogin(mensaje) {
     if (!contenedor) return;
