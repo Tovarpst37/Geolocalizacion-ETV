@@ -1,8 +1,10 @@
 <?php
 include_once '../model/Sitios/SitiosModel.php';
+
 class SitiosController
 {
 
+   
 
 
 
@@ -60,9 +62,10 @@ class SitiosController
 
     public function validarRegistrar()
     {
+        $obj = new SitiosModel();
         $_SESSION['old_input'] = $_POST;
         $cont = 0;
-        $nombre = $_POST['nombre'] ?? '';
+        $nombre = mb_strtoupper($_POST['nombre'] ?? '');
         $via_principal = $_POST['via_principal'] ?? '';
         $numero_via = $_POST['numero_via'] ?? '';
         $via_generadora = $_POST['via_generadora'] ?? '';
@@ -77,6 +80,10 @@ class SitiosController
         //validacion 
 
         //por si llega vacio
+        $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre'";
+        $existe = $obj->select($sql_validar);
+
+        
         if (empty(trim($sufijo_via))) {
             $sufijo_via = '';
         }
@@ -91,6 +98,11 @@ class SitiosController
 
 
         $errores = [];
+
+        if(!empty($existe)){
+            $errores[] = "Ya existe un sitio con ese nombre";
+            
+        } 
 
         if (empty($nombre)) {
             $errores[] = "El nombre es obligatorio.";
@@ -123,7 +135,7 @@ class SitiosController
 
 
         if (!empty($errores)) {
-            $obj = new SitiosModel();
+            
             $sql2 = "SELECT * FROM barrio";
             $barrios = $obj->select($sql2);
 
@@ -141,13 +153,13 @@ class SitiosController
         }
         if ($cont == 1) {
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
-            $this->postInsert($nombre, $direccion, $barrio, $estado);
+            $this->postInsert($nombre, $direccion, $barrio, $estado, $obj);
         }
     }
 
 
 
-    public function postInsert(String $nombre1, String $direccion1, int $barrio1, int $estado1)
+    public function postInsert(String $nombre1, String $direccion1, int $barrio1, int $estado1, SitiosModel $obj)
     {
 
         $nombre = mb_strtoupper($nombre1);
@@ -155,7 +167,7 @@ class SitiosController
         $barrio = $barrio1;
         $estado = $estado1;
 
-        $obj = new SitiosModel();
+        
 
         $sql = "INSERT INTO sitio (nombre_sitio, direccion, id_barrio, id_estado) 
         VALUES ('$nombre', '$direccion', $barrio, $estado)";
@@ -217,9 +229,10 @@ class SitiosController
 
     public function validarUpdate()
     {
+        $obj = new SitiosModel();
         $cont = 0;
         $id = $_POST['id'] ?? '';
-        $nombre = $_POST['nombre'] ?? '';
+        $nombre = mb_strtoupper($_POST['nombre'] ?? '');
         $via_principal = $_POST['via_principal'] ?? '';
         $numero_via = $_POST['numero_via'] ?? '';
         $via_generadora = $_POST['via_generadora'] ?? '';
@@ -231,7 +244,16 @@ class SitiosController
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
+        $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre'";
+        $existe = $obj->select($sql_validar);
+
+
         $errores = [];
+
+        if(!empty($existe)){
+            $errores[] = "Ya existe un sitio con ese nombre";
+            
+        } 
 
         if (empty($id)) {
             $errores[] = "No se identificó el sitio a editar.";
@@ -264,7 +286,7 @@ class SitiosController
         }
 
         if (!empty($errores)) {
-            $obj = new SitiosModel();
+            
 
             $sql = "SELECT * from sitio WHERE id_sitio = $id";
             $datos = $obj->select($sql);
@@ -313,7 +335,7 @@ class SitiosController
 
     public function getBuscar()
     {
-
+        $palabra = $_GET['busqueda'];
         $obj = new SitiosModel();
         $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
 

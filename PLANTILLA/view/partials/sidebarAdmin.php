@@ -30,7 +30,7 @@
     <div class="sidebar-content">
       <ul class="nav nav-secondary">
         <li class="nav-item active">
-          <a data-bs-toggle="collapse" href="#dashboard" class="collapsed" aria-expanded="false">
+          <a data-bs-toggle="collapse" href="index.php" class="collapsed" aria-expanded="false">
             <i class="fas fa-home"></i>
             <p>Inicio</p>
             <!--   <span class="caret"></span> -->
@@ -316,12 +316,12 @@
           <div class="collapse" id="depositoTerrono">
             <ul class="nav nav-collapse">
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getRegistrar") ?>">
                   <span class="sub-item"> Registrar tipo de depósito</span>
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getConsultar") ?>">
                   <span class="sub-item"> Consultar tipo de depósito</span>
                 </a>
               </li>

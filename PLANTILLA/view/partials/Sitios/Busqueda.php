@@ -8,7 +8,7 @@
     <input type="hidden" name="controlador" value="Sitios">
     <input type="hidden" name="funcion" value="getBuscar">
     
-    <input type="text" name="busqueda" placeholder="Search ..." class="form-control" />
+    <input type="text" name="busqueda" placeholder="Search ..." class="form-control" value = "<?php echo $palabra; ?>"/>
     
     <button type="submit" class="btn btn-outline-secondary">
         <i class="fa fa-search"></i>

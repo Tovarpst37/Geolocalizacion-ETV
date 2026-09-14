@@ -6,7 +6,9 @@
       </div>
 
       <div class="card-body p-4">
+
         <form action="<?php echo getUrl("Zoocriadero", "Zoocriadero", "validarRegistrar") ?>" method="POST">
+
 
           <div class="mb-3">
             <label for="codigo_zoocriadero" class="form-label">Código del zoocriadero <span class="text-danger">*</span></label>

@@ -9,15 +9,38 @@
                 <form action="<?php echo getUrl("FormularioM", "FormularioM", "postInsert") ?>" method="POST">
 
                     <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Codigo</label>
+                        <label for="formulariocod" class="form-label">Codigo del Seguimiento</label>
                         <input type="text" class="form-control" id="formulariom" name="formulariom"
                             placeholder="Ingrese el codigo del seguimiento" required>
                     </div>
 
 
                     <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Quiereme</label>
-                        <input type="text" class="form-control" id="formularioz" name="formularioz"
+                        <label for="formulariocod" class="form-label">Numero de Documento</label>
+                        <input type="text" class="form-control" id="docM" name="docM" placeholder="Numero de documento"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Cantidad de peces nacidos</label>
+                        <input type="text" class="form-control" id="canpez" name="canpez"
+                            placeholder="Cantidad de peces" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Cantidad de peces machos muertos</label>
+                        <input type="text" class="form-control" id="muerto_Macho" name="muerto_Macho"
+                            placeholder="Ingrese el codigo del seguimiento" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Cantidad de peces hembra muertos</label>
+                        <input type="text" class="form-control" id="muerto_Hembra" name="muerto_Hembra"
+                            placeholder="Ingrese el codigo del seguimiento" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Observaciones</label>
+                        <input type="text" class="form-control" id="obM" name="obM"
                             placeholder="Ingrese el codigo del seguimiento" required>
                     </div>
 
