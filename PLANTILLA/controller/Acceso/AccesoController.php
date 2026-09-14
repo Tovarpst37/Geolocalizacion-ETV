@@ -45,7 +45,8 @@ class AccesoController {
     }
 
     public function logout() {
-
+        session_destroy();
+        redirect("login.php");
     }
 
 }
