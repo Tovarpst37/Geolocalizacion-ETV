@@ -55,12 +55,12 @@
           <div class="collapse" id="gestionUsuario">
             <ul class="nav nav-collapse">
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("Usuario", "Usuario", "getCreate"); ?>">
                   <span class="sub-item">Registrar Usuario</span>
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("Usuario", "Usuario", "getUsuario"); ?>">
                   <span class="sub-item">Consultar Usuario</span>
                 </a>
               </li>
