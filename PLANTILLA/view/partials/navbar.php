@@ -114,7 +114,7 @@
             </div>
             <span class="profile-username">
               <span class="op-7">Hola,</span>
-              <span class="fw-bold">Samuel</span>
+              <span class="fw-bold"><?php echo $_SESSION['primer_nombre']; ?></span>
             </span>
           </a>
           <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -125,8 +125,8 @@
                     <img src="assets/img/profile.jpg" alt="image profile" class="avatar-img rounded" />
                   </div>
                   <div class="u-text">
-                    <h4>Samuel</h4>
-                    <p class="text-muted">hola@gmail.com</p>
+                    <h4><?php echo $_SESSION['primer_nombre']; ?></h4>
+                    <p class="text-muted"><?php echo $_SESSION['correo']; ?></p>
                     <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">Ver perfil</a>
                   </div>
                 </div>
