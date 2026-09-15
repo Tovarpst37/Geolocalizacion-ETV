@@ -46,8 +46,12 @@
         $ejecutar = $obj->update($sql2);
         
     
-
-    include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
+    if(count($seguimientos) <= 0){
+        include_once '../view/partials/SeguimientoZoocriadero/notExist.php';
+    }else{
+        include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
+    }
+    
 
 
     }

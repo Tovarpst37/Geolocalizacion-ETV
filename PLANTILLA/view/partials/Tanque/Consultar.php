@@ -20,7 +20,23 @@
       }
     }, 5000); // 5 segundos visible
   </script>
-<?php endif; ?>
+<?php endif; 
+    
+
+    
+
+
+
+    $array = [];
+
+    $obj2 = new TanqueController();
+    $result = $obj2->getDatos();
+        
+        if(count($result) <= 0){
+            include_once '../view/partials/Tanque/notExist.php';
+        }else{
+
+        ?>
 
 
 <div class="container-fluid text-center px-2">
@@ -33,8 +49,7 @@
     include_once '../model/Tanque/Tanque.php';
 
 
-
-    ?>
+            ?>
 
 
     <div class="d-flex justify-content-end w-100">
@@ -55,11 +70,6 @@
 
 
     <?php
-
-    $array = [];
-
-    $obj2 = new TanqueController();
-    $result = $obj2->getDatos();
 
 
     foreach ($result as $rs) {
@@ -135,7 +145,7 @@
       </div>
     <?php
 
-    }
+    }}
 
     ?>
   </div>

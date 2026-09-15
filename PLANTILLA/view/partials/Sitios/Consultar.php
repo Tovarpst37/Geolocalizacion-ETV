@@ -21,7 +21,16 @@
       }
     }, 5000); // 5 segundos visible
   </script>
-<?php endif; ?>
+<?php endif;
+
+    $bj = [];
+    $ob2 =  new SitiosController();
+    $resul = $ob2->data();
+
+    if(count($resul) <= 0){
+        include_once '../view/partials/Sitios/notExist.php';
+    }else{
+         ?>
 
 
 
@@ -55,9 +64,7 @@
     include_once '../model/Sitios/Sitios.php';
 
 
-    $bj = [];
-    $ob2 =  new SitiosController();
-    $resul = $ob2->data();
+    
 
 
     foreach ($resul as $j) {
@@ -119,7 +126,7 @@
             </div>
         </div>
 <?php
-    }
+    }}
 
     ?>
   </div>
