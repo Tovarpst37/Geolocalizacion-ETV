@@ -1,4 +1,3 @@
-
 <?php
 const tipoPez = [
     "Alevines",
