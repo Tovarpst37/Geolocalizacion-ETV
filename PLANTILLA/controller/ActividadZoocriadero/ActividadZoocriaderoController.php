@@ -63,6 +63,44 @@ return $datos;
 
 }
 
+public function postDelete(){
+
+    $obj = new ActividadZoocriaderoModel();
+
+    $id= $_GET['id'];
+
+
+    $sqlEstado="SELECT id_estado FROM actividad_zoocriadero WHERE id_actividad_zoo= $id";
+
+    $ejecutarR= $obj-> select($sqlEstado);
+
+    foreach ($ejecutarR as $rec){
+
+        if ($rec['id_estado']==2){
+           echo '<script>alert("¡Este taque ya esta inhabilitado!");</script>';
+           redirect(getUrl("ActividadZoocriadero","ActividadZoocriadero","getConsultar"));
+
+        }else if($rec['id_estado']==1){
+            
+            $sql = "UPDATE actividad_zoocriadero SET id_estado = 2 WHERE id_actividad_zoo = $id";
+            $ejecutar = $obj->delete($sql);
+                if ($ejecutar) {
+                    $_SESSION['mensaje_exito'] = "La actividad se inhabilito correctamente.";
+                    redirect(getUrl("ActividadZoocriadero", "ActividadZoocriadero", "getConsultar"));
+                } else {
+                    echo "No se pudo inhabilitar la actividad";
+                }
+        }
+
+    }
+
+    
+
+
+}
+
+
+
 
 }
 
