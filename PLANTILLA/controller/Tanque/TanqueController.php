@@ -10,8 +10,12 @@ class TanqueController
 
     public function getConsultar()
     {
+        
+            
+            include_once '../view/partials/Tanque/Consultar.php';
+        
 
-        include_once '../view/partials/Tanque/Consultar.php';
+        
     }
 
     public function getRegistrar()
@@ -29,6 +33,7 @@ class TanqueController
 
         $old = $_SESSION['old_input'] ?? [];
         unset($_SESSION['old_input']);
+        
 
         include_once '../view/partials/Tanque/Registrar.php';
     }

@@ -188,7 +188,13 @@ class ZoocriaderoController
         $sql = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql);
 
+        if(count($zoocriaderos) <= 0){
+
+        include_once '../view/partials/Zoocriadero/notExist.php';
+        }else{
+
         include_once '../view/partials/Zoocriadero/Consultar.php';
+        }
     }
 
 
