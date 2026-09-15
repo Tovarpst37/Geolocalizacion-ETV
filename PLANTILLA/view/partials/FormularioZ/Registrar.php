@@ -27,7 +27,7 @@
                             <i class="fa-solid fa-calender">
                             </i>
                         </span>
-                        <input type="datetime-local" class="form-control" id="fecha_hora" name="fecha_hora" required>
+                        <input type="date" class="form-control" id="fecha_hora" name="fecha_hora" required>
                     </div>
 
                     <div class="mb-3">
@@ -48,7 +48,7 @@
                             <?php
                             include_once '../model/Formularioz/tipoAlimen.php';
                             foreach (tipoAlimen as $tA): ?>
-                                <option value="<?php echo $tA; ?>" <?php echo (($old['tipo_pez'] ?? '') == $tA) ? 'selected' : ''; ?>><?php echo $tA; ?></option>
+                                <option value="<?php echo $tA; ?>" <?php echo (($old['tipo_alimen'] ?? '') == $tA) ? 'selected' : ''; ?>><?php echo $tA; ?></option>
                             <?php endforeach; ?>
                         </select>
                         </select>

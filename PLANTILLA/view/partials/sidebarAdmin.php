@@ -221,16 +221,16 @@
         </li>
 
         <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#HistorialZoocriadero">
+          <a data-bs-toggle="collapse" href="#Historial">
             <i class="fas fa-layer-group"></i>
             <p>Historial</p>
             <span class="caret"></span>
           </a>
 
-          <div class="collapse" id="HistorialZoocriadero">
+          <div class="collapse" id="Historial">
             <ul class="nav nav-collapse">
               <li>
-                <a href="<?php echo getUrl("HistorialZoocriadero", "HistorialZoocriadero", "getRegistrar") ?>">
+                <a href="<?php echo getUrl("Historial", "Historial", "getConsultar") ?>">
                   <span class="sub-item"> Consultar Historial</span>
                 </a>
               </li>
