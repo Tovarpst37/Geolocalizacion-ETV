@@ -29,20 +29,21 @@ class ActividadZoocriadero
 
         <div class="col">
 
-            <div class="card p-3 h-100" style="width: 100% !important; min-width: 0 !important; d-flex justify-content-center">
+            <div class="card p-3 h-100 text-center flex-column d-flex align-items-center justify-content-center" style="width: 100% !important; min-width: 0 !important; ">
 
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><b>Codigo</b>: <?php echo $this->codigo; ?></li>
-                    <li class="list-group-item"><b>Nombre</b>: <?php echo $this->nombre; ?></li>
-                    <li class="list-group-item"><b>Estado</b>: <?php echo $this->estado; ?></li>
+                <ul class="list-group list-group-flush fs-3 w-100">
+                    <li class="list-group-item border-0 text-center p-1 d-flex justify-content-center align-items-center">
+                        <span class="badge fs-5 fw-bold <?php echo $badgeClass; ?> rounded-pill"><?php echo $this->estado; ?></span></li>                  
+                    <li class="list-group-item border-0 text-center fw-bolder p-1 d-flex justify-content-center align-items-center "><?php echo $this->nombre; ?></li>
+                    <li class="list-group-item fs-5 border-0 text-center p-1  d-flex justify-content-center align-items-center">Codigo: <?php echo $this->codigo; ?></li>
 
 
                 </ul>
-                <div class="card-body">
-                    <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEdit', array('id' => $this->id)); ?>" class="btn btn-primary">
+                <div class="card-body ">
+                    <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEdit', array('id' => $this->id)); ?>" class="btn btn-primary fs-4">
                         Editar
                     </a>
-                    <a href="<?php echo getUrl("ActividadZoocriadero", "ActividadZoocriadero", "getDelete", array("id" => $this->id)) ?>" class="btn btn-danger">
+                    <a href="<?php echo getUrl("ActividadZoocriadero", "ActividadZoocriadero", "getDelete", array("id" => $this->id)) ?>" class="btn btn-danger fs-4">
                         Eliminar
                     </a>
 
