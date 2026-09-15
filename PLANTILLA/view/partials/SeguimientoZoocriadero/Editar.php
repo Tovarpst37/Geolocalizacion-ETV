@@ -6,7 +6,10 @@
           <h5 class="modal-title">Editar Seguimiento</h5>
           <a href="<?php echo getUrl('SeguimientoZoocriadero', 'SeguimientoZoocriadero', 'getConsultar') ?>" class="btn btn-close"></a>
         </div>
+
+
         <div class="modal-body">
+<div class="border-top"></div>
           <?php
           foreach ($datos as $d) {
             $horarioActual = substr($d['hora_inicio'], 0, 5) . '-' . substr($d['hora_fin'], 0, 5);

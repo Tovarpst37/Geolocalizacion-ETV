@@ -137,7 +137,7 @@
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#">Configuracion</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Cerrar Sesion</a>
+                <a class="dropdown-item" href="<?php echo getUrl("Acceso","Acceso","logout")?>">Cerrar Sesion</a>
               </li>
             </div>
           </ul>

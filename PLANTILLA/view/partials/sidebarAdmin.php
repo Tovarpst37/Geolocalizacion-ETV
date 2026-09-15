@@ -4,8 +4,8 @@
     <div class="logo-header" data-background-color="dark">
       <a href="index.php" class="logo">
         <a href="index.php" class="logo">
-          <img src="assets/img/LogoProye.png" alt="navbar brand" class="navbar-brand"
-            style="width: 80px; height: 55px; border-radius: 50%; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast;" />
+          <img src="assets/img/LogoProye-removebg-preview.png" alt="navbar brand" class="navbar-brand"
+            style="width: 80px; height: 55px; border-radius: 100%; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast;" />
 
         </a>
       </a>
@@ -55,12 +55,12 @@
           <div class="collapse" id="gestionUsuario">
             <ul class="nav nav-collapse">
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("Usuario", "Usuario", "getCreate"); ?>">
                   <span class="sub-item">Registrar Usuario</span>
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("Usuario", "Usuario", "getUsuario"); ?>">
                   <span class="sub-item">Consultar Usuario</span>
                 </a>
               </li>
@@ -221,16 +221,16 @@
         </li>
 
         <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#HistorialZoocriadero">
+          <a data-bs-toggle="collapse" href="#Historial">
             <i class="fas fa-layer-group"></i>
             <p>Historial</p>
             <span class="caret"></span>
           </a>
 
-          <div class="collapse" id="HistorialZoocriadero">
+          <div class="collapse" id="Historial">
             <ul class="nav nav-collapse">
               <li>
-                <a href="<?php echo getUrl("HistorialZoocriadero", "HistorialZoocriadero", "getRegistrar") ?>">
+                <a href="<?php echo getUrl("Historial", "Historial", "getConsultar") ?>">
                   <span class="sub-item"> Consultar Historial</span>
                 </a>
               </li>
@@ -316,12 +316,12 @@
           <div class="collapse" id="depositoTerrono">
             <ul class="nav nav-collapse">
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getRegistrar") ?>">
                   <span class="sub-item"> Registrar tipo de depósito</span>
                 </a>
               </li>
               <li>
-                <a href="components/avatars.html">
+                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getConsultar") ?>">
                   <span class="sub-item"> Consultar tipo de depósito</span>
                 </a>
               </li>
