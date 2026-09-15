@@ -53,7 +53,7 @@
         <div class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4  border rounded">
             
             <div>
-                <h6 class="mb-1"><?php echo $s['cod_zoocriadero']; ?> — Tanque <?php echo $s['codigo_tanque']; ?></h6>
+                <h6 class="mb-1"><?php echo $s['cod_seguimiento']; ?> — Zoocriadero <?php echo $s['cod_zoocriadero']; ?> — Tanque <?php echo $s['codigo_tanque']; ?></h6>
                 <small class="text-muted">
                     <?php echo $s['hora_inicio']; ?> - <?php echo $s['hora_fin']; ?> 
                     &nbsp;|&nbsp; Auxiliar: <?php echo $s['primer_nombre']." ".$s['primer_apellido']; ?>
