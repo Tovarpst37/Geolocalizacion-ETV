@@ -27,7 +27,7 @@
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
 
 
-    ?>
+  
 
 
     <div class="d-flex justify-content-end w-100">
@@ -102,7 +102,7 @@
             <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEdit', array('id' => $o->getId())); ?>" class="btn btn-primary fs-4">
               Editar
             </a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $o->getId() ?>">
+            <button type="button" class="btn btn-danger fs-4" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $o->getId() ?>">
               Inhabilitar
             </button>
 
@@ -119,11 +119,11 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                  <p>¿Estás seguro de inhabilitar <?php echo $o->getNombre() ?>?</p>
+                  <p>¿Estás seguro de inhabilitar <?php echo $o->getNombre() ?></p>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
-                    <a href="<?php echo getUrl('Tanque', 'Tanque', 'postDelete', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
+                    <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'postDelete', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
                   </div>
               </div>
             </div>
