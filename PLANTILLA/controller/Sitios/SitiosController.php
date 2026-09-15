@@ -335,9 +335,11 @@ class SitiosController
 
     public function getBuscar()
     {
+        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        if(!empty($busqueda)){ 
         $palabra = $_GET['busqueda'];
         $obj = new SitiosModel();
-        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        
 
         $sql = "SELECT 
             s.id_sitio,
@@ -348,16 +350,14 @@ class SitiosController
         FROM sitio s
         INNER JOIN barrio b ON s.id_barrio = b.id_barrio
         INNER JOIN estado e ON s.id_estado = e.id_estado 
-        WHERE s.nombre_sitio ILIKE '%$busqueda%'";
-        # $result = $obj->select($sql);
-        $datos = $obj->select($sql);
-
-
-
-
-
-
+        WHERE s.nombre_sitio ILIKE $1";
+        
+        $datos = $obj->select($sql, ['%' . $busqueda . '%']);
 
         include_once "../view/partials/Sitios/Busqueda.php";
+
+        }else{
+            include_once '../view/partials/Sitios/Consultar.php';
+        }
     }
 }
