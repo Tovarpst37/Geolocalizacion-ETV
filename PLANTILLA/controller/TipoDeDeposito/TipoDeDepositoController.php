@@ -121,15 +121,26 @@
     }
 
     public function getBuscar(){
-
-    $obj = new TipoDeDepositoModel();
     $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+
+    if(!empty($busqueda)){
+    $obj = new TipoDeDepositoModel();
+    
     $palabra = $_GET['busqueda'];
-     $sql = "SELECT * FROM tipo_de_deposito t WHERE t.nombre ILIKE '%$busqueda%'";
-    $tipos = $obj->select($sql);
+     $sql = "SELECT * FROM tipo_de_deposito t WHERE t.nombre ILIKE $1";
+    $tipos = $obj->select($sql, ['%' . $busqueda . '%']);;
 
     include_once '../view/partials/TipoDeDeposito/Buscar.php';
-}
+    }else{
+        $obj = new TipoDeDepositoModel();
+
+        $sql =  "SELECT * from tipo_de_deposito";
+        $tipos = $obj->select($sql);
+
+
+        include_once '../view/partials/TipoDeDeposito/Consultar.php';
+    }
+    }
     }
 
 ?>

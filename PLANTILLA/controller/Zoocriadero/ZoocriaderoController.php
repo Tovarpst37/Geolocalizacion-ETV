@@ -188,20 +188,37 @@ class ZoocriaderoController
         $sql = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql);
 
+        if(count($zoocriaderos) <= 0){
+
+        include_once '../view/partials/Zoocriadero/notExist.php';
+        }else{
+
         include_once '../view/partials/Zoocriadero/Consultar.php';
+        }
     }
 
 
     public function getBuscar()
     {
+    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
 
-    $palabra = $_GET['busqueda'] ?? '';
+    
+    if(!empty($busqueda)){
+        $palabra = $_GET['busqueda'] ?? '';
+        $obj = new ZoocriaderoModel();
+        $sql = "SELECT * from zoocriadero WHERE cod_zoocriadero ILIKE $1";
+        $zoocriaderos =  $obj->select($sql, ['%' . $busqueda . '%']);
+
+
+        include_once "../view/partials/Zoocriadero/Busqueda.php";
+    }else{
         $obj = new ZoocriaderoModel();
         $sql = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql);
 
-
-        include_once "../view/partials/Zoocriadero/Busqueda.php";
+        include_once '../view/partials/Zoocriadero/Consultar.php';
+        
+    }
     }
 
     public function postDelete()
@@ -342,7 +359,7 @@ class ZoocriaderoController
         $datos = $obj->select($sql9, [$id]);
 
         include_once __DIR__ . '/../../model/Errores/ErrorModal.php';
-        ErrorModal::verError($errores, getUrl('Zoocriadero', 'Zoocriadero', 'getEdit', array('id' => $id)));
+        ErrorModal::verError($errores, getUrl('Zoocriadero', 'Zoocriadero', 'getEditar', array('id' => $id)));
 
         return;
     }
