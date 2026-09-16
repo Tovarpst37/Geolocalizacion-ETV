@@ -15,7 +15,6 @@
         </div>
     </div>
 
-    <!-- Lista de Seguimientos / Formularios Registrados -->
     <div class="list-group">
         <?php if (!empty($seguimientos)): ?>
             <?php foreach ($seguimientos as $s): ?>
