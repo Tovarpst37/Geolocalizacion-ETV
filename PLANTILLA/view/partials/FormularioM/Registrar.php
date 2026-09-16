@@ -10,7 +10,7 @@
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Codigo del Seguimiento</label>
-                        <input type="text" class="form-control" id="formulariom" name="formulariom"
+                        <input type="text" class="form-control" id="codM" name="codM"
                             placeholder="Ingrese el codigo del seguimiento" required>
                     </div>
 
