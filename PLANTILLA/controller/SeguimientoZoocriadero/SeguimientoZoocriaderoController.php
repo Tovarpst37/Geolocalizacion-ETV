@@ -180,6 +180,14 @@ public function getEditar()
         $sql3 = "SELECT * from estado";
             $estados = $obj->select($sql3);
 
+            $sql4 = "SELECT * from actividad_zoocriadero";
+        $actividades = $obj->select($sql4);
+
+        
+
+        $sql4 = "SELECT id_actividad_zoo from actividad_seg_zoo WHERE id_seguimiento_zoo = $1";
+        $actividadesSelect = $obj->select($sql4,[$id]);
+
 
         include_once '../view/partials/SeguimientoZoocriadero/Editar.php';
 
@@ -192,7 +200,36 @@ public function getEditar()
         $fecha = $_POST['fecha'];
         $horario = $_POST['horario'];
          $estado = $_POST['id_estado'];
+        
         list($hora_inicio, $hora_fin) = explode('-', $horario);
+
+
+        $actividadesNuevas = $_POST['actividades'] ?? [];
+        //el array_map lo uso para convertir los valores de actividadesNuevas en numeros enteros por si acaso
+        $actividadesNuevas = array_map('intval', $actividadesNuevas);
+
+        $sql = "SELECT id_actividad_zoo FROM actividad_seg_zoo WHERE id_seguimiento_zoo = $1";
+        $actividadesActuales = $obj->select($sql, [$id]);
+        //se selecciono la columna id_actividad_zoo que trae el array
+        $idsActuales = array_column($actividadesActuales, 'id_actividad_zoo');
+
+        //id dif lo que hace es seleccionar los valores que esten en el primer array y que no se repitan en el segundo
+        $idsEliminar = array_diff($idsActuales, $actividadesNuevas);
+        $idsInsertar = array_diff($actividadesNuevas, $idsActuales);
+
+        
+        foreach ($idsEliminar as $idActividad) {
+            $sqlDelete = "DELETE FROM actividad_seg_zoo 
+                        WHERE id_seguimiento_zoo = $1 AND id_actividad_zoo = $2";
+            $obj->delete($sqlDelete, [$id, $idActividad]);
+        }
+
+        
+        foreach ($idsInsertar as $idActividad) {
+            $sqlInsert = "INSERT INTO actividad_seg_zoo (id_seguimiento_zoo, id_actividad_zoo) 
+                        VALUES ($1, $2)";
+            $obj->insert($sqlInsert, [$id, $idActividad]);
+        }
 
         $sql = "UPDATE seguimiento_zoocriadero SET 
             fecha = '$fecha',
