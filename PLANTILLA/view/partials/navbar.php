@@ -121,21 +121,18 @@
             <div class="dropdown-user-scroll scrollbar-outer">
               <li>
                 <div class="user-box">
+                  <!-- 
                   <div class="avatar-lg">
                     <img src="assets/img/profile.jpg" alt="image profile" class="avatar-img rounded" />
                   </div>
+                  -->
                   <div class="u-text">
                     <h4><?php echo $_SESSION['primer_nombre']; ?></h4>
                     <p class="text-muted"><?php echo $_SESSION['correo']; ?></p>
-                    <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">Ver perfil</a>
                   </div>
                 </div>
               </li>
               <li>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Mi perfil</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Configuracion</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="<?php echo getUrl("Acceso","Acceso","logout")?>">Cerrar Sesion</a>
               </li>
