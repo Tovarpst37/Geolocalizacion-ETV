@@ -102,7 +102,7 @@
 
           </ul>
           <div class="card-body ">
-            <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEdit', array('id' => $o->getId())); ?>" class="btn btn-primary fs-4">
+            <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEditar', array('id' => $o->getId())); ?>" class="btn btn-primary fs-4">
               Editar
             </a>  
 
