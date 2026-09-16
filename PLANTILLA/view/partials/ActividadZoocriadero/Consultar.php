@@ -72,8 +72,8 @@
     foreach ($array as $o) {
 
 
-      $badgeClass = strtolower($o->getEstado()) === 'activo' ? 'bg-success' : 'bg-danger';
-
+      $estadoA = strtolower($o->getEstado()) === 'activo';
+      $badgeClass = $estadoA ? 'bg-success' : 'bg-danger';
       $id = $o->getId();
 
 
@@ -101,10 +101,17 @@
           <div class="card-body ">
             <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEdit', array('id' => $o->getId())); ?>" class="btn btn-primary fs-4">
               Editar
-            </a>
+            </a>  
+
+            <?php if ($estadoA):  ?>
             <button type="button" class="btn btn-danger fs-4" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $o->getId() ?>">
               Inhabilitar
             </button>
+            <?php else:  ?>
+            <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'postHabilitar', array('id' => $o->getId())); ?>" class="btn btn-success fs-4">
+              habilitar
+            </a>
+            <?php endif  ?>
 
           </div>
 
