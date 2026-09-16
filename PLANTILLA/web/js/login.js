@@ -20,7 +20,7 @@ loginForm.addEventListener('submit', function (e) {
         mostrarErrorLogin(mensaje);
         return;
     }
-
+    
     loginForm.submit();
 });
 

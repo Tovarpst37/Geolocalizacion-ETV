@@ -6,7 +6,10 @@
           <h5 class="modal-title">Editar Seguimiento</h5>
           <a href="<?php echo getUrl('SeguimientoZoocriadero', 'SeguimientoZoocriadero', 'getConsultar') ?>" class="btn btn-close"></a>
         </div>
+
+
         <div class="modal-body">
+<div class="border-top"></div>
           <?php
           foreach ($datos as $d) {
             $horarioActual = substr($d['hora_inicio'], 0, 5) . '-' . substr($d['hora_fin'], 0, 5);
@@ -33,6 +36,28 @@
             </div>
 
             <div class="mb-4">
+    <label class="form-label">Actividades a realizar</label>
+    
+    <?php 
+   
+    $selectedIds = array_column($actividadesSelect, 'id_actividad_zoo');
+    ?>
+    
+    <?php foreach($actividades as $act){ ?>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="actividades[]" style="width: 1.5em; height: 1.5em;"
+                   value="<?php echo $act['id_actividad_zoo']; ?>" 
+                   id="act<?php echo $act['id_actividad_zoo']; ?>"
+                   <?php echo in_array($act['id_actividad_zoo'], $selectedIds) ? 'checked' : ''; ?>>
+            <label class="form-check-label" for="act<?php echo $act['id_actividad_zoo']; ?>">
+                <?php echo $act['nombre_actividad']; ?>
+               
+            </label>
+        </div>
+    <?php } ?>
+</div>
+
+            <div class="mb-4">
               <label for="id_estado" class="form-label">Estado</label>
               <select class="form-select" id="id_estado" name="id_estado" required>
                 <option value="">Selecciona un estado</option>
@@ -45,6 +70,7 @@
 
           <?php
           };
+          
           ?>
         </div>
         <div class="modal-footer">

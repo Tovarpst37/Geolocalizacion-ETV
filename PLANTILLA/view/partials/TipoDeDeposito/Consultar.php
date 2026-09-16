@@ -54,13 +54,11 @@
       </div>
 
       <div class="d-flex align-items-center gap-2">
-        <a href="<?= getUrl("TipoDeDeposito", "TipoDeDeposito", "getEditar", array( 'id' => $t['id_tipo_deposito'])) ?>" 
+        <a href="<?= getUrl("TipoDeDeposito", "TipoDeDeposito", "getEditar", array('id' => $t['id_tipo_deposito'])) ?>" 
            class="btn btn-primary btn-sm">
           Editar
         </a>
-
-       
-      
+      </div>
 
     </div>
   <?php endforeach; ?>

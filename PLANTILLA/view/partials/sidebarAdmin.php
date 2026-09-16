@@ -195,10 +195,10 @@
           <div class="collapse" id="HistorialZoocriadero">
             <ul class="nav nav-collapse">
               <li><a href="<?php echo getUrl("HistorialZoocriadero", "HistorialZoocriadero", "getRegistrar") ?>"><span class="sub-item">Consultar Historial</span></a></li>
+
             </ul>
           </div>
         </li>
-
         <!-- Trabajo en terreno -->
         <li class="nav-section">
           <span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span>

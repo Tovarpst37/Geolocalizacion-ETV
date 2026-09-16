@@ -27,19 +27,32 @@
                             <i class="fa-solid fa-calender">
                             </i>
                         </span>
-                        <input type="datetime-local" class="form-control" id="fecha_hora" name="fecha_hora" required>
+                        <input type="date" class="form-control" id="fecha_hora" name="fecha_hora" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="formulariopez" class="form-label">Tipo de peces</label>
-                        <select name="tipo_pez" id="tipo_pez" class="form-control"></select>
-                        <option value=""></option>
+                        <select name="tipo_pez" id="tipo_pez" class="form-control">
+                            <?php
+                            include_once '../model/Formularioz/tipoPez.php';
+                            foreach (tipoPez as $tp): ?>
+                                <option value="<?php echo $tp; ?>" <?php echo (($old['tipo_pez'] ?? '') == $tp) ? 'selected' : ''; ?>><?php echo $tp; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+
                     </div>
 
                     <div class="mb-3">
                         <label for="formularioAli" class="form-label">Tipo de Alimentación</label>
-                        <select name="tipo_alimen" id="tipo_alimen" class="form-control"></select>
-                        <option value=""></option>
+                        <select name="tipo_alimen" id="tipo_alimen" class="form-control">
+                            <?php
+                            include_once '../model/Formularioz/tipoAlimen.php';
+                            foreach (tipoAlimen as $tA): ?>
+                                <option value="<?php echo $tA; ?>" <?php echo (($old['tipo_alimen'] ?? '') == $tA) ? 'selected' : ''; ?>><?php echo $tA; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        </select>
+
                     </div>
 
                     <div class="mb-3">

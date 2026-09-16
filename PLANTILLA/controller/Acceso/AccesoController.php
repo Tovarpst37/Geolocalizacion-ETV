@@ -35,11 +35,11 @@ class AccesoController {
             return;
         }
 
-        $_SESSION['auth'] = "ok";
-        $_SESSION['id_usuario'] = $usuario['id_usuario'];
-        $_SESSION['primer_nombre'] = $usuario['primer_nombre'];
-        $_SESSION['documento']  = $usuario['documento'];
-        $_SESSION['correo'] = $usuario['correo'];
+            $_SESSION['auth'] = "ok";
+            $_SESSION['id_usuario'] = $usuario['id_usuario'];
+            $_SESSION['primer_nombre'] = $usuario['primer_nombre'];
+            $_SESSION['documento']  = $usuario['documento'];
+            $_SESSION['correo'] = $usuario['correo'];
 
         redirect("index.php");
     }

@@ -21,14 +21,7 @@
                             placeholder="Ingrese el numero de documento" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="fecha_horaLi" class="form-label">Fecha y hora del ajuste</label>
-                        <span class="icono">
-                            <i class="fa-solid fa-calender">
-                            </i>
-                        </span>
-                        <input type="datetime-local" class="form-control" id="fecha_hora" name="fecha_hora" required>
-                    </div>
+
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Nivel de agua adicionado</label>

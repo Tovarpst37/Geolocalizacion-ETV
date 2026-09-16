@@ -14,6 +14,7 @@
     
      $sql = "SELECT 
             s.id_seguimiento_zoo,
+            s.cod_seguimiento,
             s.fecha,
             s.hora_inicio,
             s.hora_fin,
@@ -29,7 +30,7 @@
         INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
         LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
         LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
-        GROUP BY s.id_seguimiento_zoo, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
+        GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
                 z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
         ORDER BY s.id_seguimiento_zoo";
 
@@ -45,8 +46,12 @@
         $ejecutar = $obj->update($sql2);
         
     
-
-    include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
+    if(count($seguimientos) <= 0){
+        include_once '../view/partials/SeguimientoZoocriadero/notExist.php';
+    }else{
+        include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
+    }
+    
 
 
     }
@@ -80,14 +85,15 @@
     $tanque = $_POST['selectTanques'] ?? '';
     $horario = $_POST['horario'] ?? '';
     $actividades = $_POST['actividades'] ?? [];
-    $sql_validar = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = '$codigo'";
-    $existe = $obj->select($sql_validar);
+    $sql_validar = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1 ";
+    $existe = $obj->select($sql_validar,[$codigo]);
 
-
-
-    list($hora_inicio, $hora_fin) = explode('-', $horario);
 
      $errores = [];
+    list($hora_inicio, $hora_fin) = explode('-', $horario);
+
+
+    
 
         if(!empty($existe)){
             $errores[] = "Ya existe un seguimiento con ese código";
@@ -131,6 +137,8 @@
                     RETURNING id_seguimiento_zoo";
 
             $resultado = $obj->select($sql); 
+
+             
             
             if($resultado){
                 $id_seguimiento = $resultado[0]['id_seguimiento_zoo'];
@@ -143,6 +151,13 @@
                 }
 
                 $_SESSION['mensaje_exito'] = "El Seguimiento de Zoocriadero se registro correctamente.";
+                $sql2 = "UPDATE seguimiento_zoocriadero 
+                        SET id_estado = 2 
+                        WHERE fecha = CURRENT_DATE 
+                        AND hora_fin < LOCALTIME 
+                        AND id_estado = 1";
+
+                $ejecutar2 = $obj->update($sql2);
                 redirect(getUrl("SeguimientoZoocriadero","SeguimientoZoocriadero","getConsultar"));
             } else {
                 echo "No se pudo registrar el seguimiento";
@@ -165,6 +180,14 @@ public function getEditar()
         $sql3 = "SELECT * from estado";
             $estados = $obj->select($sql3);
 
+            $sql4 = "SELECT * from actividad_zoocriadero";
+        $actividades = $obj->select($sql4);
+
+        
+
+        $sql4 = "SELECT id_actividad_zoo from actividad_seg_zoo WHERE id_seguimiento_zoo = $1";
+        $actividadesSelect = $obj->select($sql4,[$id]);
+
 
         include_once '../view/partials/SeguimientoZoocriadero/Editar.php';
 
@@ -177,7 +200,36 @@ public function getEditar()
         $fecha = $_POST['fecha'];
         $horario = $_POST['horario'];
          $estado = $_POST['id_estado'];
+        
         list($hora_inicio, $hora_fin) = explode('-', $horario);
+
+
+        $actividadesNuevas = $_POST['actividades'] ?? [];
+        //el array_map lo uso para convertir los valores de actividadesNuevas en numeros enteros por si acaso
+        $actividadesNuevas = array_map('intval', $actividadesNuevas);
+
+        $sql = "SELECT id_actividad_zoo FROM actividad_seg_zoo WHERE id_seguimiento_zoo = $1";
+        $actividadesActuales = $obj->select($sql, [$id]);
+        //se selecciono la columna id_actividad_zoo que trae el array
+        $idsActuales = array_column($actividadesActuales, 'id_actividad_zoo');
+
+        //id dif lo que hace es seleccionar los valores que esten en el primer array y que no se repitan en el segundo
+        $idsEliminar = array_diff($idsActuales, $actividadesNuevas);
+        $idsInsertar = array_diff($actividadesNuevas, $idsActuales);
+
+        
+        foreach ($idsEliminar as $idActividad) {
+            $sqlDelete = "DELETE FROM actividad_seg_zoo 
+                        WHERE id_seguimiento_zoo = $1 AND id_actividad_zoo = $2";
+            $obj->delete($sqlDelete, [$id, $idActividad]);
+        }
+
+        
+        foreach ($idsInsertar as $idActividad) {
+            $sqlInsert = "INSERT INTO actividad_seg_zoo (id_seguimiento_zoo, id_actividad_zoo) 
+                        VALUES ($1, $2)";
+            $obj->insert($sqlInsert, [$id, $idActividad]);
+        }
 
         $sql = "UPDATE seguimiento_zoocriadero SET 
             fecha = '$fecha',
@@ -187,6 +239,14 @@ public function getEditar()
         WHERE id_seguimiento_zoo = '$id'";
 
         $ejecutar = $obj->update($sql); 
+
+        $sql2 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 2 
+                WHERE fecha = CURRENT_DATE 
+                AND hora_fin < LOCALTIME 
+                AND id_estado = 1";
+
+        $ejecutar2 = $obj->update($sql2);
 
         if ($ejecutar) {
             $_SESSION['mensaje_exito'] = "El Seguimiento de zoocriadero se actualizó correctamente.";
@@ -238,33 +298,80 @@ public function getEditar()
 
 public function getBuscar(){
 
-    $obj = new SeguimientoZoocriaderoModel();
+
     $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+    if(!empty($busqueda)){
+    $obj = new SeguimientoZoocriaderoModel();
+    
     $palabra = $_GET['busqueda'];
      $sql = "SELECT 
-                s.id_seguimiento_zoo,
-                s.hora_inicio,
-                s.hora_fin,
-                s.id_estado,
-                z.cod_zoocriadero,
-                t.codigo_tanque,
-                u.primer_nombre,
-                u.primer_apellido,
-                STRING_AGG(az.nombre_actividad, ', ') AS actividades
-            FROM seguimiento_zoocriadero s
-            INNER JOIN tanque t ON s.id_tanque = t.id_tanque
-            INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
-            INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
-            LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
-            LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
-            WHERE t.codigo_tanque ILIKE '%$busqueda%'
-            GROUP BY s.id_seguimiento_zoo, s.hora_inicio, s.hora_fin, s.id_estado, 
-                    z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
-            ORDER BY s.id_seguimiento_zoo";
+            s.id_seguimiento_zoo,
+            s.cod_seguimiento,
+            s.fecha,
+            s.hora_inicio,
+            s.hora_fin,
+            s.id_estado,
+            z.cod_zoocriadero,
+            t.codigo_tanque,
+            u.primer_nombre,
+            u.primer_apellido,
+            STRING_AGG(az.nombre_actividad, ', ') AS actividades
+        FROM seguimiento_zoocriadero s
+        INNER JOIN tanque t ON s.id_tanque = t.id_tanque
+        INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
+        INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
+        LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
+        LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
+        WHERE s.cod_seguimiento ILIKE $1
+        GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
+                z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
+        ORDER BY s.id_seguimiento_zoo";
+
+            
+
+    $seguimientos = $obj->select($sql, ['%' . $busqueda . '%']);
+
+    include_once '../view/partials/SeguimientoZoocriadero/Buscar.php';
+}else{
+    $obj = new SeguimientoZoocriaderoModel();
+    
+     $sql = "SELECT 
+            s.id_seguimiento_zoo,
+            s.cod_seguimiento,
+            s.fecha,
+            s.hora_inicio,
+            s.hora_fin,
+            s.id_estado,
+            z.cod_zoocriadero,
+            t.codigo_tanque,
+            u.primer_nombre,
+            u.primer_apellido,
+            STRING_AGG(az.nombre_actividad, ', ') AS actividades
+        FROM seguimiento_zoocriadero s
+        INNER JOIN tanque t ON s.id_tanque = t.id_tanque
+        INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
+        INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
+        LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
+        LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
+        GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
+                z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
+        ORDER BY s.id_seguimiento_zoo";
 
     $seguimientos = $obj->select($sql);
 
-    include_once '../view/partials/SeguimientoZoocriadero/Buscar.php';
+    
+        $sql2 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 2 
+                WHERE fecha = CURRENT_DATE 
+                AND hora_fin < LOCALTIME 
+                AND id_estado = 1";
+
+        $ejecutar = $obj->update($sql2);
+        
+
+        include_once '../view/partials/SeguimientoZoocriadero/notExist.php';
+}
+
 }
 
 

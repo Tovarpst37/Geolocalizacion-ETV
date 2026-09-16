@@ -233,16 +233,16 @@ class SitiosController
         $cont = 0;
         $id = $_POST['id'] ?? '';
         $nombre = mb_strtoupper($_POST['nombre'] ?? '');
-        $via_principal = $_POST['via_principal'] ?? '';
-        $numero_via = $_POST['numero_via'] ?? '';
-        $via_generadora = $_POST['via_generadora'] ?? '';
-        $placa = $_POST['placa'] ?? '';
+            $via_principal = $_POST['via_principal'] ?? '';
+            $numero_via = $_POST['numero_via'] ?? '';
+            $via_generadora = $_POST['via_generadora'] ?? '';
+            $placa = $_POST['placa'] ?? '';
         $barrio = $_POST['barrio'] ?? '';
         $estado = $_POST['estado'] ?? '';
 
-        $sufijo_via = trim($_POST['sufijo_via'] ?? '');
-        $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
-        $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
+         $sufijo_via = trim($_POST['sufijo_via'] ?? '');
+            $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
+            $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
         $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre'";
         $existe = $obj->select($sql_validar);
@@ -335,9 +335,11 @@ class SitiosController
 
     public function getBuscar()
     {
+        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        if(!empty($busqueda)){ 
         $palabra = $_GET['busqueda'];
         $obj = new SitiosModel();
-        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        
 
         $sql = "SELECT 
             s.id_sitio,
@@ -348,16 +350,14 @@ class SitiosController
         FROM sitio s
         INNER JOIN barrio b ON s.id_barrio = b.id_barrio
         INNER JOIN estado e ON s.id_estado = e.id_estado 
-        WHERE s.nombre_sitio ILIKE '%$busqueda%'";
-        # $result = $obj->select($sql);
-        $datos = $obj->select($sql);
-
-
-
-
-
-
+        WHERE s.nombre_sitio ILIKE $1";
+        
+        $datos = $obj->select($sql, ['%' . $busqueda . '%']);
 
         include_once "../view/partials/Sitios/Busqueda.php";
+
+        }else{
+            include_once '../view/partials/Sitios/Consultar.php';
+        }
     }
 }
