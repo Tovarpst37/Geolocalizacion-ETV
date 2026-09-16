@@ -3,13 +3,6 @@ include_once '../model/Sitios/SitiosModel.php';
 
 class SitiosController
 {
-
-   
-
-
-
-
-
     public function posDelete()
     {
         $id = $_GET['id'];
