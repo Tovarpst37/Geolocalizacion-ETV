@@ -71,9 +71,12 @@
 
     foreach ($array as $o) {
 
-
-      $estadoA = strtolower($o->getEstado()) === 'activo';
+      // se guarda falso o verdadero si es igual a activo
+      $estadoA = strtolower($o->getEstado()) === 'activo'; 
+      
+      // se crea otra variable para preguntar el estado cual es?
       $badgeClass = $estadoA ? 'bg-success' : 'bg-danger';
+
       $id = $o->getId();
 
 
@@ -108,9 +111,9 @@
               Inhabilitar
             </button>
             <?php else:  ?>
-            <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'postHabilitar', array('id' => $o->getId())); ?>" class="btn btn-success fs-4">
+           <button type="button" class="btn btn-success fs-4" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $o->getId() ?>">
               habilitar
-            </a>
+           </button>
             <?php endif  ?>
 
           </div>
@@ -131,6 +134,26 @@
                 <div class="modal-footer">
                   <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
                     <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'postDelete', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+                              <!-- sesion habilitar -->
+
+          <div class="modal fade" id="exampleModalHabilitar<?php echo $id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">habilitar Actividad</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <p>¿Estás seguro de habilitar <?php echo $o->getNombre() ?></p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'postHabilitar', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
                   </div>
               </div>
             </div>
