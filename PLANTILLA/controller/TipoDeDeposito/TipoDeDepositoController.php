@@ -40,8 +40,8 @@
         }else{ 
 
         
-            $sql = "INSERT into tipo_de_deposito (nombre) VALUES ('$nombre')";
-            $ejecutar = $obj->insert($sql);
+            $sql = "INSERT into tipo_de_deposito (nombre) VALUES ($1)";
+            $ejecutar = $obj->insert($sql,[$nombre]);
 
                 if ($ejecutar) {
                     $_SESSION['mensaje_exito'] = "El tipo de deposito se registro con exito.";
@@ -58,7 +58,7 @@
 
         $obj = new TipoDeDepositoModel();
 
-        $sql =  "SELECT * from tipo_de_deposito";
+        $sql =  "SELECT * from tipo_de_deposito ORDER BY id_tipo_deposito";
         $tipos = $obj->select($sql);
 
 
@@ -70,8 +70,8 @@
 
         $id = $_GET['id'];
         $obj = new TipoDeDepositoModel();
-        $sql = "SELECT * from tipo_de_deposito WHERE id_tipo_deposito = '$id'";
-        $datos = $obj->select($sql);
+        $sql = "SELECT * from tipo_de_deposito WHERE id_tipo_deposito = $1";
+        $datos = $obj->select($sql,[$id]);
 
         include_once '../view/partials/TipoDeDeposito/Editar.php';
 
@@ -107,8 +107,8 @@
             return;
         }else{ 
 
-        $sql = "UPDATE tipo_de_deposito SET nombre = '$nombre' WHERE id_tipo_deposito = '$id'";
-        $ejecutar = $obj->update($sql);
+        $sql = "UPDATE tipo_de_deposito SET nombre = '$nombre' WHERE id_tipo_deposito = $1";
+        $ejecutar = $obj->update($sql,[$id]);
 
                 if ($ejecutar) {
                     $_SESSION['mensaje_exito'] = "El tipo de deposito de actualizo con exito.";
