@@ -3,7 +3,6 @@
 include_once '../model/FormularioAj/FormulariosModel.php';
 class FormularioAjController
 {
-
     public function getRegistrar()
     {
         $obj = new FormulariosModel();
@@ -20,12 +19,28 @@ class FormularioAjController
         include_once '../view/partials/FormularioAj/registrar.php';
     }
 
+    private function getOrCreateActividadZoo($obj, $nombre, $codigoDefault)
+    {
+        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad = '$nombre'";
+        $res = $obj->select($sqlBuscar);
+
+        if (!empty($res)) {
+            return $res[0]['id_actividad_zoo'];
+        }
+
+        $sqlCrear = "INSERT INTO actividad_zoocriadero (cod_actividad, nombre_actividad, id_estado) 
+                     VALUES ('$codigoDefault', '$nombre', 1) 
+                     RETURNING id_actividad_zoo";
+        $creado = $obj->select($sqlCrear);
+
+        return !empty($creado) ? $creado[0]['id_actividad_zoo'] : null;
+    }
+
     public function postInsert()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $obj = new FormulariosModel();
 
-            // Capturar los datos recibidos del formulario
             $codM = $_POST['codAj'] ?? '';
             $docM = $_POST['num'] ?? '';
             $nivelAgua = $_POST['nv'] ?? 0;
@@ -33,21 +48,8 @@ class FormularioAjController
             $temp = $_POST['tem'] ?? 0;
             $obser = $_POST['ob'] ?? '';
 
-            // No hay campo de fecha en el formulario: se usa la fecha/hora del servidor
             $fechaHora = date('Y-m-d H:i:s');
 
-            // Campos que este formulario no captura: valores neutros por defecto
-            $genero = 'Sin especificar';
-            $tipoAlimento = 'Sin especificar';
-            $canpez = 0;
-            $muerto_Macho = 0;
-            $muerto_Hembra = 0;
-            $estregarParedes = 'false';
-            $aspirar = 'false';
-            $succionador = 'false';
-            $aguaCambiada = 0; // numérico, no boolean
-
-            // 1. Consultar si el codigo de seguimiento ya existe en la base de datos
             $sqlExiste = "SELECT id_seguimiento_zoo, cod_seguimiento 
                       FROM seguimiento_zoocriadero 
                       WHERE cod_seguimiento = '$codM'";
@@ -79,24 +81,34 @@ class FormularioAjController
                 }
             }
 
-            // 2. Guardar el detalle del ajuste de nivel
             if ($id_seguimiento_zoo) {
                 $sqlSub = "INSERT INTO sub_actividades 
-               (tipo_alimento, fecha, genero, observaciones, 
-                can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, 
-                estregar_paredes, aspirar, succionador, adicion_nivel_agua, 
-                medicion_ph, medicion_temperatura, estado_tanque, agua_cambiada, 
+               (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
+                can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
+                estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
+                adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
+                estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
                 id_estado, id_seguimiento_zoo, cod_seguimiento) 
                VALUES 
-               ('$tipoAlimento', '$fechaHora', '$genero', '$obser', 
-                '$muerto_Hembra', '$muerto_Macho', '$canpez', 
-                $estregarParedes, $aspirar, $succionador, $nivelAgua, 
-                $ph, $temp, 'Sin especificar', $aguaCambiada, 
-                1, $id_seguimiento_zoo, '$codM')";
+               (NULL, NULL, NULL, NULL, 
+                NULL, NULL, NULL, NULL, 
+                NULL, NULL, NULL, NULL, NULL, 
+                $nivelAgua, $ph, $temp, '$fechaHora', '$obser', 
+                NULL, NULL, NULL, NULL, 
+                1, $id_seguimiento_zoo, '$codM')
+               RETURNING id_sub_actividad";
 
-                $resSub = $obj->insert($sqlSub);
+                $resSub = $obj->select($sqlSub);
 
-                if ($resSub) {
+                if (!empty($resSub)) {
+                    $id_sub_actividad = $resSub[0]['id_sub_actividad'];
+
+                    $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Ajuste de nivel', 'AJU001');
+                    if ($id_actividad_zoo) {
+                        $obj->insert("INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) 
+                                      VALUES ($id_actividad_zoo, $id_sub_actividad)");
+                    }
+
                     redirect(getUrl("FormularioAj", "FormularioAj", "getRegistrar"));
                 } else {
                     echo "Error al guardar el detalle en sub_actividades.";
@@ -107,5 +119,4 @@ class FormularioAjController
         }
     }
 }
-
 ?>
