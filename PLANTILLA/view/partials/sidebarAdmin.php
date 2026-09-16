@@ -251,6 +251,52 @@
           <h4 class="text-section">Trabajo en terreno</h4>
         </li>
 
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#sitiosTerreno">
+            <i class="fas fa-layer-group"></i>
+            <p>Sitios</p>
+            <span class="caret"></span>
+          </a>
+          <div class="collapse" id="sitiosTerreno">
+            <ul class="nav nav-collapse">
+              <li>
+                <a href="<?php echo getUrl("Sitios", "Sitios", "getCreate2") ?>">
+                  <span class="sub-item"> Registrar sitio</span>
+                </a>
+              </li>
+              <li>
+                <a href="<?php echo getUrl("Sitios", "Sitios", "getConsultar") ?>">
+                  <span class="sub-item"> Consultar sitio</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+
+
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#depositoTerrono">
+            <i class="fas fa-layer-group"></i>
+            <p>Tipo de deposito</p>
+            <span class="caret"></span>
+          </a>
+          <div class="collapse" id="depositoTerrono">
+            <ul class="nav nav-collapse">
+              <li>
+                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getRegistrar") ?>">
+                  <span class="sub-item"> Registrar tipo de depósito</span>
+                </a>
+              </li>
+              <li>
+                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getConsultar") ?>">
+                  <span class="sub-item"> Consultar tipo de depósito</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
 
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#Terreno">
@@ -277,57 +323,6 @@
         </li>
 
 
-
-        <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#sitiosTerreno">
-            <i class="fas fa-layer-group"></i>
-            <p>Sitios</p>
-            <span class="caret"></span>
-          </a>
-          <div class="collapse" id="sitiosTerreno">
-            <ul class="nav nav-collapse">
-              <li>
-                <a href="<?php echo getUrl("Sitios", "Sitios", "getCreate2") ?>">
-                  <span class="sub-item"> Registrar sitio</span>
-                </a>
-              </li>
-              <li>
-                <a href="<?php echo getUrl("Sitios", "Sitios", "getConsultar") ?>">
-                  <span class="sub-item"> Consultar sitio</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li>
-
-
-
-
-
-
-
-
-        <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#depositoTerrono">
-            <i class="fas fa-layer-group"></i>
-            <p>Tipo de deposito</p>
-            <span class="caret"></span>
-          </a>
-          <div class="collapse" id="depositoTerrono">
-            <ul class="nav nav-collapse">
-              <li>
-                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getRegistrar") ?>">
-                  <span class="sub-item"> Registrar tipo de depósito</span>
-                </a>
-              </li>
-              <li>
-                <a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getConsultar") ?>">
-                  <span class="sub-item"> Consultar tipo de depósito</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li>
         <!-- Modulos -->
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#actividadTerrono">
@@ -383,23 +378,36 @@
             <p>Fomularios</p>
             <span class="caret"></span>
           </a>
+
           <div class="collapse" id="fomularioTerreno">
             <ul class="nav nav-collapse">
               <li>
-                <a href="components/avatars.html">
-                  <span class="sub-item"> Registrar formulario</span>
+                <a href="<?php echo getUrl("FormularioInsp", "FormularioInsp", "getRegistrar") ?>">
+                  <span class="sub-item"> Registrar Inspección</span>
                 </a>
               </li>
               <li>
-                <a href="components/buttons.html">
-                  <span class="sub-item">Consultar formulario</span>
+                <a href="<?php echo getUrl("FormularioSiem", "FormularioSiem", "getRegistrar") ?>">
+                  <span class="sub-item"> Registrar Siembra</span>
+                </a>
+              </li>
+              <li>
+                <a href="<?php echo getUrl("FormularioSegT", "FormularioSegT", "getRegistrar") ?>">
+                  <span class="sub-item"> Registrar Seguimiento</span>
+                </a>
+              </li>
+              <li>
+                <a href="<?php echo getUrl("FormularioResi", "FormularioResi", "getRegistrar") ?>">
+                  <span class="sub-item"> Registrar Resiembra</span>
                 </a>
               </li>
 
 
             </ul>
           </div>
+
         </li>
+
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#HistorialTerreno">
             <i class="fas fa-layer-group"></i>
