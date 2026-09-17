@@ -419,10 +419,10 @@ public function getSitios(){
     
     $obj = new SeguimientoTerrenoModel();
     
-    $sql = "SELECT id_sitio_deposito, nombre from sitio_deposito WHERE id_sitio = $1";
+    $sql = "SELECT id_sitio_deposito, codigo_sitio_deposito from sitio_deposito WHERE id_sitio = $1";
     $terreno = $obj->select($sql,[$id_sitio]);
     
-    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1";
+    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1 AND id_rol = 5";
     $usuarios = $obj->select($sql2,[$id_sitio]);
     
     $resultado = [
