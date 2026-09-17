@@ -79,8 +79,8 @@ if (count($resul) <= 0) {
 
             ?>
 
-                <div class="col">
-                    <div class="card p-3 h-100" style="width: 100% !important; min-width: 0 !important;">
+             <div class="col">
+                    <div class="card p-3" style="width: 100% !important; min-width: 0 !important;"> 
                         <div class="card-body pb-2 text-start">
                             <div class="mb-2">
                                 <span class="badge <?php echo $badgeClass ?> rounded-pill"><?php echo $i->getEstado() ?></span>
@@ -90,9 +90,9 @@ if (count($resul) <= 0) {
                         </div>
 
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><?php echo $i->getDireccion() ?></li>
-                            <li class="list-group-item"><?php echo $i->getNombre_tipo_deposito() ?></li>
-                            <li class="list-group-item"><?php echo $i->getDescripcion() ?></li>
+                            <li class="list-group-item">&nbsp;Sitio: <?php echo $i->getDireccion() ?></li>
+                            <li class="list-group-item">&nbsp; Nombre tipo deposito : <?php echo $i->getNombre_tipo_deposito() ?></li>
+                            <li class="list-group-item">&nbsp; Descripcion: <?php echo $i->getDescripcion() ?></li>
                         </ul>
 
                         <div class="card-body d-flex gap-2 pt-3">
