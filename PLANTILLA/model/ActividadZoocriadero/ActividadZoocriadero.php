@@ -19,42 +19,26 @@ class ActividadZoocriadero
 
 
 
-    public function getCard()
-    {
 
-        $badgeClass = strtolower($this->estado) === 'activo' ? 'bg-success' : 'bg-danger';
+   public function getId()
+{
+    return $this->id;
+}
 
-?>
+public function getCodigo()
+{
+    return $this->codigo;
+}
 
+public function getNombre()
+{
+    return $this->nombre;
+}
 
-        <div class="col">
-
-            <div class="card p-3 h-100" style="width: 100% !important; min-width: 0 !important; d-flex justify-content-center">
-
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><b>Codigo</b>: <?php echo $this->codigo; ?></li>
-                    <li class="list-group-item"><b>Nombre</b>: <?php echo $this->nombre; ?></li>
-                    <li class="list-group-item"><b>Estado</b>: <?php echo $this->estado; ?></li>
-
-
-                </ul>
-                <div class="card-body">
-                    <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEdit', array('id' => $this->id)); ?>" class="btn btn-primary">
-                        Editar
-                    </a>
-                    <a href="<?php echo getUrl("ActividadZoocriadero", "ActividadZoocriadero", "getDelete", array("id" => $this->id)) ?>" class="btn btn-danger">
-                        Eliminar
-                    </a>
-
-                </div>
-            </div>
-
-        </div>
-<?php
-
-
-
-    }
+public function getEstado()
+{
+    return $this->estado;
+}
 
 
 
