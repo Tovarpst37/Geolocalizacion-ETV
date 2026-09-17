@@ -67,7 +67,7 @@
         $sql2 = "SELECT * from estado";
         $estados = $obj->select($sql2);
 
-        $sql3 = "SELECT * from actividad_zoocriadero";
+        $sql3 = "SELECT * from actividad_zoocriadero WHERE id_estado = 1";
         $actividades = $obj->select($sql3);
         
         include_once '../view/partials/SeguimientoZoocriadero/Registrar.php';
@@ -181,7 +181,7 @@ public function getEditar()
         $sql3 = "SELECT * from estado";
             $estados = $obj->select($sql3);
 
-            $sql4 = "SELECT * from actividad_zoocriadero";
+            $sql4 = "SELECT * from actividad_zoocriadero WHERE id_estado = 1";
         $actividades = $obj->select($sql4);
 
         

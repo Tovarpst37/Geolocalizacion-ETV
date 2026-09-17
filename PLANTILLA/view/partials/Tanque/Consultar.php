@@ -38,20 +38,8 @@
 
         ?>
 
-
-<div class="container-fluid text-center px-2">
-
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-    <?php
-
-
-    include_once '../controller/Tanque/TanqueController.php';
-    include_once '../model/Tanque/Tanque.php';
-
-
-            ?>
-
-
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Tanques</h3>
     <div class="d-flex justify-content-end w-100">
       <div class="input-group" style="max-width: 350px;">
         <form class="input-group" action="index.php" method="GET">
@@ -67,9 +55,16 @@
         </form>
       </div>
     </div>
+     </div>
+<div class="container-fluid text-center px-2">
 
-
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
     <?php
+
+
+    include_once '../controller/Tanque/TanqueController.php';
+    include_once '../model/Tanque/Tanque.php';
+
 
 
     foreach ($result as $rs) {

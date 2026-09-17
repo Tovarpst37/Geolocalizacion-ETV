@@ -1,5 +1,6 @@
 
-
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Tipo de Deposito</h3>
 
 <div class="d-flex justify-content-end w-100">
   <div class="input-group" style="max-width: 350px;">
@@ -17,11 +18,14 @@
     </form>
   </div>
 </div>
+</div>
 
 
 <div class="list-group mt-4">
 
-  <?php foreach ($tipos as $t): ?>
+  <?php 
+  if(!empty($tipos)){
+  foreach ($tipos as $t): ?>
     
     <div class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3 border rounded">
         
@@ -38,6 +42,15 @@
       </div>
 
     </div>
-  <?php endforeach; ?>
+  <?php endforeach; 
+  }else{
+
+    ?>
+    <div class="text-center text-muted py-5 mt-5">
+        <i class="fa fa-search fa-2x mb-3"></i>
+        <p class="mb-3">No se encontraron resultados</p>
+    </div>
+    <?php
+    } ?>
 
 </div>

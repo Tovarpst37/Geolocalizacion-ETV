@@ -22,6 +22,7 @@ include_once '../view/usuario/disable.php';
     </div>
 </div>
 
+<?php if(!empty($usuarios)){?>
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
@@ -96,7 +97,15 @@ include_once '../view/usuario/disable.php';
                             <?php endif; ?>
                         </td>
                     </tr>
-                <?php } ?>
+                <?php }}else{
+
+    ?>
+    <div class="text-center text-muted py-5 mt-5">
+        <i class="fa fa-search fa-2x mb-3"></i>
+        <p class="mb-3">No se encontraron resultados</p>
+    </div>
+    <?php
+    } ?> 
                 </tbody>
                 
             </table>
