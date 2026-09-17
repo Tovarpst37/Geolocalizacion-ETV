@@ -94,6 +94,40 @@
                         </select>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="id_coor" class="form-label">Coordinador asignado <span class="text-danger">*</span></label>
+                        <select class="form-select" id="id_coor" name="id_coor" required>
+                            <option value="" selected disabled>Selecciona un coordinador</option>
+                            <?php foreach ($coord as $usu): ?>
+                                <option value="<?php echo $usu['id_usuario']; ?>" <?php echo (($old['id_coor'] ?? '') == $usu['id_usuario']) ? 'selected' : ''; ?>>
+                                    <?php echo $usu['primer_nombre'] . " " . $usu['segundo_nombre'] . " " . $usu['primer_apellido'] . " " . $usu['segundo_apellido']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Auxiliares asignados</label>
+                        <div class="border rounded p-3 overflow-auto" style="max-height: 250px;">
+                            <?php foreach ($auxi as $usu): ?>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                        name="usuarios_asignados[]"
+                                        value="<?php echo $usu['id_usuario']; ?>"
+                                        id="user<?php echo $usu['id_usuario']; ?>"
+                                        <?php echo (in_array($usu['id_usuario'], $old['usuarios_asignados'] ?? [])) ? 'checked' : ''; ?>>
+
+                                    <label class="form-check-label" for="user<?php echo $usu['id_usuario']; ?>">
+                                        <?php echo $usu['primer_nombre'] . " " .
+                                            $usu['segundo_nombre'] . " " .
+                                            $usu['primer_apellido'] . " " .
+                                            $usu['segundo_apellido']; ?>
+                                    </label>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
                     <div class="mb-4">
                         <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
                         <select class="form-select" id="estado" name="estado" required>

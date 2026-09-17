@@ -232,13 +232,7 @@
           </a>
           <div class="collapse" id="Terreno">
             <ul class="nav nav-collapse">
-              <li><a href="<?php echo getUrl("Terreno", "Terreno", "getRegistrar") ?>"><span class="sub-item">Registrar
-                    terreno</span></a></li>
-              <li><a href="<?php echo getUrl("Terreno", "Terreno", "getConsultar") ?>"><span class="sub-item">Consultar
-                    terreno</span></a></li>
-            </ul>
-          </div>
-        </li>
+
 
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#sitiosTerreno">
