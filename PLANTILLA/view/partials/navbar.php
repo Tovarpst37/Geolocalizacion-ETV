@@ -22,7 +22,7 @@
   <!-- Navbar Header -->
   <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
     <div class="container-fluid">
-      
+
 
       <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
         <li class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
@@ -114,30 +114,27 @@
             </div>
             <span class="profile-username">
               <span class="op-7">Hola,</span>
-              <span class="fw-bold">Samuel</span>
+              <span class="fw-bold"><?php echo $_SESSION['primer_nombre']; ?></span>
             </span>
           </a>
           <ul class="dropdown-menu dropdown-user animated fadeIn">
             <div class="dropdown-user-scroll scrollbar-outer">
               <li>
                 <div class="user-box">
+                  <!-- 
                   <div class="avatar-lg">
                     <img src="assets/img/profile.jpg" alt="image profile" class="avatar-img rounded" />
                   </div>
+                  -->
                   <div class="u-text">
-                    <h4>Samuel</h4>
-                    <p class="text-muted">hola@gmail.com</p>
-                    <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">Ver perfil</a>
+                    <h4><?php echo $_SESSION['primer_nombre']; ?></h4>
+                    <p class="text-muted"><?php echo $_SESSION['correo']; ?></p>
                   </div>
                 </div>
               </li>
               <li>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Mi perfil</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Configuracion</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="<?php echo getUrl("Acceso","Acceso","logout")?>">Cerrar Sesion</a>
+                <a class="dropdown-item" href="<?php echo getUrl("Acceso", "Acceso", "logout") ?>">Cerrar Sesion</a>
               </li>
             </div>
           </ul>
