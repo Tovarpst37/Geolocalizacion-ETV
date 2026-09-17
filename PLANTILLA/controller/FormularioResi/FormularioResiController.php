@@ -1,8 +1,8 @@
 <?php
 
-include_once '../model/FormularioSegT/FormulariosModel.php';
+include_once '../model/FormularioResi/FormulariosModel.php';
 
-class FormularioSegTController
+class FormularioResiController
 {
     public function getRegistrar()
     {
@@ -17,7 +17,7 @@ class FormularioSegTController
         $sql4 = "SELECT * FROM sub_actividades_ter";
         $observaciones = $obj->select($sql4);
 
-        include_once '../view/partials/FormularioSegT/registrar.php';
+        include_once '../view/partials/FormularioResi/registrar.php';
     }
 
     // Busca la actividad por nombre en actividad_terreno; si no existe, la crea.
@@ -45,12 +45,13 @@ class FormularioSegTController
 
             $codSeg = $_POST['codSeg'] ?? '';
             $documen = $_POST['documen'] ?? '';
-            $fechaHora = $_POST['fecha_horaSeg'] ?? date('Y-m-d H:i:s');
-            $numeroVisita = $_POST['numeroVisita'] ?? 1;
-            $depositoVis = ($_POST['depositoVisitado'] ?? '0') == '1' ? 'true' : 'false';
+            $fechaHora = $_POST['fecha_horaResi'] ?? date('Y-m-d H:i:s');
+            $canHembras = $_POST['canHembras'] ?? 0;
+            $canMachos = $_POST['canMachos'] ?? 0;
+            $canGuppies = $_POST['canGuppies'] ?? 0;
             $presenciaLarv = ($_POST['presenciaLarvas'] ?? '0') == '1' ? 'true' : 'false';
             $presenciaPec = ($_POST['presenciaPeces'] ?? '0') == '1' ? 'true' : 'false';
-            $obser = $_POST['obserSeg'] ?? '';
+            $obser = $_POST['obserResi'] ?? '';
 
             // 1. Consultar si el codigo de seguimiento ya existe
             $sqlExiste = "SELECT id_seguimiento_terreno, cod_seguimiento 
@@ -83,14 +84,14 @@ class FormularioSegTController
                 }
             }
 
-            // 2. Guardar el detalle del seguimiento
+            // 2. Guardar el detalle de la resiembra
             if ($id_seguimiento_terreno) {
                 $sqlSub = "INSERT INTO sub_actividades_ter
-               (fecha_seguimiento, numero_visita, deposito_agua_visitado, 
-                presencia_larvas_seguimiento, presencia_peces_seguimiento, obser_seguimiento, 
+               (fecha_resiembra, can_hembras_sembradas, can_machos_sembrados, can_peces_guppies_sembrados,
+                presencia_larvas_resiembra, presencia_peces_resiembra, obser_resiembra, 
                 id_estado, id_seguimiento_terreno, cod_seguimiento) 
                VALUES 
-               ('$fechaHora', $numeroVisita, $depositoVis, 
+               ('$fechaHora', $canHembras, $canMachos, $canGuppies,
                 $presenciaLarv, $presenciaPec, '$obser', 
                 1, $id_seguimiento_terreno, '$codSeg')
                RETURNING id_sub_actividad";
@@ -100,8 +101,8 @@ class FormularioSegTController
                 if (!empty($resSub)) {
                     $id_sub_actividad = $resSub[0]['id_sub_actividad'];
 
-                    // 3. Enlazar esta fila con la actividad "Seguimiento" en la tabla puente
-                    $id_actividad_terreno = $this->getOrCreateActividadTerreno($obj, 'Seguimiento');
+                    // 3. Enlazar esta fila con la actividad "Resiembra" en la tabla puente
+                    $id_actividad_terreno = $this->getOrCreateActividadTerreno($obj, 'Resiembra');
 
                     if ($id_actividad_terreno) {
                         $sqlBridge = "INSERT INTO actividad_ter_subactividades 
@@ -110,9 +111,9 @@ class FormularioSegTController
                         $obj->select($sqlBridge);
                     }
 
-                    redirect(getUrl("FormularioSegT", "FormularioSegT", "getRegistrar"));
+                    redirect(getUrl("FormularioResi", "FormularioResi", "getRegistrar"));
                 } else {
-                    echo "Error al guardar el detalle en sub_actividades_terreno.";
+                    echo "Error al guardar el detalle en sub_actividades_ter.";
                 }
             } else {
                 echo "Error al procesar el código de seguimiento.";

@@ -368,7 +368,7 @@
           </a>
           <div class="collapse" id="HistorialTerreno">
             <ul class="nav nav-collapse">
-              <li><a href="<?php echo getUrl("HistorialTerreno", "HistorialTerreno", "getRegistrar") ?>"><span
+              <li><a href="<?php echo getUrl("HistorialTerreno", "HistorialTerreno", "getConsultar") ?>"><span
                     class="sub-item">Consultar Historial</span></a></li>
             </ul>
           </div>
