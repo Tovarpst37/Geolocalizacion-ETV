@@ -25,7 +25,8 @@
 <?php endif; ?>
 
 
-
+<div class="page-header">
+    <h4 class="fw-bold mb-3">Seguimiento Zoocriadero</h4>
 
     <div class="d-flex justify-content-end w-100">
       <div class="input-group" style="max-width: 350px;">
@@ -42,7 +43,7 @@
         </form>
       </div>
     </div>
-
+</div>
 
     
 

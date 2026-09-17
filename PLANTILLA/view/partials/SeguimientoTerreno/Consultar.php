@@ -26,7 +26,8 @@
 
 
 
-
+<div class="page-header">
+    <h4 class="fw-bold mb-3">Seguimiento Terreno</h4>
     <div class="d-flex justify-content-end w-100">
       <div class="input-group" style="max-width: 350px;">
         <form class="input-group" action="index.php" method="GET">
@@ -42,7 +43,7 @@
         </form>
       </div>
     </div>
-
+ </div>
 
     
 
