@@ -12,7 +12,7 @@ include_once '../view/usuario/disable.php';
           <input type="hidden" name="controlador" value="Usuario">
           <input type="hidden" name="funcion" value="getBuscar">
 
-          <input type="text" name="busqueda" placeholder="Search ..." class="form-control" value="<?php echo htmlspecialchars($palabra ?? ''); ?>">
+          <input type="text" name="busqueda" placeholder="Search ..." class="form-control"  value = "<?php echo $palabra; ?>"/>
 
           <button type="submit" class="btn btn-outline-secondary">
             <i class="fa fa-search"></i>
@@ -98,9 +98,12 @@ include_once '../view/usuario/disable.php';
                     </tr>
                 <?php } ?>
                 </tbody>
+                
             </table>
         </div>
     </div>
 </div>
+
+
 
 <script src="../view/usuario/js/list.js"></script>
