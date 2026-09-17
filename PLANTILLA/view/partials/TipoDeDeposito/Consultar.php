@@ -24,6 +24,8 @@
 <?php endif; ?>
 
 
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Tipo de Deposito</h3>
 <div class="d-flex justify-content-end w-100">
   <div class="input-group" style="max-width: 350px;">
     <form class="input-group" action="index.php" method="GET">
@@ -40,6 +42,7 @@
     </form>
   </div>
 </div>
+</div>
 
 
 <div class="list-group mt-4">
@@ -54,13 +57,11 @@
       </div>
 
       <div class="d-flex align-items-center gap-2">
-        <a href="<?= getUrl("TipoDeDeposito", "TipoDeDeposito", "getEditar", array( 'id' => $t['id_tipo_deposito'])) ?>" 
+        <a href="<?= getUrl("TipoDeDeposito", "TipoDeDeposito", "getEditar", array('id' => $t['id_tipo_deposito'])) ?>" 
            class="btn btn-primary btn-sm">
           Editar
         </a>
-
-       
-      
+      </div>
 
     </div>
   <?php endforeach; ?>

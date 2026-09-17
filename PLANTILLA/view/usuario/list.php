@@ -4,6 +4,22 @@ include_once '../view/usuario/disable.php';
 ?>
 <div class="page-header">
     <h3 class="fw-bold mb-3">Usuarios</h3>
+
+     <div class="d-flex justify-content-end w-100">
+      <div class="input-group" style="max-width: 350px;">
+        <form class="input-group" action="index.php" method="GET">
+          <input type="hidden" name="modulo" value="Usuario">
+          <input type="hidden" name="controlador" value="Usuario">
+          <input type="hidden" name="funcion" value="getBuscar">
+
+          <input type="text" name="busqueda" placeholder="Search ..." class="form-control" value="<?php echo htmlspecialchars($palabra ?? ''); ?>">
+
+          <button type="submit" class="btn btn-outline-secondary">
+            <i class="fa fa-search"></i>
+          </button>
+        </form>
+      </div>
+    </div>
 </div>
 
 <div class="card">

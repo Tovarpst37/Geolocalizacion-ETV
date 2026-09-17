@@ -69,7 +69,10 @@
 
           <div class="mb-4">
               <label class="form-label">Actividades a realizar</label>
-              
+              <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+    <?php if (empty($actividades)){ ?>
+    <p class="text-muted">No hay actividades disponibles</p>
+<?php }else{ ?>
               <?php foreach($actividades as $act){ ?>
                   <div class="form-check">
                       <input class="form-check-input" type="checkbox" name="actividades[]"  style="width: 1.5em; height: 1.5em;"
@@ -79,7 +82,9 @@
                           <?php echo $act['nombre_actividad']; ?>
                       </label>
                   </div>
-              <?php } ?>
+              <?php };
+              }; ?>
+          </div>
           </div>
 
           

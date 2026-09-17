@@ -9,50 +9,46 @@
                 <form action="<?php echo getUrl("FormularioLi", "FormularioLi", "postInsert") ?>" method="POST">
 
                     <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Codigo del seguimiento</label>
+                        <label for="coLi" class="form-label">Codigo del seguimiento</label>
                         <input type="text" class="form-control" id="coLi" name="coLi"
                             placeholder="Ingrese el codigo del seguimiento" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Numero de dociumento</label>
+                        <label for="docLi" class="form-label">Numero de documento</label>
                         <input type="text" class="form-control" id="docLi" name="docLi"
                             placeholder="Ingrese el numero de documento" required>
                     </div>
 
-
                     <div class="mb-3">
-                        <label for="fecha_hora" class="form-label">Fecha y hora de Limpieza</label>
+                        <label for="fecha_horaLi" class="form-label">Fecha y hora de Limpieza</label>
                         <span class="icono">
-                            <i class="fa-solid fa-calender">
-                            </i>
+                            <i class="fa-solid fa-calendar"></i>
                         </span>
                         <input type="datetime-local" class="form-control" id="fecha_horaLi" name="fecha_horaLi"
                             required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="formulariopez" class="form-label">Tipo de Limpieza</label>
-
-                        <select class="form-control" id="limpieza" name="limpieza[]">
-
-                            <option value="esponja">Esponja</option>
-                            <option value="aspirar">aspirar con manguera</option>
-                            <option value="succionador">Succionador</option>
-
-                        </select>
-
+                        <label class="form-label">Tipo de Limpieza</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="estregarParedes" name="estregarParedes"
+                                value="1">
+                            <label class="form-check-label" for="estregarParedes">Sí, estregar paredes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="aspirar" name="aspirar" value="1">
+                            <label class="form-check-label" for="aspirar">Sí, aspirar</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="succionador" name="succionador"
+                                value="1">
+                            <label class="form-check-label" for="succionador">Sí, succionador</label>
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="formularioAli" class="form-label">Tipo de Alimentación</label>
-                        <select name="tipo_alimen" id="tipo_alimen" class="form-control"></select>
-                        <option value=""></option>
-                    </div>
-
-
-                    <div class="mb-3">
-                        <label for="obser" class="form-label">Observaciones</label>
+                        <label for="obserLi" class="form-label">Observaciones</label>
                         <input type="text" class="form-control" id="obserLi" name="obserLi"
                             placeholder="Ingrese las observaciones" required>
                     </div>

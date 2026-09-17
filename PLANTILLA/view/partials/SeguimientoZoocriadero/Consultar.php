@@ -25,7 +25,8 @@
 <?php endif; ?>
 
 
-
+<div class="page-header">
+    <h4 class="fw-bold mb-3">Seguimiento Zoocriadero</h4>
 
     <div class="d-flex justify-content-end w-100">
       <div class="input-group" style="max-width: 350px;">
@@ -42,7 +43,7 @@
         </form>
       </div>
     </div>
-
+</div>
 
     
 
@@ -50,10 +51,10 @@
 
     <?php foreach($seguimientos as $s){ ?>
     
-        <div class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4  border rounded">
+        <div class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4 mb-3  border rounded">
             
             <div>
-                <h6 class="mb-1"><?php echo $s['cod_zoocriadero']; ?> — Tanque <?php echo $s['codigo_tanque']; ?></h6>
+                <h6 class="mb-1"><?php echo $s['cod_seguimiento']; ?> — Zoocriadero <?php echo $s['cod_zoocriadero']; ?> — Tanque <?php echo $s['codigo_tanque']; ?></h6>
                 <small class="text-muted">
                     <?php echo $s['hora_inicio']; ?> - <?php echo $s['hora_fin']; ?> 
                     &nbsp;|&nbsp; Auxiliar: <?php echo $s['primer_nombre']." ".$s['primer_apellido']; ?>
