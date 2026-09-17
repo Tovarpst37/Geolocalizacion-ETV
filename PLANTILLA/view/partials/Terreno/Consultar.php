@@ -39,8 +39,8 @@ if (count($resul) <= 0) {
     <div class="d-flex justify-content-end w-100">
         <div class="input-group" style="max-width: 350px;">
             <form class="input-group" action="index.php" method="GET">
-                <input type="hidden" name="modulo" value="Terrenos">
-                <input type="hidden" name="controlador" value="Terrenos">
+                <input type="hidden" name="modulo" value="Terreno">
+                <input type="hidden" name="controlador" value="Terreno">
                 <input type="hidden" name="funcion" value="getBuscar">
 
                 <input type="text" name="busqueda" placeholder="Search ..." class="form-control" />
