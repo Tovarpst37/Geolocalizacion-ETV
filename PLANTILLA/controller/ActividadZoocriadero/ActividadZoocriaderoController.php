@@ -31,7 +31,7 @@ class ActividadZoocriaderoController
         $validar_exist = $obj->select($sql_validar, [$codigo]);
 
         if (count($validar_exist) > 0) {
-            $errores[] = "Ya existe uan actividad con este codigo";
+            $errores[] = "Ya existe una actividad con este codigo";
         }
 
         if (empty($codigo)) {
@@ -40,6 +40,10 @@ class ActividadZoocriaderoController
 
         if (empty($nombre)) {
             $errores[] = "El nombre de la actividad es obligatoria";
+        }
+
+        if (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u', $nombre)) {
+            $errores[] = "El nombre de la actividad solo debe contener letras y espacios (sin números ni símbolos).";
         }
 
 
@@ -207,50 +211,17 @@ class ActividadZoocriaderoController
         $cont = 0;
 
         $id = $_POST['id'] ?? '';
-        $codigo = mb_strtoupper($_POST['cod_actividad'] ?? '');
         $nombre = $_POST['nombre_actividad'] ?? '';
 
-        $errores = [];
-
-        $sql_validar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE id_actividad_zoo =$1 
-        AND cod_actividad =$2";
-
-        $validar_exist = $obj->select($sql_validar, [$id, $codigo]);
-
-        if (count($validar_exist) > 0) {
-            $errores[] = "Ya existe uan actividad con este codigo";
-        }
-
-        if (empty($codigo)) {
-            $errores[] = "El codigo de la actividad es obligatoria";
-        }
 
         if (empty($nombre)) {
             $errores[] = "El nombre de la actividad es obligatoria";
         }
 
-
-
-        
-        if (!empty($codigo)) {
-
-            if (substr($codigo, 0, 2) !== 'AZ') {
-
-                $errores[] = "Las primeras dos letras del codigo deben ser: AZ";
-            }
-
-            if (substr($codigo, 2, 1) !== '-') {
-
-                $errores[] = "El codigo debe contener un guion, como el siguiente Ejemplo: 'AZ-'";
-            }
-
-            $resto_codigo = substr($codigo, 3);
-
-            // Validar que la parte restante sea EXACTAMENTE 3 números (ni más, ni menos)
-            if (!preg_match('/^\d{3}$/', $resto_codigo)) {
-                $errores[] = "El código debe contener una cantidad exacta de 3 números, como el siguiente Ejemplo: 'AZ-001'";
-            }
+        if (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u', $nombre)) {
+            $errores[] = "El nombre de la actividad solo debe contener letras y espacios (sin números ni símbolos).";
         }
+
 
         if (!empty($errores)) {
             include_once '../model/Errores/ErrorModal.php';
@@ -269,13 +240,13 @@ class ActividadZoocriaderoController
     {
 
 
-        $codigo = mb_strtoupper($_POST['cod_actividad']);
+        
         $nombre = $_POST['nombre_actividad'];
         $id = $_POST['id'];
 
-        $sql = "UPDATE actividad_zoocriadero SET cod_actividad = $1, nombre_actividad = $2 WHERE id_actividad_zoo = $3";
+        $sql = "UPDATE actividad_zoocriadero SET nombre_actividad = $1 WHERE id_actividad_zoo = $2";
 
-        $ejecutar = $obj->update($sql, [$codigo, $nombre, $id]);
+        $ejecutar = $obj->update($sql, [$nombre, $id]);
 
         if ($ejecutar) {
             $_SESSION['mensaje_exito'] = "la Actividad se actualizó correctamente.";

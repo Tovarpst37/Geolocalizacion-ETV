@@ -104,14 +104,14 @@ else:
 
             <!-- Código e ID -->
             <div class="mb-3">
-              <h4 class="fw-bold text-dark mb-0"><?php echo $o->getCodigo(); ?></h4>
+              <h4 class="fw-bold text-dark mb-0"><?php echo $o->getNombre(); ?></h4>
               <small class="text-muted fw-semibold">ID <?php echo $o->getId(); ?></small>
             </div>
 
             <!-- Lista de datos con divisores -->
             <ul class="list-group list-group-flush mb-4">
               <li class="list-group-item px-1 py-2 border-top text-dark fw-medium" style="border-color: #e0e0e0 !important;">
-                <?php echo $o->getNombre(); ?>
+              Codigo: <?php echo $o->getCodigo(); ?>
               </li>
               <!-- Puedes agregar más elementos de lista si los requieres -->
             </ul>
