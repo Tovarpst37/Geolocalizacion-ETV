@@ -22,7 +22,7 @@
   <!-- Navbar Header -->
   <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
     <div class="container-fluid">
-      
+
 
       <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
         <li class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
@@ -134,7 +134,7 @@
               </li>
               <li>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="<?php echo getUrl("Acceso","Acceso","logout")?>">Cerrar Sesion</a>
+                <a class="dropdown-item" href="<?php echo getUrl("Acceso", "Acceso", "logout") ?>">Cerrar Sesion</a>
               </li>
             </div>
           </ul>
