@@ -14,7 +14,7 @@ include_once '../view/partials/head.php';
             <div class="w-100 px-4 px-md-5" style="max-width: 420px;">
 
                 <h2 class="title text-center mb-4">
-                    Login
+                    <img src="" alt="">
                 </h2>
 
                 <form action="<?php echo getUrl("Acceso","Acceso","login",false,"ajax");?>" method="POST" id="loginForm">

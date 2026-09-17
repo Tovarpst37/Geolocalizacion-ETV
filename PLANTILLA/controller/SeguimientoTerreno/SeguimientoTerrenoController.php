@@ -31,7 +31,8 @@
             LEFT JOIN sitio si ON s.id_sitio = si.id_sitio
             LEFT JOIN sitio_deposito sd ON s.id_sitio = sd.id_sitio
             LEFT JOIN actividad_seg_terreno ast ON s.id_seguimiento_terreno = ast.id_seguimiento_terreno
-            LEFT JOIN actividad_terreno at ON ast.id_actividad_terreno = at.id_actividad_terreno
+            LEFT JOIN actividad_terreno at ON ast.id_actividad_terreno = at.id_actividad_terreno 
+                                        AND at.id_estado = 1          -- Solo actividades activas
             WHERE r.nombre_rol IN ('Auxiliar Terreno', 'Coordinador Terreno')
             GROUP BY 
                 s.id_seguimiento_terreno, 
@@ -78,7 +79,7 @@
         $sql2 = "SELECT * from estado";
         $estados = $obj->select($sql2);
 
-        $sql3 = "SELECT * from actividad_terreno";
+        $sql3 = "SELECT * from actividad_terreno WHERE id_estado = 1";
         $actividades = $obj->select($sql3);
         
         include_once '../view/partials/SeguimientoTerreno/Registrar.php';
@@ -194,7 +195,7 @@ public function getEditar()
         $sql3 = "SELECT * from estado";
             $estados = $obj->select($sql3);
 
-            $sql4 = "SELECT * from actividad_terreno";
+            $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1";
         $actividades = $obj->select($sql4);
 
         
@@ -418,10 +419,10 @@ public function getSitios(){
     
     $obj = new SeguimientoTerrenoModel();
     
-    $sql = "SELECT id_sitio_deposito, nombre from sitio_deposito WHERE id_sitio = $1";
+    $sql = "SELECT id_sitio_deposito, codigo_sitio_deposito from sitio_deposito WHERE id_sitio = $1";
     $terreno = $obj->select($sql,[$id_sitio]);
     
-    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1";
+    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1 AND id_rol = 5";
     $usuarios = $obj->select($sql2,[$id_sitio]);
     
     $resultado = [

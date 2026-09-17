@@ -31,7 +31,8 @@ if (count($resul) <= 0) {
     include_once '../view/partials/Sitios/notExist.php';
 } else {
 ?>
-
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Sitios</h3>
     <div class="d-flex justify-content-end w-100">
         <div class="input-group" style="max-width: 350px;">
             <form class="input-group" action="index.php" method="GET">
@@ -46,6 +47,7 @@ if (count($resul) <= 0) {
                 </button>
             </form>
         </div>
+    </div>
     </div>
 
     <?php

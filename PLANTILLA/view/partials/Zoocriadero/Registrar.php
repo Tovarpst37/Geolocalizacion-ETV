@@ -97,8 +97,12 @@
     <div class="mb-4">
     <label class="form-label">Auxiliares asignados</label>
 
-    <div class="border rounded p-3 overflow-auto" style="max-height: 250px;">
-        <?php foreach ($auxi as $usu): ?>
+    
+      <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+    <?php if (empty($auxi)){ ?>
+    <p class="text-muted">No hay auxiliares disponibles</p>
+<?php }else{ ?>
+        <?php foreach ($auxi as $usu){ ?>
             <div class="form-check">
                 <input class="form-check-input" type="checkbox"
                        name="usuarios_asignados[]"
@@ -112,7 +116,8 @@
                                $usu['segundo_apellido']; ?>
                 </label>
             </div>
-        <?php endforeach; ?>
+        <?php };
+        }; ?>
     </div>
 </div>
 

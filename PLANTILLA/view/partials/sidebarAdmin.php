@@ -1,64 +1,24 @@
 <style>
-  :root {
-    --sb-dark: #000687;
-    --sb-primary: #0339A6;
-    --sb-accent: #0B79D9;
-    --sb-secondary: #3270A6;
-    --sb-light: #7AA5BF;
-  }
+.sidebar{
+  width: 256px;
+  height: 100vh;
+  background-color: #fff;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
 
-  .sidebar {
-    background: linear-gradient(180deg, var(--sb-dark) 0%, var(--sb-primary) 55%, var(--sb-secondary) 100%);
-  }
+}
 
-  .sidebar .nav-section .text-section {
-    color: var(--sb-light);
-    letter-spacing: .5px;
-    font-weight: 600;
-  }
+.logo-header{
+  gap: 10;
+  width: 256px;
+  background-color: #0B79D9;
+  border-top-right-radius: 20px;
+}
 
-  .sidebar .nav-item>a {
-    color: #ffffff;
-  }
-
-  .sidebar .nav-item>a i.fas {
-    color: var(--sb-light);
-    width: 22px;
-    text-align: center;
-  }
-
-  .sidebar .nav-item>a:hover,
-  .sidebar .nav-item>a:hover i.fas {
-    color: #ffffff;
-    background-color: var(--sb-accent);
-    border-radius: 6px;
-  }
-
-  .sidebar .nav-collapse .sub-item {
-    color: #dbe7f5;
-  }
-
-  .sidebar .nav-collapse a:hover .sub-item {
-    color: #ffffff;
-  }
-
-  .sub-item-pending {
-    opacity: .6;
-  }
-
-  .badge-pending {
-    font-size: 10px;
-    background: var(--sb-accent);
-    color: #fff;
-    border-radius: 10px;
-    padding: 1px 6px;
-    margin-left: 6px;
-  }
 </style>
-
-<div class="sidebar" data-background-color="dark">
+<div class="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-header" data-background-color="dark">
+    <div class="logo-header">
       <a href="index.php" class="logo">
         <img src="assets/img/LogoProye.png" alt="navbar brand" class="navbar-brand"
           style="width: 80px; height: 55px; border-radius: 50%; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast;" />
@@ -368,7 +328,7 @@
           </a>
           <div class="collapse" id="HistorialTerreno">
             <ul class="nav nav-collapse">
-              <li><a href="<?php echo getUrl("HistorialTerreno", "HistorialTerreno", "getRegistrar") ?>"><span
+              <li><a href="<?php echo getUrl("HistorialTerreno", "HistorialTerreno", "getConsultar") ?>"><span
                     class="sub-item">Consultar Historial</span></a></li>
             </ul>
           </div>

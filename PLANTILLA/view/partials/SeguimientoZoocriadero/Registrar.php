@@ -10,7 +10,8 @@
 
           <div class="mb-3">
             <label for="codigo_tanque" class="form-label">Codigo del Seguimiento</label>
-            <input type="text" class="form-control" id="codigo_Seguimiento" name="codigo_Seguimiento" placeholder="Ej: ZOO-MELENDEZ-02" required>
+            <input type="text" class="form-control" id="codigo_Seguimiento" name="codigo_Seguimiento" value = "SEGUIMIENTO# <?php echo $id_seg[0]['max'] + 1;  ?>" disabled>
+            
           </div>
 
           <div class="mb-4">
@@ -69,7 +70,10 @@
 
           <div class="mb-4">
               <label class="form-label">Actividades a realizar</label>
-              
+              <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+    <?php if (empty($actividades)){ ?>
+    <p class="text-muted">No hay actividades disponibles</p>
+<?php }else{ ?>
               <?php foreach($actividades as $act){ ?>
                   <div class="form-check">
                       <input class="form-check-input" type="checkbox" name="actividades[]"  style="width: 1.5em; height: 1.5em;"
@@ -79,7 +83,9 @@
                           <?php echo $act['nombre_actividad']; ?>
                       </label>
                   </div>
-              <?php } ?>
+              <?php };
+              }; ?>
+          </div>
           </div>
 
           

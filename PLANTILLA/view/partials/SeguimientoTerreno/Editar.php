@@ -1,4 +1,5 @@
-<div class="modal show" tabindex="-1" style="display:block;">
+<div class="modal show z-2" tabindex="-1"
+  style="display: block; top: 70px; height: calc(100% - 70px); left: 250px; width: calc(100% - 250px);">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <form action="<?php echo getUrl('SeguimientoTerreno', 'SeguimientoTerreno', 'postUpdate'); ?>" method="POST">
@@ -42,19 +43,24 @@
    
     $selectedIds = array_column($actividadesSelect, 'id_actividad_terreno');
     ?>
-    
+    <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+    <?php if (empty($actividades)){ ?>
+    <p class="text-muted">No hay actividades disponibles</p>
+<?php }else{ ?>
     <?php foreach($actividades as $act){ ?>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="actividades[]" style="width: 1.5em; height: 1.5em;"
+            <input class="form-check-input" type="checkbox" name="actividades[]" 
+                   style="width: 1.5em; height: 1.5em;"
                    value="<?php echo $act['id_actividad_terreno']; ?>" 
                    id="act<?php echo $act['id_actividad_terreno']; ?>"
                    <?php echo in_array($act['id_actividad_terreno'], $selectedIds) ? 'checked' : ''; ?>>
             <label class="form-check-label" for="act<?php echo $act['id_actividad_terreno']; ?>">
                 <?php echo $act['nombre_actividad']; ?>
-               
             </label>
         </div>
-    <?php } ?>
+    <?php }; ?>
+<?php }; ?>
+</div>
 </div>
 
             <div class="mb-4">
