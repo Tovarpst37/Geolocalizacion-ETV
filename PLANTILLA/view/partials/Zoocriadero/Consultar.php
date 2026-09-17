@@ -24,7 +24,8 @@
 <?php endif; ?>
 
 
-
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Zoocriaderos</h3>
 <div class="d-flex justify-content-end w-100">
     <div class="input-group" style="max-width: 350px;">
 <form class="input-group" action="index.php" method="GET">
@@ -38,6 +39,7 @@
         <i class="fa fa-search"></i>
     </button>
 </form>
+</div>
 </div>
 </div>
 

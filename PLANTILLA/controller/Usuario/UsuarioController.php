@@ -194,5 +194,85 @@
          redirect(getUrl("Usuario","Usuario","getUsuario"));
       }
 
+
+      public function getBuscar(){
+          $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+          $palabra = $_GET['busqueda'];
+          $obj = new UsuarioModel();
+         if(!empty($busqueda)){
+            
+          
+         
+         $sql1 = "SELECT * FROM tipo_documento";
+         $sql2 = "SELECT * FROM genero";
+         $sql3 = "SELECT * FROM rol";
+         $sql4 = "SELECT * FROM rh";
+         $tipo_documento = $obj->select($sql1);
+         $genero = $obj->select($sql2);
+         $rol = $obj->select($sql3);
+         $rh = $obj->select($sql4);
+
+         $sql = "SELECT u.id_usuario, u.primer_nombre, u.segundo_nombre,
+            u.primer_apellido, u.segundo_apellido,
+            u.id_tipo_documento,
+            td.nombre_documento AS tipo_documento,
+            u.documento, u.fecha_nacimiento, u.correo,
+            u.id_genero,
+            g.nombre_genero AS genero_usuario,
+            u.id_rol,
+            r.nombre_rol AS rol_usuario,
+            u.id_rh,
+            rh.nombre_rh AS rh_usuario,
+            u.id_estado
+         FROM usuarios u
+         INNER JOIN tipo_documento td ON u.id_tipo_documento = td.id_tipo_documento
+         INNER JOIN genero g ON u.id_genero = g.id_genero
+         INNER JOIN rol r ON u.id_rol = r.id_rol
+         INNER JOIN rh ON u.id_rh = rh.id_rh
+         WHERE u.documento ILIKE $1
+         ORDER BY u.id_usuario";
+
+         $usuarios = $obj->select($sql, ['%' . $busqueda . '%']);
+
+         
+            include_once '../view/usuario/list.php';
+      
+         }else{
+            $sql1 = "SELECT * FROM tipo_documento";
+         $sql2 = "SELECT * FROM genero";
+         $sql3 = "SELECT * FROM rol";
+         $sql4 = "SELECT * FROM rh";
+         $tipo_documento = $obj->select($sql1);
+         $genero = $obj->select($sql2);
+         $rol = $obj->select($sql3);
+         $rh = $obj->select($sql4);
+
+         $sql = "SELECT u.id_usuario, u.primer_nombre, u.segundo_nombre,
+            u.primer_apellido, u.segundo_apellido,
+            u.id_tipo_documento,
+            td.nombre_documento AS tipo_documento,
+            u.documento, u.fecha_nacimiento, u.correo,
+            u.id_genero,
+            g.nombre_genero AS genero_usuario,
+            u.id_rol,
+            r.nombre_rol AS rol_usuario,
+            u.id_rh,
+            rh.nombre_rh AS rh_usuario,
+            u.id_estado
+         FROM usuarios u
+         INNER JOIN tipo_documento td ON u.id_tipo_documento = td.id_tipo_documento
+         INNER JOIN genero g ON u.id_genero = g.id_genero
+         INNER JOIN rol r ON u.id_rol = r.id_rol
+         INNER JOIN rh ON u.id_rh = rh.id_rh
+         ORDER BY u.id_usuario";
+
+         $usuarios = $obj->select($sql);
+
+         
+            include_once '../view/usuario/list.php';
+         
+         }
+      }
+
    }
 ?>
