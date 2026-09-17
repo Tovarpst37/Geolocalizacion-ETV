@@ -352,9 +352,6 @@ class SitiosController
         if (empty($estado)) {
             $errores[] = "Debe seleccionar un estado.";
         }
-        if (empty($id_coor)) {
-            $errores[] = "Debe seleccionar un coordinador.";
-        }
 
         $nombre_validar = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u';
         if (!empty($nombre) && !preg_match($nombre_validar, $nombre)) {
@@ -425,10 +422,11 @@ class SitiosController
 
         if ($cont == 1) {
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
-            $this->postUpdate((int) $id, $nombre, $direccion, $barrio, $estado, (int) $id_coor, $usuarios_asignados, $obj);
+            $id_coor_final = !empty($id_coor) ? (int) $id_coor : null;
+            $this->postUpdate((int) $id, $nombre, $direccion, $barrio, $estado, $id_coor_final, $usuarios_asignados, $obj);
         }
     }
-    public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado, int $id_coor, array $auxiliares, SitiosModel $obj)
+    public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado, ?int $id_coor, array $auxiliares, SitiosModel $obj)
     {
         $sql = "UPDATE sitio SET 
         nombre_sitio = '$nombre',
@@ -441,14 +439,15 @@ class SitiosController
 
         if ($ejecutar) {
 
-
+            
             $sql_liberar = "UPDATE usuarios SET id_sitio = NULL WHERE id_sitio = $id";
             $obj->update($sql_liberar);
 
-
-            $sql_coor = "UPDATE usuarios SET id_sitio = $id WHERE id_usuario = $id_coor";
-            $obj->update($sql_coor);
-
+           
+            if (!empty($id_coor)) {
+                $sql_coor = "UPDATE usuarios SET id_sitio = $id WHERE id_usuario = $id_coor";
+                $obj->update($sql_coor);
+            }
 
             if (!empty($auxiliares)) {
                 $ids_aux = implode(',', array_map('intval', $auxiliares));
