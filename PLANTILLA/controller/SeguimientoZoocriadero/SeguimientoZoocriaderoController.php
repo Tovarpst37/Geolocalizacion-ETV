@@ -64,6 +64,9 @@
         $sql = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql);
 
+        $sql3 = "SELECT MAX(id_seguimiento_zoo) FROM seguimiento_zoocriadero";
+        $id_seg = $obj->select($sql3);
+        
         $sql2 = "SELECT * from estado";
         $estados = $obj->select($sql2);
 
