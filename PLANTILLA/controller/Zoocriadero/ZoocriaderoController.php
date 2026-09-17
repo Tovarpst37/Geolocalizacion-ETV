@@ -22,7 +22,7 @@ class ZoocriaderoController
 
         $coord = $obj->select($sql);
 
-        $sql2 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero IS null";
+        $sql2 = "SELECT * from usuarios WHERE id_rol = 4 AND id_zoocriadero IS null";
         $auxi = $obj->select($sql2);
 
         include_once '../model/Direcciones/direcciones.php';
@@ -270,10 +270,10 @@ class ZoocriaderoController
         $sql7 = "SELECT * from usuarios WHERE id_rol = 2 AND id_zoocriadero = $1";
         $coordS = $obj->select($sql7,[$id]);
 
-        $sql2 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero IS null";
+        $sql2 = "SELECT * from usuarios WHERE id_rol = 4 AND id_zoocriadero IS null";
         $auxi = $obj->select($sql2);
 
-        $sql8 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero = $1";
+        $sql8 = "SELECT * from usuarios WHERE id_rol = 4 AND id_zoocriadero = $1";
         $auxiS = $obj->select($sql8,[$id]);
 
         $sql9 = "SELECT * from zoocriadero WHERE id_zoocriadero = $1";

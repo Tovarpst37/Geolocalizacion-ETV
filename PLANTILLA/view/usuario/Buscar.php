@@ -12,7 +12,7 @@ include_once '../view/usuario/disable.php';
           <input type="hidden" name="controlador" value="Usuario">
           <input type="hidden" name="funcion" value="getBuscar">
 
-          <input type="text" name="busqueda" placeholder="Search ..." class="form-control" value="<?php echo htmlspecialchars($palabra ?? ''); ?>">
+          <input type="text" name="busqueda" placeholder="Search ..." class="form-control"  value = "<?php echo $palabra; ?>"/>
 
           <button type="submit" class="btn btn-outline-secondary">
             <i class="fa fa-search"></i>
@@ -22,6 +22,7 @@ include_once '../view/usuario/disable.php';
     </div>
 </div>
 
+<?php if(!empty($usuarios)){?>
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
@@ -96,11 +97,22 @@ include_once '../view/usuario/disable.php';
                             <?php endif; ?>
                         </td>
                     </tr>
-                <?php } ?>
+                <?php }}else{
+
+    ?>
+    <div class="text-center text-muted py-5 mt-5">
+        <i class="fa fa-search fa-2x mb-3"></i>
+        <p class="mb-3">No se encontraron resultados</p>
+    </div>
+    <?php
+    } ?> 
                 </tbody>
+                
             </table>
         </div>
     </div>
 </div>
+
+
 
 <script src="../view/usuario/js/list.js"></script>

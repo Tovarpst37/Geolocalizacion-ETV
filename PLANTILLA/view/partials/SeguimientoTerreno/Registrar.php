@@ -107,12 +107,12 @@ document.querySelector('#select_ter').addEventListener('change', function(e){
             const selectTerreno = document.querySelector('#selectTerreno');
             
             if(data.terreno.length === 0){
-                selectTerreno.innerHTML = '<option value="">No hay depósitos disponibles</option>';
+                selectTerreno.innerHTML = '<option value="">No hay terreno disponibles</option>';
                 selectTerreno.disabled = true;
             } else {
                 let opcionesTerreno = '';
                 data.terreno.forEach(terreno => {
-                    opcionesTerreno += `<option value="${terreno.id_sitio_deposito}">${terreno.nombre}</option>`;
+                    opcionesTerreno += `<option value="${terreno.id_sitio_deposito}">${terreno.codigo_sitio_deposito}</option>`;
                 });
                 selectTerreno.innerHTML = opcionesTerreno;
                 selectTerreno.disabled = false;

@@ -43,7 +43,7 @@ class TanqueController
     {
         $obj = new TanqueModel();
         $cont = 0;
-        $codigo = $_POST['codigo_tanque'] ?? '';
+        $codigo = mb_strtoupper($_POST['codigo_tanque'] ?? '');
         $tipo = $_POST['id_tipo_tanque'] ?? '';
         $zoocriadero = $_POST['id_zoocriadero'] ?? '';
         $estado = $_POST['id_estado'] ?? '';

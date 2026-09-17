@@ -16,9 +16,9 @@
 
 
                     <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Numero de Documento</label>
+                        <label for="documen" class="form-label">Número de documento</label>
                         <input type="text" class="form-control" id="documen" name="documen"
-                            placeholder="Ingrese el codigo del seguimiento" required>
+                            value="<?php echo $documentoSesion; ?>" readonly required>
                     </div>
 
                     <div class="mb-3">
