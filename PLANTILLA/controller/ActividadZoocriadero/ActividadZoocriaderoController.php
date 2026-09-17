@@ -13,58 +13,73 @@ class ActividadZoocriaderoController
         include_once '../view/partials/ActividadZoocriadero/Registrar.php';
     }
 
-    public function validarRegistro(){
+    public function validarRegistro()
+    {
 
-        $obj= new ActividadZoocriaderoModel();
+        $obj = new ActividadZoocriaderoModel();
 
-        $cont=0;
+        $cont = 0;
 
-        $id= $_POST['id']??'';
-        $codigo = mb_strtoupper($_POST['cod_actividad']??'');
-        $nombre = $_POST['nombre_actividad']??'';
+        $id = $_POST['id'] ?? '';
+        $codigo = mb_strtoupper($_POST['cod_actividad'] ?? '');
+        $nombre = $_POST['nombre_actividad'] ?? '';
 
-        $errores=[];
+        $errores = [];
 
-        $sql_validar ="SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE cod_actividad=$1";
+        $sql_validar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE cod_actividad=$1";
 
-        $validar_exist= $obj -> select($sql_validar,[$codigo]);
+        $validar_exist = $obj->select($sql_validar, [$codigo]);
 
-        if(count($validar_exist)>0) {
-            $errores[]="Ya existe uan actividad con este codigo";
+        if (count($validar_exist) > 0) {
+            $errores[] = "Ya existe uan actividad con este codigo";
         }
 
-        if(empty($codigo)) {
-            $errores[]= "El codigo de la actividad es obligatoria";
+        if (empty($codigo)) {
+            $errores[] = "El codigo de la actividad es obligatoria";
         }
 
-        if(empty($nombre)){
-            $errores[]="El nombre de la actividad es obligatoria";
+        if (empty($nombre)) {
+            $errores[] = "El nombre de la actividad es obligatoria";
         }
 
 
-        $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
-        if (!empty($codigo) && !preg_match($codigo_validar, $codigo)) {
-            $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
+        if (!empty($codigo)) {
+
+            if (substr($codigo, 0, 2) !== 'AZ') {
+
+                $errores[] = "Las primeras dos letras del codigo deben ser: AZ";
+            }
+
+            if (substr($codigo, 2, 1) !== '-') {
+
+                $errores[] = "El codigo debe contener un guion, como el siguiente Ejemplo: 'AZ-'";
+            }
+
+            $resto_codigo = substr($codigo, 3);
+
+            // Validar que la parte restante sea EXACTAMENTE 3 números (ni más, ni menos)
+            if (!preg_match('/^\d{3}$/', $resto_codigo)) {
+                $errores[] = "El código debe contener una cantidad exacta de 3 números, como el siguiente Ejemplo: 'AZ-001'";
+            }
         }
 
-        if(!empty($errores)){
+        if (!empty($errores)) {
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError($errores, getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getRegistrar', array('id' => $id)));
             return;
-        }else{
-            $cont=1;
+        } else {
+            $cont = 1;
         }
 
-        if($cont==1){
-            $this ->postRegistrar($obj);
+        if ($cont == 1) {
+            $this->postRegistrar($obj);
         }
-
     }
 
     public function postRegistrar(ActividadZoocriaderoModel $obj)
     {
 
-        
+
 
         $codigo = mb_strtoupper($_POST['cod_actividad']);
         $nombre = $_POST['nombre_actividad'];
@@ -73,7 +88,7 @@ class ActividadZoocriaderoController
         $sql = "INSERT INTO actividad_zoocriadero (cod_actividad, nombre_actividad, id_estado) VALUES
     ($1,$2,$3)";
 
-        $ejecutar = $obj->insert($sql,[$codigo, $nombre, $estado]);
+        $ejecutar = $obj->insert($sql, [$codigo, $nombre, $estado]);
 
         if ($ejecutar) {
             redirect(getUrl("ActividadZoocriadero", "ActividadZoocriadero", "getConsultar"));
@@ -169,114 +184,124 @@ class ActividadZoocriaderoController
     }
 
 
-    public function getEditar() {
+    public function getEditar()
+    {
 
-        $obj= new ActividadZoocriaderoModel();
+        $obj = new ActividadZoocriaderoModel();
 
-        $id=$_GET['id'];
+        $id = $_GET['id'];
 
-        $sql= "SELECT * FROM actividad_zoocriadero WHERE id_actividad_zoo=$1";
-        $datos= $obj->select($sql, [$id]);
-        
+        $sql = "SELECT * FROM actividad_zoocriadero WHERE id_actividad_zoo=$1";
+        $datos = $obj->select($sql, [$id]);
+
         include_once '../view/partials/ActividadZoocriadero/Editar.php';
     }
 
 
 
-    public function validarUpdate(){
+    public function validarUpdate()
+    {
 
-        $obj= new ActividadZoocriaderoModel();
+        $obj = new ActividadZoocriaderoModel();
 
-        $cont=0;
+        $cont = 0;
 
-        $id= $_POST['id']??'';
-        $codigo = mb_strtoupper($_POST['cod_actividad']??'');
-        $nombre = $_POST['nombre_actividad']??'';
+        $id = $_POST['id'] ?? '';
+        $codigo = mb_strtoupper($_POST['cod_actividad'] ?? '');
+        $nombre = $_POST['nombre_actividad'] ?? '';
 
-        $errores=[];
+        $errores = [];
 
-        $sql_validar ="SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE id_actividad_zoo=$1 
-        AND cod_actividad=$2";
+        $sql_validar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE id_actividad_zoo =$1 
+        AND cod_actividad =$2";
 
-        $validar_exist= $obj -> select($sql_validar,[$id,$codigo]);
+        $validar_exist = $obj->select($sql_validar, [$id, $codigo]);
 
-        if(count($validar_exist)>0) {
-            $errores[]="Ya existe uan actividad con este codigo";
+        if (count($validar_exist) > 0) {
+            $errores[] = "Ya existe uan actividad con este codigo";
         }
 
-        if(empty($codigo)) {
-            $errores[]= "El codigo de la actividad es obligatoria";
+        if (empty($codigo)) {
+            $errores[] = "El codigo de la actividad es obligatoria";
         }
 
-        if(empty($nombre)){
-            $errores[]="El nombre de la actividad es obligatoria";
+        if (empty($nombre)) {
+            $errores[] = "El nombre de la actividad es obligatoria";
         }
 
 
-        $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
-        if (!empty($codigo) && !preg_match($codigo_validar, $codigo)) {
-            $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
+
+        
+        if (!empty($codigo)) {
+
+            if (substr($codigo, 0, 2) !== 'AZ') {
+
+                $errores[] = "Las primeras dos letras del codigo deben ser: AZ";
+            }
+
+            if (substr($codigo, 2, 1) !== '-') {
+
+                $errores[] = "El codigo debe contener un guion, como el siguiente Ejemplo: 'AZ-'";
+            }
+
+            $resto_codigo = substr($codigo, 3);
+
+            // Validar que la parte restante sea EXACTAMENTE 3 números (ni más, ni menos)
+            if (!preg_match('/^\d{3}$/', $resto_codigo)) {
+                $errores[] = "El código debe contener una cantidad exacta de 3 números, como el siguiente Ejemplo: 'AZ-001'";
+            }
         }
 
-        if(!empty($errores)){
+        if (!empty($errores)) {
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError($errores, getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEditar', array('id' => $id)));
             return;
-        }else{
-            $cont=1;
+        } else {
+            $cont = 1;
         }
 
-        if($cont==1){
-            $this ->postUpdate($obj);
+        if ($cont == 1) {
+            $this->postUpdate($obj);
         }
-
-
-
-
     }
 
-    public function postUpdate(ActividadZoocriaderoModel $obj){
+    public function postUpdate(ActividadZoocriaderoModel $obj)
+    {
 
-        
+
         $codigo = mb_strtoupper($_POST['cod_actividad']);
         $nombre = $_POST['nombre_actividad'];
-        $id= $_POST['id'];
+        $id = $_POST['id'];
 
         $sql = "UPDATE actividad_zoocriadero SET cod_actividad = $1, nombre_actividad = $2 WHERE id_actividad_zoo = $3";
 
-        $ejecutar= $obj->update($sql,[$codigo,$nombre,$id]);
+        $ejecutar = $obj->update($sql, [$codigo, $nombre, $id]);
 
-        if($ejecutar){
-            $_SESSION['mensaje_exito'] ="la Actividad se actualizó correctamente.";
+        if ($ejecutar) {
+            $_SESSION['mensaje_exito'] = "la Actividad se actualizó correctamente.";
             redirect(getUrl("ActividadZoocriadero", "ActividadZoocriadero", "getConsultar"));
         } else {
             echo "No se pudo Actualizar la actividad";
         }
-
-        
-
     }
 
 
-    public function getBuscar(){
+    public function getBuscar()
+    {
 
-    $tex= $_GET['busqueda']??'';
-    $obj =new ActividadZoocriaderoModel();
-    $busqueda= mb_strtoupper($tex);
-    $valor="%$busqueda%";
+        $tex = $_GET['busqueda'] ?? '';
+        $obj = new ActividadZoocriaderoModel();
+        $busqueda = mb_strtoupper($tex);
+        $valor = "%$busqueda%";
 
-    $sql = "SELECT a.id_actividad_zoo, a.cod_actividad, a.nombre_actividad,
+        $sql = "SELECT a.id_actividad_zoo, a.cod_actividad, a.nombre_actividad,
     e.nombre_estado FROM actividad_zoocriadero a
     INNER JOIN estado e ON  a.id_estado= e.id_estado
     WHERE UPPER(a.cod_actividad) LIKE $1 
     OR UPPER(a.nombre_actividad) LIKE $1";
-    
-    $actividad2 = $obj ->select($sql,[$valor]);
 
-    include_once "../view/partials/ActividadZoocriadero/Busqueda.php";
-        
+        $actividad2 = $obj->select($sql, [$valor]);
+
+        include_once "../view/partials/ActividadZoocriadero/Busqueda.php";
     }
-
 }
-
-?>
