@@ -210,6 +210,26 @@ class ActividadZoocriaderoController
 
     }
 
+
+    public function getBuscar(){
+
+    $tex= $_GET['busqueda']??'';
+    $obj =new ActividadZoocriaderoModel();
+    $busqueda= mb_strtoupper($tex);
+    $valor="%$busqueda%";
+
+    $sql = "SELECT a.id_actividad_zoo, a.cod_actividad, a.nombre_actividad,
+    e.nombre_estado FROM actividad_zoocriadero a
+    INNER JOIN estado e ON  a.id_estado= e.id_estado
+    WHERE UPPER(a.cod_actividad) LIKE $1 
+    OR UPPER(a.nombre_actividad) LIKE $1";
+    
+    $actividad2 = $obj ->select($sql,[$valor]);
+
+    include_once "../view/partials/ActividadZoocriadero/Busqueda.php";
+        
+    }
+
 }
 
 ?>
