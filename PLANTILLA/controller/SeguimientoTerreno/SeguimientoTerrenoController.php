@@ -21,7 +21,7 @@
                 s.hora_fin,
                 s.id_estado,
                 si.nombre_sitio,
-                sd.nombre AS cod_terreno,
+                sd.codigo_sitio_deposito AS cod_terreno,
                 u.primer_nombre,
                 u.primer_apellido,
                 STRING_AGG(at.nombre_actividad, ', ') AS actividades
@@ -41,7 +41,7 @@
                 s.hora_fin, 
                 s.id_estado, 
                 si.nombre_sitio,
-                sd.nombre,
+                sd.codigo_sitio_deposito,
                 u.primer_nombre, 
                 u.primer_apellido
             ORDER BY s.id_seguimiento_terreno";
@@ -327,7 +327,7 @@ public function getBuscar(){
                 s.hora_fin,
                 s.id_estado,
                 si.nombre_sitio,
-                sd.nombre AS cod_terreno,
+                sd.codigo_sitio_deposito AS cod_terreno,
                 u.primer_nombre,
                 u.primer_apellido,
                 STRING_AGG(at.nombre_actividad, ', ') AS actividades
