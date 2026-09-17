@@ -15,7 +15,7 @@ class Sitios
         $this->direccion = $direccion;
         $this->barrio = $barrio;
         $this->estado = $estado;
-    }
+    }   
 
     public function postUpdate()
     {

@@ -22,7 +22,7 @@ class ZoocriaderoController
 
         $coord = $obj->select($sql);
 
-        $sql2 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero IS null";
+        $sql2 = "SELECT * from usuarios WHERE id_rol = 4 AND id_zoocriadero IS null";
         $auxi = $obj->select($sql2);
 
         include_once '../model/Direcciones/direcciones.php';
@@ -188,20 +188,37 @@ class ZoocriaderoController
         $sql = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql);
 
+        if(count($zoocriaderos) <= 0){
+
+        include_once '../view/partials/Zoocriadero/notExist.php';
+        }else{
+
         include_once '../view/partials/Zoocriadero/Consultar.php';
+        }
     }
 
 
     public function getBuscar()
     {
+    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
 
-    $palabra = $_GET['busqueda'] ?? '';
+    
+    if(!empty($busqueda)){
+        $palabra = $_GET['busqueda'] ?? '';
+        $obj = new ZoocriaderoModel();
+        $sql = "SELECT * from zoocriadero WHERE cod_zoocriadero ILIKE $1";
+        $zoocriaderos =  $obj->select($sql, ['%' . $busqueda . '%']);
+
+
+        include_once "../view/partials/Zoocriadero/Busqueda.php";
+    }else{
         $obj = new ZoocriaderoModel();
         $sql = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql);
 
-
-        include_once "../view/partials/Zoocriadero/Busqueda.php";
+        include_once '../view/partials/Zoocriadero/Consultar.php';
+        
+    }
     }
 
     public function postDelete()
@@ -253,10 +270,10 @@ class ZoocriaderoController
         $sql7 = "SELECT * from usuarios WHERE id_rol = 2 AND id_zoocriadero = $1";
         $coordS = $obj->select($sql7,[$id]);
 
-        $sql2 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero IS null";
+        $sql2 = "SELECT * from usuarios WHERE id_rol = 4 AND id_zoocriadero IS null";
         $auxi = $obj->select($sql2);
 
-        $sql8 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero = $1";
+        $sql8 = "SELECT * from usuarios WHERE id_rol = 4 AND id_zoocriadero = $1";
         $auxiS = $obj->select($sql8,[$id]);
 
         $sql9 = "SELECT * from zoocriadero WHERE id_zoocriadero = $1";
@@ -342,7 +359,7 @@ class ZoocriaderoController
         $datos = $obj->select($sql9, [$id]);
 
         include_once __DIR__ . '/../../model/Errores/ErrorModal.php';
-        ErrorModal::verError($errores, getUrl('Zoocriadero', 'Zoocriadero', 'getEdit', array('id' => $id)));
+        ErrorModal::verError($errores, getUrl('Zoocriadero', 'Zoocriadero', 'getEditar', array('id' => $id)));
 
         return;
     }

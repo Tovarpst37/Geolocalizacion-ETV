@@ -99,7 +99,7 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <p>¿Estás seguro de inhabilitar <?php echo $o->getNombre() ?></p>
+                                        <p>¿Estás seguro de inhabilitar?<?php echo $o->getNombre() ?></p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
@@ -119,7 +119,7 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <p>¿Estás seguro de habilitar <?php echo $o->getNombre() ?></p>
+                                        <p>¿Estás seguro de habilitar? <?php echo $o->getNombre() ?></p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>

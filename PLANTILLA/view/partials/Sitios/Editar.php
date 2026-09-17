@@ -117,6 +117,43 @@
                             </div>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="id_coor" class="form-label">Coordinador asignado <span class="text-danger">*</span></label>
+                            <select class="form-select" id="id_coor" name="id_coor" required>
+                                <option value="" selected disabled>Selecciona un coordinador</option>
+                                <?php foreach ($coord as $usu) {
+                                    $selected = (isset($coor_actual['id_usuario']) && $coor_actual['id_usuario'] == $usu['id_usuario']) ? "selected" : "";
+                                    echo "<option value='" . $usu['id_usuario'] . "' $selected>" .
+                                        $usu['primer_nombre'] . " " . $usu['segundo_nombre'] . " " .
+                                        $usu['primer_apellido'] . " " . $usu['segundo_apellido'] . "</option>";
+                                } ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Auxiliares asignados</label>
+                            <div class="border rounded p-3 overflow-auto" style="max-height: 250px;">
+                                <?php foreach ($auxi as $usu) {
+                                    $checked = in_array($usu['id_usuario'], $auxi_actuales ?? []) ? "checked" : "";
+                                ?>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                            name="usuarios_asignados[]"
+                                            value="<?php echo $usu['id_usuario']; ?>"
+                                            id="user<?php echo $usu['id_usuario']; ?>"
+                                            <?php echo $checked; ?>>
+
+                                        <label class="form-check-label" for="user<?php echo $usu['id_usuario']; ?>">
+                                            <?php echo $usu['primer_nombre'] . " " .
+                                                $usu['segundo_nombre'] . " " .
+                                                $usu['primer_apellido'] . " " .
+                                                $usu['segundo_apellido']; ?>
+                                        </label>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+
                         <div class="text-muted small mb-3"><span class="text-danger">*</span> Campos obligatorios</div>
 
                         <div class="d-grid">

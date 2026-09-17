@@ -10,8 +10,12 @@ class TanqueController
 
     public function getConsultar()
     {
+        
+            
+            include_once '../view/partials/Tanque/Consultar.php';
+        
 
-        include_once '../view/partials/Tanque/Consultar.php';
+        
     }
 
     public function getRegistrar()
@@ -29,6 +33,7 @@ class TanqueController
 
         $old = $_SESSION['old_input'] ?? [];
         unset($_SESSION['old_input']);
+        
 
         include_once '../view/partials/Tanque/Registrar.php';
     }
@@ -38,7 +43,7 @@ class TanqueController
     {
         $obj = new TanqueModel();
         $cont = 0;
-        $codigo = $_POST['codigo_tanque'] ?? '';
+        $codigo = mb_strtoupper($_POST['codigo_tanque'] ?? '');
         $tipo = $_POST['id_tipo_tanque'] ?? '';
         $zoocriadero = $_POST['id_zoocriadero'] ?? '';
         $estado = $_POST['id_estado'] ?? '';
@@ -339,29 +344,34 @@ class TanqueController
     public function getBuscar()
     {
 
+        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
 
+        if(!empty($busqueda)){ 
         $palabra = $_GET['busqueda'];
         $obj = new TanqueModel();
-        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        
 
 
         $sql = "SELECT 
-            t.id_tanque,
-            t.codigo_tanque,
-            t.img,
-            ti.nombre_tipo_tanque,
-            z.cod_zoocriadero,
-            z.direcciom,
-            est.nombre_estado
-            FROM tanque t
-            INNER JOIN tipo_tanque ti ON t.id_tipo_tanque = ti.id_tipo_tanque
-            INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
-            INNER JOIN estado est ON t.id_estado = est.id_estado
-            WHERE t.codigo_tanque ILIKE %$1%";
+                    t.id_tanque,
+                    t.codigo_tanque,
+                    t.img,
+                    ti.nombre_tipo_tanque,
+                    z.cod_zoocriadero,
+                    z.direcciom,
+                    est.nombre_estado
+                FROM tanque t
+                INNER JOIN tipo_tanque ti ON t.id_tipo_tanque = ti.id_tipo_tanque
+                INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
+                INNER JOIN estado est ON t.id_estado = est.id_estado
+                WHERE t.codigo_tanque ILIKE $1";
 
-        $tanque2 = $obj->select($sql,[$busqueda]);
+        $tanque2 = $obj->select($sql, ['%' . $busqueda . '%']);
 
         include_once "../view/partials/Tanque/Busqueda.php";
+        }else{
+            include_once '../view/partials/Tanque/Consultar.php';
+        }
     }
 
     public function getCant()
