@@ -13,25 +13,72 @@ class ActividadZoocriaderoController
         include_once '../view/partials/ActividadZoocriadero/Registrar.php';
     }
 
+    public function validarRegistro(){
 
-    public function postRegistrar()
+        $obj= new ActividadZoocriaderoModel();
+
+        $cont=0;
+
+        $id= $_POST['id']??'';
+        $codigo = mb_strtoupper($_POST['cod_actividad']??'');
+        $nombre = $_POST['nombre_actividad']??'';
+
+        $errores=[];
+
+        $sql_validar ="SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE cod_actividad=$1";
+
+        $validar_exist= $obj -> select($sql_validar,[$codigo]);
+
+        if(count($validar_exist)>0) {
+            $errores[]="Ya existe uan actividad con este codigo";
+        }
+
+        if(empty($codigo)) {
+            $errores[]= "El codigo de la actividad es obligatoria";
+        }
+
+        if(empty($nombre)){
+            $errores[]="El nombre de la actividad es obligatoria";
+        }
+
+
+        $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
+        if (!empty($codigo) && !preg_match($codigo_validar, $codigo)) {
+            $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
+        }
+
+        if(!empty($errores)){
+            include_once '../model/Errores/ErrorModal.php';
+            ErrorModal::verError($errores, getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getRegistrar', array('id' => $id)));
+            return;
+        }else{
+            $cont=1;
+        }
+
+        if($cont==1){
+            $this ->postRegistrar($obj);
+        }
+
+    }
+
+    public function postRegistrar(ActividadZoocriaderoModel $obj)
     {
 
-        $obj = new ActividadZoocriaderoModel();
+        
 
-        $codigo = $_POST['cod_actividad'];
+        $codigo = mb_strtoupper($_POST['cod_actividad']);
         $nombre = $_POST['nombre_actividad'];
         $estado = 1;
 
         $sql = "INSERT INTO actividad_zoocriadero (cod_actividad, nombre_actividad, id_estado) VALUES
-    ('$codigo','$nombre','$estado')";
+    ($1,$2,$3)";
 
-        $ejecutar = $obj->insert($sql);
+        $ejecutar = $obj->insert($sql,[$codigo, $nombre, $estado]);
 
         if ($ejecutar) {
             redirect(getUrl("ActividadZoocriadero", "ActividadZoocriadero", "getConsultar"));
         } else {
-            echo "No se pudo registrar la ciudad";
+            echo "No se pudo registrar la actividad";
         }
     }
 
