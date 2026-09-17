@@ -3,6 +3,13 @@ include_once '../model/Sitios/SitiosModel.php';
 
 class SitiosController
 {
+
+
+
+
+
+
+
     public function posDelete()
     {
         $id = $_GET['id'];
@@ -76,7 +83,7 @@ class SitiosController
         $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre'";
         $existe = $obj->select($sql_validar);
 
-        
+
         if (empty(trim($sufijo_via))) {
             $sufijo_via = '';
         }
@@ -92,10 +99,9 @@ class SitiosController
 
         $errores = [];
 
-        if(!empty($existe)){
+        if (!empty($existe)) {
             $errores[] = "Ya existe un sitio con ese nombre";
-            
-        } 
+        }
 
         if (empty($nombre)) {
             $errores[] = "El nombre es obligatorio.";
@@ -128,7 +134,7 @@ class SitiosController
 
 
         if (!empty($errores)) {
-            
+
             $sql2 = "SELECT * FROM barrio";
             $barrios = $obj->select($sql2);
 
@@ -160,7 +166,7 @@ class SitiosController
         $barrio = $barrio1;
         $estado = $estado1;
 
-        
+
 
         $sql = "INSERT INTO sitio (nombre_sitio, direccion, id_barrio, id_estado) 
         VALUES ('$nombre', '$direccion', $barrio, $estado)";
@@ -226,16 +232,16 @@ class SitiosController
         $cont = 0;
         $id = $_POST['id'] ?? '';
         $nombre = mb_strtoupper($_POST['nombre'] ?? '');
-            $via_principal = $_POST['via_principal'] ?? '';
-            $numero_via = $_POST['numero_via'] ?? '';
-            $via_generadora = $_POST['via_generadora'] ?? '';
-            $placa = $_POST['placa'] ?? '';
+        $via_principal = $_POST['via_principal'] ?? '';
+        $numero_via = $_POST['numero_via'] ?? '';
+        $via_generadora = $_POST['via_generadora'] ?? '';
+        $placa = $_POST['placa'] ?? '';
         $barrio = $_POST['barrio'] ?? '';
         $estado = $_POST['estado'] ?? '';
 
-         $sufijo_via = trim($_POST['sufijo_via'] ?? '');
-            $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
-            $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
+        $sufijo_via = trim($_POST['sufijo_via'] ?? '');
+        $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
+        $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
         $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre'";
         $existe = $obj->select($sql_validar);
@@ -243,10 +249,9 @@ class SitiosController
 
         $errores = [];
 
-        if(!empty($existe)){
+        if (!empty($existe)) {
             $errores[] = "Ya existe un sitio con ese nombre";
-            
-        } 
+        }
 
         if (empty($id)) {
             $errores[] = "No se identificó el sitio a editar.";
@@ -279,7 +284,7 @@ class SitiosController
         }
 
         if (!empty($errores)) {
-            
+
 
             $sql = "SELECT * from sitio WHERE id_sitio = $id";
             $datos = $obj->select($sql);
@@ -300,14 +305,12 @@ class SitiosController
 
         if ($cont == 1) {
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
-            $this->postUpdate($id, $nombre, $direccion, $barrio, $estado);
+            $this->postUpdate($id, $nombre, $direccion, $barrio, $estado, $obj);
         }
     }
 
-    public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado)
+    public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado, SitiosModel $obj)
     {
-        $obj = new SitiosModel();
-
         $sql = "UPDATE sitio SET 
         nombre_sitio = '$nombre',
         direccion = '$direccion',
@@ -324,17 +327,15 @@ class SitiosController
             echo "No se pudo actualizar el sitio";
         }
     }
-
-
     public function getBuscar()
     {
         $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
-        if(!empty($busqueda)){ 
-        $palabra = $_GET['busqueda'];
-        $obj = new SitiosModel();
-        
+        if (!empty($busqueda)) {
+            $palabra = $_GET['busqueda'];
+            $obj = new SitiosModel();
 
-        $sql = "SELECT 
+
+            $sql = "SELECT 
             s.id_sitio,
             s.nombre_sitio,
             s.direccion,
@@ -344,12 +345,11 @@ class SitiosController
         INNER JOIN barrio b ON s.id_barrio = b.id_barrio
         INNER JOIN estado e ON s.id_estado = e.id_estado 
         WHERE s.nombre_sitio ILIKE $1";
-        
-        $datos = $obj->select($sql, ['%' . $busqueda . '%']);
 
-        include_once "../view/partials/Sitios/Busqueda.php";
+            $datos = $obj->select($sql, ['%' . $busqueda . '%']);
 
-        }else{
+            include_once "../view/partials/Sitios/Busqueda.php";
+        } else {
             include_once '../view/partials/Sitios/Consultar.php';
         }
     }

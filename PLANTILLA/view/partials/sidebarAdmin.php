@@ -262,7 +262,7 @@
           <div class="collapse" id="Terreno">
             <ul class="nav nav-collapse">
               <li>
-                <a href="<?php echo getUrl("Terreno", "Terreno", "getRegistrar") ?>">
+                <a href="<?php echo getUrl("Terreno", "Terreno", "getCreate") ?>">
                   <span class="sub-item"> Registrar terreno</span>
                 </a>
               </li>

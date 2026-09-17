@@ -6,19 +6,19 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="<?php echo getUrl("Terrenos", "Terrenos", "validarRegistrar") ?>" method="POST">
+                <form action="<?php echo getUrl("Terreno", "Terreno", "validarRegistrar") ?>" method="POST">
 
                     <div class="mb-3">
-                        <label for="codigo_sitio_deposito" class="form-label">Código del sitio de depósito <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="codigo_sitio_deposito" name="codigo_sitio_deposito" placeholder="Ingresa el código del sitio de depósito" value="<?php echo $old['codigo_sitio_deposito'] ?? ''; ?>" required>
+                        <label for="codigo_sitio_deposito" class="form-label">Código de terreno <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="codigo_sitio_deposito" name="codigo_sitio_deposito" placeholder="Ingresa el código del terreno" value="<?php echo $old['codigo_sitio_deposito'] ?? ''; ?>" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="direccion" class="form-label">Dirección <span class="text-danger">*</span></label>
-                        <select class="form-select" id="direccion" name="direccion" required>
-                            <option value="" selected disabled>Selecciona una dirección</option>
-                            <?php foreach ($direcciones as $dir): ?>
-                                <option value="<?php echo $dir['id_direccion']; ?>" <?php echo (($old['direccion'] ?? '') == $dir['id_direccion']) ? 'selected' : ''; ?>><?php echo $dir['direccion_completa']; ?></option>
+                        <label for="nombre_sitio" class="form-label">Sitio <span class="text-danger">*</span></label>
+                        <select class="form-select" id="nombre_sitio" name="nombre_sitio" required>
+                            <option value="" selected disabled>Selecciona un sitio</option>
+                            <?php foreach ($sitios as $sit): ?>
+                                <option value="<?php echo $sit['id_sitio']; ?>" <?php echo (($old['nombre_sitio'] ?? '') == $sit['id_sitio']) ? 'selected' : ''; ?>><?php echo $sit['nombre_sitio']; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -28,7 +28,7 @@
                         <select class="form-select" id="nombre_tipo_deposito" name="nombre_tipo_deposito" required>
                             <option value="" selected disabled>Selecciona un tipo de depósito</option>
                             <?php foreach ($tipos_deposito as $tipo): ?>
-                                <option value="<?php echo $tipo['id_tipo_deposito']; ?>" <?php echo (($old['nombre_tipo_deposito'] ?? '') == $tipo['id_tipo_deposito']) ? 'selected' : ''; ?>><?php echo $tipo['nombre_tipo_deposito']; ?></option>
+                                <option value="<?php echo $tipo['id_tipo_deposito']; ?>" <?php echo (($old['nombre'] ?? '') == $tipo['id_tipo_deposito']) ? 'selected' : ''; ?>><?php echo $tipo['nombre']; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
