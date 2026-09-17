@@ -117,6 +117,17 @@
          $rol                 = $_POST['rol'];
          $rh                  = $_POST['rh'];
 
+
+         $sql = "SELECT id_zoocriadero, id_sitio FROM usuarios WHERE id_usuario = $1";
+         $sql2 = "SELECT id_rol FROM usuarios WHERE id_usuario = $1";
+
+         $rol_actual = $obj->select($sql2,[$id_usuario]);
+
+         $resultado = $obj->select($sql, [$id_usuario]);
+
+         if($rol_actual[0]['id_rol'] == $rol){
+
+
          $sql = "UPDATE usuarios SET
                   primer_nombre = '$primer_nombre',
                   segundo_nombre = '$segundo_nombre',
@@ -138,6 +149,39 @@
          }else{
             echo "Hubo un error al momento de actualizar";
          }
+         }else{
+         if($resultado[0]['id_zoocriadero'] == null && $resultado[0]['id_sitio'] == null){
+
+            $sql = "UPDATE usuarios SET
+                  primer_nombre = '$primer_nombre',
+                  segundo_nombre = '$segundo_nombre',
+                  primer_apellido = '$primer_apellido',
+                  segundo_apellido = '$segundo_apellido',
+                  id_tipo_documento = $tipo_documento,
+                  documento = '$documento',
+                  fecha_nacimiento = '$fecha_nacimiento',
+                  correo = '$correo_electronico',
+                  id_genero = $genero,
+                  id_rol = $rol,
+                  id_rh = $rh
+               WHERE id_usuario = $id_usuario";
+
+         $ejecutar = $obj->update($sql);
+
+         if($ejecutar){
+            redirect(getUrl("Usuario","Usuario","getUsuario"));
+         }else{
+            echo "Hubo un error al momento de actualizar";
+         }
+         }
+         else{
+            
+
+            $errores[] = "Este usuario esta activo en un zoocriadero o sitio no puedes modificar su rol.";
+            include_once '../model/Errores/ErrorModal.php';
+            ErrorModal::verError($errores, getUrl('Usuario', 'Usuario', 'getUsuario'));
+         }
+      }
       }
 
       public function postCambiarEstado(){
