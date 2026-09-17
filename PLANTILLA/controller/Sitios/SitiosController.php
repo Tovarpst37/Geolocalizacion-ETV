@@ -41,8 +41,126 @@ class SitiosController
 
 
     public function getCreate2()
-    {
-        $obj = new SitiosModel();
+{
+    $obj = new SitiosModel();
+
+    $sql2 = "SELECT * FROM barrio";
+    $barrios = $obj->select($sql2);
+
+    $sql3 = "SELECT * from estado";
+    $estados = $obj->select($sql3);
+
+    $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
+              FROM usuarios 
+              WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
+    $coord = $obj->select($sql4);
+
+    $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
+              FROM usuarios 
+              WHERE id_rol = 5 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
+    $auxi = $obj->select($sql5);
+
+    include_once '../model/Direcciones/direcciones.php';
+
+    $old = $_SESSION['old_input'] ?? [];
+    unset($_SESSION['old_input']);
+
+    include_once '../view/partials/Sitios/Registrar.php';
+}
+
+    public function validarRegistrar()
+{
+    $obj = new SitiosModel();
+    $_SESSION['old_input'] = $_POST;
+    $cont = 0;
+    $nombre = mb_strtoupper($_POST['nombre'] ?? '');
+    $via_principal = $_POST['via_principal'] ?? '';
+    $numero_via = $_POST['numero_via'] ?? '';
+    $via_generadora = $_POST['via_generadora'] ?? '';
+    $placa = $_POST['placa'] ?? '';
+    $barrio = $_POST['barrio'] ?? '';
+    $estado = $_POST['estado'] ?? '';
+    $id_coor = $_POST['id_coor'] ?? '';
+    $usuarios_asignados = $_POST['usuarios_asignados'] ?? [];
+
+    $sufijo_via = trim($_POST['sufijo_via'] ?? '');
+    $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
+    $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
+
+    $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre'";
+    $existe = $obj->select($sql_validar);
+
+    if (empty(trim($sufijo_via))) {
+        $sufijo_via = '';
+    }
+    if (empty(trim($cruce_prefijo))) {
+        $cruce_prefijo = '';
+    }
+    if (empty(trim($sufijo_generadora))) {
+        $sufijo_generadora = '';
+    }
+
+    $errores = [];
+
+    if (!empty($existe)) {
+        $errores[] = "Ya existe un sitio con ese nombre";
+    }
+    if (empty($nombre)) {
+        $errores[] = "El nombre es obligatorio.";
+    }
+    if (empty($via_principal)) {
+        $errores[] = "Debe seleccionar la vía principal.";
+    }
+    if (empty($numero_via)) {
+        $errores[] = "Debe seleccionar el número de la vía.";
+    }
+    if (empty($via_generadora)) {
+        $errores[] = "Debe seleccionar el número de la vía generadora.";
+    }
+    if (empty($placa)) {
+        $errores[] = "Debe seleccionar el número de placa.";
+    }
+    if (empty($barrio)) {
+        $errores[] = "Debe seleccionar un barrio.";
+    }
+    if (empty($estado)) {
+        $errores[] = "Debe seleccionar un estado.";
+    }
+    if (empty($id_coor)) {
+        $errores[] = "Debe seleccionar un coordinador.";
+    }
+
+    $nombre_validar = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u';
+    if (!empty($nombre) && !preg_match($nombre_validar, $nombre)) {
+        $errores[] = "El nombre solo puede contener letras y espacios.";
+    }
+
+    // el coordinador debe ser rol 3 (Coordinador Terreno) y no estar ya asignado
+    if (!empty($id_coor)) {
+        $sql_coor = "SELECT id_usuario FROM usuarios 
+                     WHERE id_usuario = " . (int) $id_coor . " 
+                     AND id_rol = 3
+                     AND (id_zoocriadero IS NOT NULL OR id_sitio IS NOT NULL)";
+        $coor_ocupado = $obj->select($sql_coor);
+        if (!empty($coor_ocupado)) {
+            $errores[] = "El coordinador seleccionado ya está asignado a otro sitio o zoocriadero.";
+        }
+    }
+
+    // los auxiliares deben ser rol 5 (Auxiliar Terreno) y no estar ya asignados
+    if (!empty($usuarios_asignados)) {
+        $ids_aux = implode(',', array_map('intval', $usuarios_asignados));
+        $sql_aux = "SELECT id_usuario FROM usuarios 
+                    WHERE id_usuario IN ($ids_aux) 
+                    AND id_rol = 5
+                    AND (id_zoocriadero IS NOT NULL OR id_sitio IS NOT NULL)";
+        $aux_ocupados = $obj->select($sql_aux);
+        if (!empty($aux_ocupados)) {
+            $errores[] = "Uno o más auxiliares seleccionados ya están asignados a otro sitio o zoocriadero.";
+        }
+    }
+
+    if (!empty($errores)) {
 
         $sql2 = "SELECT * FROM barrio";
         $barrios = $obj->select($sql2);
@@ -51,142 +169,26 @@ class SitiosController
         $estados = $obj->select($sql3);
 
         $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-              FROM usuarios 
-              WHERE id_rol = 2 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
+                  FROM usuarios WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
         $coord = $obj->select($sql4);
 
         $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-              FROM usuarios 
-              WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
+                  FROM usuarios WHERE id_rol = 5 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
         $auxi = $obj->select($sql5);
 
-        include_once '../model/Direcciones/direcciones.php';
+        include_once '../model/Errores/ErrorModal.php';
+        ErrorModal::verError($errores, getUrl('Sitios', 'Sitios', 'getCreate2'));
 
-        $old = $_SESSION['old_input'] ?? [];
-        unset($_SESSION['old_input']);
-
-        include_once '../view/partials/Sitios/Registrar.php';
+        return;
+    } else {
+        $cont = 1;
     }
 
-    public function validarRegistrar()
-    {
-        $obj = new SitiosModel();
-        $_SESSION['old_input'] = $_POST;
-        $cont = 0;
-        $nombre = mb_strtoupper($_POST['nombre'] ?? '');
-        $via_principal = $_POST['via_principal'] ?? '';
-        $numero_via = $_POST['numero_via'] ?? '';
-        $via_generadora = $_POST['via_generadora'] ?? '';
-        $placa = $_POST['placa'] ?? '';
-        $barrio = $_POST['barrio'] ?? '';
-        $estado = $_POST['estado'] ?? '';
-        $id_coor = $_POST['id_coor'] ?? '';
-        $usuarios_asignados = $_POST['usuarios_asignados'] ?? [];
-
-        $sufijo_via = trim($_POST['sufijo_via'] ?? '');
-        $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
-        $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
-
-        $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre'";
-        $existe = $obj->select($sql_validar);
-
-        if (empty(trim($sufijo_via))) {
-            $sufijo_via = '';
-        }
-        if (empty(trim($cruce_prefijo))) {
-            $cruce_prefijo = '';
-        }
-        if (empty(trim($sufijo_generadora))) {
-            $sufijo_generadora = '';
-        }
-
-        $errores = [];
-
-        if (!empty($existe)) {
-            $errores[] = "Ya existe un sitio con ese nombre";
-        }
-        if (empty($nombre)) {
-            $errores[] = "El nombre es obligatorio.";
-        }
-        if (empty($via_principal)) {
-            $errores[] = "Debe seleccionar la vía principal.";
-        }
-        if (empty($numero_via)) {
-            $errores[] = "Debe seleccionar el número de la vía.";
-        }
-        if (empty($via_generadora)) {
-            $errores[] = "Debe seleccionar el número de la vía generadora.";
-        }
-        if (empty($placa)) {
-            $errores[] = "Debe seleccionar el número de placa.";
-        }
-        if (empty($barrio)) {
-            $errores[] = "Debe seleccionar un barrio.";
-        }
-        if (empty($estado)) {
-            $errores[] = "Debe seleccionar un estado.";
-        }
-        if (empty($id_coor)) {
-            $errores[] = "Debe seleccionar un coordinador.";
-        }
-
-        $nombre_validar = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u';
-        if (!empty($nombre) && !preg_match($nombre_validar, $nombre)) {
-            $errores[] = "El nombre solo puede contener letras y espacios.";
-        }
-
-        // el coordinador no puede estar ya asignado a otro sitio o zoocriadero
-        if (!empty($id_coor)) {
-            $sql_coor = "SELECT id_usuario FROM usuarios 
-                     WHERE id_usuario = " . (int) $id_coor . " 
-                     AND (id_zoocriadero IS NOT NULL OR id_sitio IS NOT NULL)";
-            $coor_ocupado = $obj->select($sql_coor);
-            if (!empty($coor_ocupado)) {
-                $errores[] = "El coordinador seleccionado ya está asignado a otro sitio o zoocriadero.";
-            }
-        }
-
-        // ningún auxiliar seleccionado puede estar ya asignado
-        if (!empty($usuarios_asignados)) {
-            $ids_aux = implode(',', array_map('intval', $usuarios_asignados));
-            $sql_aux = "SELECT id_usuario FROM usuarios 
-                    WHERE id_usuario IN ($ids_aux) 
-                    AND (id_zoocriadero IS NOT NULL OR id_sitio IS NOT NULL)";
-            $aux_ocupados = $obj->select($sql_aux);
-            if (!empty($aux_ocupados)) {
-                $errores[] = "Uno o más auxiliares seleccionados ya están asignados a otro sitio o zoocriadero.";
-            }
-        }
-
-        if (!empty($errores)) {
-
-            $sql2 = "SELECT * FROM barrio";
-            $barrios = $obj->select($sql2);
-
-            $sql3 = "SELECT * from estado";
-            $estados = $obj->select($sql3);
-
-            $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 2 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
-            $coord = $obj->select($sql4);
-
-            $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
-            $auxi = $obj->select($sql5);
-
-            include_once '../model/Errores/ErrorModal.php';
-            ErrorModal::verError($errores, getUrl('Sitios', 'Sitios', 'getCreate2'));
-
-            return;
-        } else {
-            $cont = 1;
-        }
-
-        if ($cont == 1) {
-            $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
-            $this->postInsert($nombre, $direccion, $barrio, $estado, (int) $id_coor, $usuarios_asignados, $obj);
-        }
+    if ($cont == 1) {
+        $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
+        $this->postInsert($nombre, $direccion, $barrio, $estado, (int) $id_coor, $usuarios_asignados, $obj);
     }
+}
 
     public function postInsert(string $nombre1, string $direccion1, int $barrio1, int $estado1, int $id_coor1, array $auxiliares1, SitiosModel $obj)
     {
@@ -257,7 +259,7 @@ public function data()
     return $datos;
 }
 
-   public function getEdit()
+ public function getEdit()
 {
     $id = $_GET['id'] ?? null;
 
@@ -278,23 +280,21 @@ public function data()
     $sql3 = "SELECT * from estado";
     $estados = $obj->select($sql3);
 
-    
     $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
-              WHERE id_rol = 2 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
+              WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
     $coord = $obj->select($sql4);
 
     $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
-              WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
+              WHERE id_rol = 5 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
     $auxi = $obj->select($sql5);
 
-   
-    $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 2";
+    $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 3";
     $coor_result = $obj->select($sql6);
     $coor_actual = $coor_result[0] ?? null;
 
-    $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 3";
+    $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 5";
     $auxi_result = $obj->select($sql7);
     $auxi_actuales = array_column($auxi_result, 'id_usuario');
 
@@ -302,7 +302,7 @@ public function data()
 }
 
 
-    public function validarUpdate()
+   public function validarUpdate()
 {
     $obj = new SitiosModel();
     $cont = 0;
@@ -362,10 +362,11 @@ public function data()
         $errores[] = "El nombre solo puede contener letras y espacios.";
     }
 
-    
+   
     if (!empty($id_coor)) {
         $sql_coor = "SELECT id_usuario FROM usuarios 
                      WHERE id_usuario = " . (int) $id_coor . " 
+                     AND id_rol = 3
                      AND (id_zoocriadero IS NOT NULL OR (id_sitio IS NOT NULL AND id_sitio != $id))";
         $coor_ocupado = $obj->select($sql_coor);
         if (!empty($coor_ocupado)) {
@@ -378,6 +379,7 @@ public function data()
         $ids_aux = implode(',', array_map('intval', $usuarios_asignados));
         $sql_aux = "SELECT id_usuario FROM usuarios 
                     WHERE id_usuario IN ($ids_aux) 
+                    AND id_rol = 5
                     AND (id_zoocriadero IS NOT NULL OR (id_sitio IS NOT NULL AND id_sitio != $id))";
         $aux_ocupados = $obj->select($sql_aux);
         if (!empty($aux_ocupados)) {
@@ -399,18 +401,18 @@ public function data()
         $estados = $obj->select($sql3);
 
         $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 2 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
+                  FROM usuarios WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
         $coord = $obj->select($sql4);
 
         $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
+                  FROM usuarios WHERE id_rol = 5 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
         $auxi = $obj->select($sql5);
 
-        $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 2";
+        $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 3";
         $coor_result = $obj->select($sql6);
         $coor_actual = $coor_result[0] ?? null;
 
-        $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 3";
+        $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 5";
         $auxi_result = $obj->select($sql7);
         $auxi_actuales = array_column($auxi_result, 'id_usuario');
 
