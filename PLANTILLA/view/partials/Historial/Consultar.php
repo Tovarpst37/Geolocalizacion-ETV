@@ -3,8 +3,8 @@
     <div class="d-flex justify-content-end w-100 mb-4">
         <div class="input-group" style="max-width: 350px;">
             <form class="input-group" action="index.php" method="GET">
-                <input type="hidden" name="modulo" value="FormularioZ">
-                <input type="hidden" name="controlador" value="FormularioZ">
+                <input type="hidden" name="modulo" value="Historial">
+                <input type="hidden" name="controlador" value="Historial">
                 <input type="hidden" name="funcion" value="getBuscar">
 
                 <input type="text" name="busqueda" placeholder="Buscar por código..." class="form-control" />
