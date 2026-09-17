@@ -117,9 +117,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="id_coor" class="form-label">Coordinador asignado <span class="text-danger">*</span></label>
-                        <select class="form-select" id="id_coor" name="id_coor" required>
-                            <option value="" selected disabled>Selecciona un coordinador</option>
+                        <label for="id_coor" class="form-label">Coordinador asignado</label>
+                        <select class="form-select" id="id_coor" name="id_coor">
+                            <option value="" <?php echo empty($coor_actual['id_usuario']) ? "selected" : ""; ?>>Ninguno</option>
                             <?php foreach ($coord as $usu) {
                                 $selected = (isset($coor_actual['id_usuario']) && $coor_actual['id_usuario'] == $usu['id_usuario']) ? "selected" : "";
                                 echo "<option value='" . $usu['id_usuario'] . "' $selected>" .
