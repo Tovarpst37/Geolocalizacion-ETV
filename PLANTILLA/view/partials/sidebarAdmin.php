@@ -220,35 +220,61 @@
 
         <!-- Trabajo en terreno -->
         <li class="nav-section">
-          <span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span>
+          <span class="sidebar-mini-icon">
+            <i class="fa fa-ellipsis-h"></i>
+          </span>
           <h4 class="text-section">Trabajo en terreno</h4>
         </li>
 
+
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#Terreno">
-            <i class="fas fa-map-marked-alt"></i>
+            <i class="fas fa-layer-group"></i>
             <p>Terreno</p>
             <span class="caret"></span>
           </a>
+
           <div class="collapse" id="Terreno">
             <ul class="nav nav-collapse">
+              <li>
+                <a href="<?php echo getUrl("Terreno", "Terreno", "getCreate") ?>">
+                  <span class="sub-item"> Registrar terreno</span>
+                </a>
+              </li>
+              <li>
+                <a href="<?php echo getUrl("Terreno", "Terreno", "getConsultar") ?>">
+                  <span class="sub-item"> Consultar terreno</span>
+                </a>
+              </li>
+
+            </ul>
+          </div>
+        </li>
+
 
 
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#sitiosTerreno">
-            <i class="fas fa-map-marker-alt"></i>
+            <i class="fas fa-layer-group"></i>
             <p>Sitios</p>
             <span class="caret"></span>
           </a>
           <div class="collapse" id="sitiosTerreno">
             <ul class="nav nav-collapse">
-              <li><a href="<?php echo getUrl("Sitios", "Sitios", "getCreate2") ?>"><span class="sub-item">Registrar
-                    sitio</span></a></li>
-              <li><a href="<?php echo getUrl("Sitios", "Sitios", "getConsultar") ?>"><span class="sub-item">Consultar
-                    sitio</span></a></li>
+              <li>
+                <a href="<?php echo getUrl("Sitios", "Sitios", "getCreate2") ?>">
+                  <span class="sub-item"> Registrar sitio</span>
+                </a>
+              </li>
+              <li>
+                <a href="<?php echo getUrl("Sitios", "Sitios", "getConsultar") ?>">
+                  <span class="sub-item"> Consultar sitio</span>
+                </a>
+              </li>
             </ul>
           </div>
         </li>
+
 
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#depositoTerrono">
