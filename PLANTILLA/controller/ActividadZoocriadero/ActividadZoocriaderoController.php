@@ -134,4 +134,82 @@ class ActividadZoocriaderoController
         include_once '../view/partials/ActividadZoocriadero/Editar.php';
     }
 
+
+
+    public function validarUpdate(){
+
+        $obj= new ActividadZoocriaderoModel();
+
+        $cont=0;
+
+        $id= $_POST['id']??'';
+        $codigo = mb_strtoupper($_POST['cod_actividad']??'');
+        $nombre = $_POST['nombre_actividad']??'';
+
+        $errores=[];
+
+        $sql_validar ="SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE id_actividad_zoo=$1 
+        AND cod_actividad=$2";
+
+        $validar_exist= $obj -> select($sql_validar,[$id,$codigo]);
+
+        if(count($validar_exist)>0) {
+            $errores[]="Ya existe uan actividad con este codigo";
+        }
+
+        if(empty($codigo)) {
+            $errores[]= "El codigo de la actividad es obligatoria";
+        }
+
+        if(empty($nombre)){
+            $errores[]="El nombre de la actividad es obligatoria";
+        }
+
+
+        $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
+        if (!empty($codigo) && !preg_match($codigo_validar, $codigo)) {
+            $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
+        }
+
+        if(!empty($errores)){
+            include_once '../model/Errores/ErrorModal.php';
+            ErrorModal::verError($errores, getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEditar', array('id' => $id)));
+            return;
+        }else{
+            $cont=1;
+        }
+
+        if($cont==1){
+            $this ->postUpdate($obj);
+        }
+
+
+
+
+    }
+
+    public function postUpdate(ActividadZoocriaderoModel $obj){
+
+        
+        $codigo = mb_strtoupper($_POST['cod_actividad']);
+        $nombre = $_POST['nombre_actividad'];
+        $id= $_POST['id'];
+
+        $sql = "UPDATE actividad_zoocriadero SET cod_actividad = $1, nombre_actividad = $2 WHERE id_actividad_zoo = $3";
+
+        $ejecutar= $obj->update($sql,[$codigo,$nombre,$id]);
+
+        if($ejecutar){
+            $_SESSION['mensaje_exito'] ="la Actividad se actualizó correctamente.";
+            redirect(getUrl("ActividadZoocriadero", "ActividadZoocriadero", "getConsultar"));
+        } else {
+            echo "No se pudo Actualizar la actividad";
+        }
+
+        
+
+    }
+
 }
+
+?>
