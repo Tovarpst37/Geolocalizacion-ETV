@@ -1,37 +1,37 @@
 <?php include_once '../view/partials/formulari/headFormulari.php';?>   
         <h2 class="mb-0 ">Registro de Usuarios</h2>
 <?php include_once '../view/partials/formulari/body.php';?>   
-  <form action="<?php echo getUrl("Usuario","Usuario","postCreate")?>" method="POST">
+  <form action="<?php echo getUrl("Usuario","Usuario","postCreate")?>" method="POST" id="createUsuarios">
 
     <h4 class="mb-4">Datos Del usuario</h4>
 
       <div class ="row row-cols-2">
         <div class="col mb-3">
           <label for="codigo_tanque" class="form-label">Primer Nombre <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
+          <input type="text" class="form-control letras" id="primer_nombre" name="primer_nombre">
         </div>
 
         <div class="col mb-3">
           <label for="codigo_tanque" class="form-label">Segundo Nombre</label>
-          <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre">
+          <input type="text" class="form-control letras" id="segundo_nombre" name="segundo_nombre">
         </div>
         
         <div class="col mb-3">
           <label for="codigo_tanque" class="form-label">Primer Apellido<span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" required>
+          <input type="text" class="form-control letras" id="primer_apellido" name="primer_apellido">
         </div>
 
         <div class="col mb-3">
           <label for="codigo_tanque" class="form-label">Segundo Apellido</label>
-          <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido">
+          <input type="text" class="form-control letras" id="segundo_apellido" name="segundo_apellido">
         </div>
 
       </div>
 
       <div class="row row-cols-2">
         <div class="col mb-3">
-          <label for="codigo_tanque" class="form-label">Tipo De Documento<span class="text-danger">*</span></label>
-          <select class = "form-select col mb-3" name = "tipo_documento" id="tipo_documento" required>
+          <label for="codigo_tanque" class="form-label">Tipo De Documento<span class="text-danger select-validar">*</span></label>
+          <select class = "form-select col mb-3" name = "tipo_documento" id="tipo_documento">
             <option value="">Selecciona una opcion</option>
             <?php foreach ($tipo_documento as $item): ?>
               <option value="<?php echo $item['id_tipo_documento']; ?>">
@@ -51,7 +51,6 @@
             id="documento"
             name="documento"
             placeholder="Numero de identificacion"
-            required
             >
         </div>
 
@@ -59,12 +58,12 @@
 
       <div class="mb-3">
           <label for="fecha_nacimiento" class="form-label">Fecha Nacimiento<span class="text-danger">*</span></label>
-          <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+          <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento">
       </div>
 
       <div class="mb-3">
         <label for="codigo_tanque" class="form-label">Correo Electronico<span class="text-danger">*</span></label>
-        <input type="text" class="form-control" id="correo" name="correo" required>
+        <input type="text" class="form-control" id="correo" name="correo">
       </div>
 
       <div class="mb-1">
@@ -76,7 +75,6 @@
           id="password"
           name="password"
           placeholder="Contraseña"
-          required
         >
 
         <?php include_once '../view/partials/contentPassword.php';?>
@@ -89,8 +87,8 @@
       </div>
           
       <div class="mb-3">
-        <label for="codigo_tanque" class="form-label">Genero<span class="text-danger">*</span></label>
-        <select class = "form-select col mb-3" name = "genero"id="id_genero" required>
+        <label for="codigo_tanque" class="form-label select-validar">Genero<span class="text-danger">*</span></label>
+        <select class = "form-select col mb-3" name = "genero" id="id_genero">
           <option value="">Selecciona una opcion</option>
             <?php foreach ($genero as $item): ?>
               <option value="<?php echo $item['id_genero']; ?>">
@@ -101,8 +99,8 @@
       </div>
 
       <div class="mb-3">
-        <label for="codigo_tanque" class="form-label">Rol<span class="text-danger">*</span></label>
-          <select class = "form-select col mb-3" name = "rol" id="id_rol" required>
+        <label for="codigo_tanque" class="form-label select-validar">Rol<span class="text-danger">*</span></label>
+          <select class = "form-select col mb-3" name = "rol" id="id_rol">
             <option value="">Selecciona una opcion</option>
               <?php foreach ($rol as $item): ?>
                 <option value="<?php echo $item['id_rol']; ?>">
@@ -113,8 +111,8 @@
       </div>
 
       <div class="mb-3">
-        <label for="codigo_tanque" class="form-label">RH<span class="text-danger">*</span></label>
-          <select class = "form-select col mb-3" name = "rh" id="id_rh" required>
+        <label for="codigo_tanque" class="form-label select-validar">RH<span class="text-danger">*</span></label>
+          <select class = "form-select col mb-3" name = "rh" id="id_rh">
             <option value="">Selecciona una opcion</option>
               <?php foreach ($rh as $item): ?>
                 <option value="<?php echo $item['id_rh']; ?>">
@@ -137,3 +135,6 @@
 <script src="js/document.js"></script>
 <script src="js/password.js"></script>
 <script src="js/checkbox.js"></script>
+<script src="js/soloLetras.js"></script>
+<script src="js/selectCompleto.js"></script>
+<script src="../view/usuario/js/create.js"></script>
