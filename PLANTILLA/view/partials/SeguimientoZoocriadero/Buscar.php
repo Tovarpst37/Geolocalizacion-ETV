@@ -1,4 +1,6 @@
 
+    <div class="page-header">
+    <h4 class="fw-bold mb-3">Seguimiento Zoocriadero</h4>
     <div class="d-flex justify-content-end w-100">
       <div class="input-group" style="max-width: 350px;">
         <form class="input-group" action="index.php" method="GET">
@@ -14,13 +16,15 @@
         </form>
       </div>
     </div>
-
+</div>
 
     
 
 <div class="list-group mt-4">
 
-    <?php foreach($seguimientos as $s){ ?>
+    <?php 
+    if(!empty($seguimientos)){
+    foreach($seguimientos as $s){ ?>
     
         <div class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4  border rounded">
             
@@ -65,5 +69,13 @@
             </div>
 
         </div>
-    <?php } ?>
+    <?php }}else{
+
+    ?>
+    <div class="text-center text-muted py-5 mt-5">
+        <i class="fa fa-search fa-2x mb-3"></i>
+        <p class="mb-3">No se encontraron resultados</p>
+    </div>
+    <?php
+    } ?> 
 </div>
