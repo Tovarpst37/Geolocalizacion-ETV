@@ -4,19 +4,23 @@ include_once '../model/Sitios/SitiosModel.php';
 class SitiosController
 {
 
-
-
-
-
-
+    // AGREGADO: genera "$2,$3,$4..." para armar cláusulas IN (...) con cantidad variable de valores
+    private function inPlaceholders(array $items, int $start = 1): array
+    {
+        $placeholders = [];
+        for ($i = 0; $i < count($items); $i++) {
+            $placeholders[] = '$' . ($start + $i);
+        }
+        return $placeholders;
+    }
 
     public function posDelete()
     {
-        $id = $_GET['id'];
+        $id = $_GET['id'] ?? null;
         $obj = new SitiosModel();
 
-        $sql2 = "SELECT id_estado from sitio WHERE id_sitio = $id";
-        $validacion =  $obj->select($sql2);
+        $sql2 = "SELECT id_estado from sitio WHERE id_sitio = $1";
+        $validacion = $obj->select($sql2, [$id]);
         foreach ($validacion as $j) {
 
             if ($j['id_estado'] == 2) {
@@ -24,9 +28,8 @@ class SitiosController
                 redirect(getUrl("Sitios", "Sitios", "getConsultar"));
             }
 
-
-            $sql = "UPDATE  sitio set id_estado = 2 WHERE id_sitio = $id";
-            $ejecutar = $obj->update($sql);
+            $sql = "UPDATE sitio SET id_estado = 2 WHERE id_sitio = $1";
+            $ejecutar = $obj->update($sql, [$id]);
 
             if ($ejecutar) {
                 $_SESSION['mensaje_exito'] = "El sitio se inhabilito correctamente.";
@@ -60,6 +63,10 @@ class SitiosController
               WHERE id_rol = 5 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
         $auxi = $obj->select($sql5);
 
+        // AGREGADO: catálogo de tipos de depósito para el select del formulario
+        $sql6 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
+        $tipos_deposito = $obj->select($sql6);
+
         include_once '../model/Direcciones/direcciones.php';
 
         $old = $_SESSION['old_input'] ?? [];
@@ -87,8 +94,13 @@ class SitiosController
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
-        $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre'";
-        $existe = $obj->select($sql_validar);
+        // AGREGADO: tipo de depósito y descripción
+        $id_tipo_deposito = $_POST['id_tipo_deposito'] ?? '';
+        $descripcion = trim($_POST['descripcion'] ?? '');
+
+        // PARAMETRIZADO
+        $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = $1";
+        $existe = $obj->select($sql_validar, [$nombre]);
 
         if (empty(trim($sufijo_via))) {
             $sufijo_via = '';
@@ -130,31 +142,40 @@ class SitiosController
             $errores[] = "Debe seleccionar un coordinador.";
         }
 
+        // AGREGADO: validación de tipo de depósito y longitud de descripción
+        if (empty($id_tipo_deposito)) {
+            $errores[] = "Debe seleccionar un tipo de depósito.";
+        }
+        if (mb_strlen($descripcion) > 300) {
+            $errores[] = "La descripción no puede superar los 300 caracteres.";
+        }
+
         $nombre_validar = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u';
         if (!empty($nombre) && !preg_match($nombre_validar, $nombre)) {
             $errores[] = "El nombre solo puede contener letras y espacios.";
         }
 
-        // el coordinador debe ser rol 3 (Coordinador Terreno) y no estar ya asignado
+        // el coordinador debe ser rol 3 (Coordinador Terreno) y no estar ya asignado — PARAMETRIZADO
         if (!empty($id_coor)) {
             $sql_coor = "SELECT id_usuario FROM usuarios 
-                     WHERE id_usuario = " . (int) $id_coor . " 
+                     WHERE id_usuario = $1 
                      AND id_rol = 3
                      AND (id_zoocriadero IS NOT NULL OR id_sitio IS NOT NULL)";
-            $coor_ocupado = $obj->select($sql_coor);
+            $coor_ocupado = $obj->select($sql_coor, [(int) $id_coor]);
             if (!empty($coor_ocupado)) {
                 $errores[] = "El coordinador seleccionado ya está asignado a otro sitio o zoocriadero.";
             }
         }
 
-        // los auxiliares deben ser rol 5 (Auxiliar Terreno) y no estar ya asignados
+        // los auxiliares deben ser rol 5 (Auxiliar Terreno) y no estar ya asignados — PARAMETRIZADO (IN dinámico)
         if (!empty($usuarios_asignados)) {
-            $ids_aux = implode(',', array_map('intval', $usuarios_asignados));
+            $ids_aux = array_map('intval', $usuarios_asignados);
+            $placeholders = implode(',', $this->inPlaceholders($ids_aux));
             $sql_aux = "SELECT id_usuario FROM usuarios 
-                    WHERE id_usuario IN ($ids_aux) 
+                    WHERE id_usuario IN ($placeholders) 
                     AND id_rol = 5
                     AND (id_zoocriadero IS NOT NULL OR id_sitio IS NOT NULL)";
-            $aux_ocupados = $obj->select($sql_aux);
+            $aux_ocupados = $obj->select($sql_aux, $ids_aux);
             if (!empty($aux_ocupados)) {
                 $errores[] = "Uno o más auxiliares seleccionados ya están asignados a otro sitio o zoocriadero.";
             }
@@ -176,6 +197,10 @@ class SitiosController
                   FROM usuarios WHERE id_rol = 5 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
             $auxi = $obj->select($sql5);
 
+            // AGREGADO: recargar tipos de depósito para volver a pintar el formulario con errores
+            $sql6 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
+            $tipos_deposito = $obj->select($sql6);
+
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError($errores, getUrl('Sitios', 'Sitios', 'getCreate2'));
 
@@ -186,11 +211,11 @@ class SitiosController
 
         if ($cont == 1) {
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
-            $this->postInsert($nombre, $direccion, $barrio, $estado, (int) $id_coor, $usuarios_asignados, $obj);
+            $this->postInsert($nombre, $direccion, (int) $barrio, (int) $estado, (int) $id_coor, $usuarios_asignados, (int) $id_tipo_deposito, $descripcion, $obj);
         }
     }
 
-    public function postInsert(string $nombre1, string $direccion1, int $barrio1, int $estado1, int $id_coor1, array $auxiliares1, SitiosModel $obj)
+    public function postInsert(string $nombre1, string $direccion1, int $barrio1, int $estado1, int $id_coor1, array $auxiliares1, int $id_tipo_deposito1, string $descripcion1, SitiosModel $obj)
     {
         $nombre = mb_strtoupper($nombre1);
         $direccion = $direccion1;
@@ -198,23 +223,27 @@ class SitiosController
         $estado = $estado1;
         $id_coor = $id_coor1;
         $auxiliares = $auxiliares1;
+        $id_tipo_deposito = $id_tipo_deposito1;
+        $descripcion = $descripcion1;
 
-        $sql = "INSERT INTO sitio (nombre_sitio, direccion, id_barrio, id_estado) 
-            VALUES ('$nombre', '$direccion', $barrio, $estado)
+        // PARAMETRIZADO
+        $sql = "INSERT INTO sitio (nombre_sitio, direccion, id_barrio, id_estado, id_tipo_deposito, descripcion) 
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING id_sitio";
 
-        $resultado = $obj->select($sql);
+        $resultado = $obj->select($sql, [$nombre, $direccion, $barrio, $estado, $id_tipo_deposito, $descripcion]);
         $id_sitio = $resultado[0]['id_sitio'] ?? null;
 
         if ($id_sitio) {
 
-            $sql_coor = "UPDATE usuarios SET id_sitio = $id_sitio WHERE id_usuario = $id_coor";
-            $obj->update($sql_coor);
+            $sql_coor = "UPDATE usuarios SET id_sitio = $1 WHERE id_usuario = $2";
+            $obj->update($sql_coor, [$id_sitio, $id_coor]);
 
             if (!empty($auxiliares)) {
-                $ids_aux = implode(',', array_map('intval', $auxiliares));
-                $sql_aux = "UPDATE usuarios SET id_sitio = $id_sitio WHERE id_usuario IN ($ids_aux)";
-                $obj->update($sql_aux);
+                $ids_aux = array_map('intval', $auxiliares);
+                $placeholders = implode(',', $this->inPlaceholders($ids_aux, 2));
+                $sql_aux = "UPDATE usuarios SET id_sitio = $1 WHERE id_usuario IN ($placeholders)";
+                $obj->update($sql_aux, array_merge([$id_sitio], $ids_aux));
             }
 
             $_SESSION['mensaje_exito'] = "El sitio se registró correctamente.";
@@ -238,10 +267,13 @@ class SitiosController
         b.nombre_barrio AS barrio,
         e.nombre_estado AS estado,
         coor.nombre_coor AS coordinador,
-        aux.nombres_aux AS auxiliares
+        aux.nombres_aux AS auxiliares,
+        td.nombre AS tipo_deposito,
+        s.descripcion
     FROM sitio s
     INNER JOIN barrio b ON s.id_barrio = b.id_barrio
     INNER JOIN estado e ON s.id_estado = e.id_estado
+    LEFT JOIN tipo_de_deposito td ON s.id_tipo_deposito = td.id_tipo_deposito
     LEFT JOIN (
         SELECT id_sitio, CONCAT(primer_nombre, ' ', primer_apellido) AS nombre_coor
         FROM usuarios
@@ -268,8 +300,10 @@ class SitiosController
         }
 
         $obj = new SitiosModel();
-        $sql = "SELECT * from sitio WHERE id_sitio = $id";
-        $datos = $obj->select($sql);
+
+        // PARAMETRIZADO
+        $sql = "SELECT * from sitio WHERE id_sitio = $1";
+        $datos = $obj->select($sql, [$id]);
         include_once '../model/Direcciones/direcciones.php';
         $partes = parsearDireccion($datos[0]['direccion']);
 
@@ -281,21 +315,25 @@ class SitiosController
 
         $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
-              WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
-        $coord = $obj->select($sql4);
+              WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
+        $coord = $obj->select($sql4, [$id]);
 
         $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
-              WHERE id_rol = 5 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
-        $auxi = $obj->select($sql5);
+              WHERE id_rol = 5 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
+        $auxi = $obj->select($sql5, [$id]);
 
-        $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 3";
-        $coor_result = $obj->select($sql6);
+        $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
+        $coor_result = $obj->select($sql6, [$id]);
         $coor_actual = $coor_result[0] ?? null;
 
-        $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 5";
-        $auxi_result = $obj->select($sql7);
+        $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 5";
+        $auxi_result = $obj->select($sql7, [$id]);
         $auxi_actuales = array_column($auxi_result, 'id_usuario');
+
+        // AGREGADO: catálogo de tipos de depósito (id_tipo_deposito y descripcion actuales ya vienen en $datos[0])
+        $sql8 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
+        $tipos_deposito = $obj->select($sql8);
 
         include_once '../view/partials/Sitios/Editar.php';
     }
@@ -320,8 +358,13 @@ class SitiosController
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
-        $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = '$nombre' AND id_sitio != $id";
-        $existe = $obj->select($sql_validar);
+        // AGREGADO: tipo de depósito y descripción
+        $id_tipo_deposito = $_POST['id_tipo_deposito'] ?? '';
+        $descripcion = trim($_POST['descripcion'] ?? '');
+
+        // PARAMETRIZADO
+        $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = $1 AND id_sitio != $2";
+        $existe = $obj->select($sql_validar, [$nombre, $id]);
 
         $errores = [];
 
@@ -353,31 +396,40 @@ class SitiosController
             $errores[] = "Debe seleccionar un estado.";
         }
 
+        // AGREGADO: validación de tipo de depósito y longitud de descripción
+        if (empty($id_tipo_deposito)) {
+            $errores[] = "Debe seleccionar un tipo de depósito.";
+        }
+        if (mb_strlen($descripcion) > 300) {
+            $errores[] = "La descripción no puede superar los 300 caracteres.";
+        }
+
         $nombre_validar = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/u';
         if (!empty($nombre) && !preg_match($nombre_validar, $nombre)) {
             $errores[] = "El nombre solo puede contener letras y espacios.";
         }
 
-
+        // PARAMETRIZADO
         if (!empty($id_coor)) {
             $sql_coor = "SELECT id_usuario FROM usuarios 
-                     WHERE id_usuario = " . (int) $id_coor . " 
+                     WHERE id_usuario = $1 
                      AND id_rol = 3
-                     AND (id_zoocriadero IS NOT NULL OR (id_sitio IS NOT NULL AND id_sitio != $id))";
-            $coor_ocupado = $obj->select($sql_coor);
+                     AND (id_zoocriadero IS NOT NULL OR (id_sitio IS NOT NULL AND id_sitio != $2))";
+            $coor_ocupado = $obj->select($sql_coor, [(int) $id_coor, $id]);
             if (!empty($coor_ocupado)) {
                 $errores[] = "El coordinador seleccionado ya está asignado a otro sitio o zoocriadero.";
             }
         }
 
-
+        // PARAMETRIZADO (IN dinámico + exclusión del sitio actual)
         if (!empty($usuarios_asignados)) {
-            $ids_aux = implode(',', array_map('intval', $usuarios_asignados));
+            $ids_aux = array_map('intval', $usuarios_asignados);
+            $placeholders = implode(',', $this->inPlaceholders($ids_aux, 2));
             $sql_aux = "SELECT id_usuario FROM usuarios 
-                    WHERE id_usuario IN ($ids_aux) 
+                    WHERE id_usuario IN ($placeholders) 
                     AND id_rol = 5
-                    AND (id_zoocriadero IS NOT NULL OR (id_sitio IS NOT NULL AND id_sitio != $id))";
-            $aux_ocupados = $obj->select($sql_aux);
+                    AND (id_zoocriadero IS NOT NULL OR (id_sitio IS NOT NULL AND id_sitio != $1))";
+            $aux_ocupados = $obj->select($sql_aux, array_merge([$id], $ids_aux));
             if (!empty($aux_ocupados)) {
                 $errores[] = "Uno o más auxiliares seleccionados ya están asignados a otro sitio o zoocriadero.";
             }
@@ -385,8 +437,8 @@ class SitiosController
 
         if (!empty($errores)) {
 
-            $sql = "SELECT * from sitio WHERE id_sitio = $id";
-            $datos = $obj->select($sql);
+            $sql = "SELECT * from sitio WHERE id_sitio = $1";
+            $datos = $obj->select($sql, [$id]);
             include_once '../model/Direcciones/direcciones.php';
             $partes = parsearDireccion($datos[0]['direccion']);
 
@@ -397,20 +449,24 @@ class SitiosController
             $estados = $obj->select($sql3);
 
             $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
-            $coord = $obj->select($sql4);
+                  FROM usuarios WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
+            $coord = $obj->select($sql4, [$id]);
 
             $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 5 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $id)";
-            $auxi = $obj->select($sql5);
+                  FROM usuarios WHERE id_rol = 5 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
+            $auxi = $obj->select($sql5, [$id]);
 
-            $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 3";
-            $coor_result = $obj->select($sql6);
+            $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
+            $coor_result = $obj->select($sql6, [$id]);
             $coor_actual = $coor_result[0] ?? null;
 
-            $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $id AND id_rol = 5";
-            $auxi_result = $obj->select($sql7);
+            $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 5";
+            $auxi_result = $obj->select($sql7, [$id]);
             $auxi_actuales = array_column($auxi_result, 'id_usuario');
+
+            // AGREGADO: recargar tipos de depósito para volver a pintar el formulario con errores
+            $sql8 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
+            $tipos_deposito = $obj->select($sql8);
 
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError($errores, getUrl('Sitios', 'Sitios', 'getEdit', array('id' => $id)));
@@ -423,41 +479,44 @@ class SitiosController
         if ($cont == 1) {
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
             $id_coor_final = !empty($id_coor) ? (int) $id_coor : null;
-            $this->postUpdate((int) $id, $nombre, $direccion, $barrio, $estado, $id_coor_final, $usuarios_asignados, $obj);
+            $this->postUpdate((int) $id, $nombre, $direccion, (int) $barrio, (int) $estado, $id_coor_final, $usuarios_asignados, (int) $id_tipo_deposito, $descripcion, $obj);
         }
     }
 
-    public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado, ?int $id_coor, array $auxiliares, SitiosModel $obj)
+    public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado, ?int $id_coor, array $auxiliares, int $id_tipo_deposito, string $descripcion, SitiosModel $obj)
     {
-        
+
         if (empty($id_coor)) {
             $estado = 2;
         }
-        
 
+        // PARAMETRIZADO
         $sql = "UPDATE sitio SET 
-        nombre_sitio = '$nombre',
-        direccion = '$direccion',
-        id_barrio = $barrio,
-        id_estado = $estado
-    WHERE id_sitio = $id";
+        nombre_sitio = $1,
+        direccion = $2,
+        id_barrio = $3,
+        id_estado = $4,
+        id_tipo_deposito = $5,
+        descripcion = $6
+    WHERE id_sitio = $7";
 
-        $ejecutar = $obj->update($sql);
+        $ejecutar = $obj->update($sql, [$nombre, $direccion, $barrio, $estado, $id_tipo_deposito, $descripcion, $id]);
 
         if ($ejecutar) {
 
-            $sql_liberar = "UPDATE usuarios SET id_sitio = NULL WHERE id_sitio = $id";
-            $obj->update($sql_liberar);
+            $sql_liberar = "UPDATE usuarios SET id_sitio = NULL WHERE id_sitio = $1";
+            $obj->update($sql_liberar, [$id]);
 
             if (!empty($id_coor)) {
-                $sql_coor = "UPDATE usuarios SET id_sitio = $id WHERE id_usuario = $id_coor";
-                $obj->update($sql_coor);
+                $sql_coor = "UPDATE usuarios SET id_sitio = $1 WHERE id_usuario = $2";
+                $obj->update($sql_coor, [$id, $id_coor]);
             }
 
             if (!empty($auxiliares)) {
-                $ids_aux = implode(',', array_map('intval', $auxiliares));
-                $sql_aux = "UPDATE usuarios SET id_sitio = $id WHERE id_usuario IN ($ids_aux)";
-                $obj->update($sql_aux);
+                $ids_aux = array_map('intval', $auxiliares);
+                $placeholders = implode(',', $this->inPlaceholders($ids_aux, 2));
+                $sql_aux = "UPDATE usuarios SET id_sitio = $1 WHERE id_usuario IN ($placeholders)";
+                $obj->update($sql_aux, array_merge([$id], $ids_aux));
             }
 
             $_SESSION['mensaje_exito'] = "El sitio se actualizó correctamente.";
@@ -466,4 +525,47 @@ class SitiosController
             echo "No se pudo actualizar el sitio";
         }
     }
+
+   public function getBuscar()
+{
+    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+    if (!empty($busqueda)) {
+        $palabra = $_GET['busqueda'];
+        $obj = new SitiosModel();
+
+        $sql = "SELECT 
+            s.id_sitio,
+            s.nombre_sitio,
+            s.direccion,
+            b.nombre_barrio AS barrio,
+            e.nombre_estado AS estado,
+            coor.nombre_coor AS coordinador,
+            aux.nombres_aux AS auxiliares,
+            td.nombre AS tipo_deposito,
+            s.descripcion
+        FROM sitio s
+        INNER JOIN barrio b ON s.id_barrio = b.id_barrio
+        INNER JOIN estado e ON s.id_estado = e.id_estado
+        LEFT JOIN tipo_de_deposito td ON s.id_tipo_deposito = td.id_tipo_deposito
+        LEFT JOIN (
+            SELECT id_sitio, CONCAT(primer_nombre, ' ', primer_apellido) AS nombre_coor
+            FROM usuarios
+            WHERE id_rol = 3
+        ) coor ON coor.id_sitio = s.id_sitio
+        LEFT JOIN (
+            SELECT id_sitio, STRING_AGG(CONCAT(primer_nombre, ' ', primer_apellido), ', ') AS nombres_aux
+            FROM usuarios
+            WHERE id_rol = 5
+            GROUP BY id_sitio
+        ) aux ON aux.id_sitio = s.id_sitio
+        WHERE s.nombre_sitio ILIKE $1
+        ORDER BY s.id_sitio";
+
+        $datos = $obj->select($sql, ['%' . $busqueda . '%']);
+
+        include_once "../view/partials/Sitios/Busqueda.php";
+    } else {
+        include_once '../view/partials/Sitios/Consultar.php';
+    }
+}
 }
