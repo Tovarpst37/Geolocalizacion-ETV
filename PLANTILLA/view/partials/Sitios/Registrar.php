@@ -94,16 +94,21 @@
                         </select>
                     </div>
 
+             
                     <div class="mb-3">
-                        <label for="id_coor" class="form-label">Coordinador asignado <span class="text-danger">*</span></label>
-                        <select class="form-select" id="id_coor" name="id_coor" required>
-                            <option value="" selected disabled>Selecciona un coordinador</option>
-                            <?php foreach ($coord as $usu): ?>
-                                <option value="<?php echo $usu['id_usuario']; ?>" <?php echo (($old['id_coor'] ?? '') == $usu['id_usuario']) ? 'selected' : ''; ?>>
-                                    <?php echo $usu['primer_nombre'] . " " . $usu['segundo_nombre'] . " " . $usu['primer_apellido'] . " " . $usu['segundo_apellido']; ?>
-                                </option>
+                        <label for="id_tipo_deposito" class="form-label">Tipo de depósito <span class="text-danger">*</span></label>
+                        <select class="form-select" id="id_tipo_deposito" name="id_tipo_deposito" required>
+                            <option value="" selected disabled>Selecciona un tipo de depósito</option>
+                            <?php foreach ($tipos_deposito as $td): ?>
+                                <option value="<?php echo $td['id_tipo_deposito']; ?>" <?php echo (($old['id_tipo_deposito'] ?? '') == $td['id_tipo_deposito']) ? 'selected' : ''; ?>><?php echo $td['nombre']; ?></option>
                             <?php endforeach; ?>
                         </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" maxlength="300" placeholder="Descripción del sitio (máx. 300 caracteres)"><?php echo $old['descripcion'] ?? ''; ?></textarea>
+                        <div class="form-text text-end"><span id="contadorDescripcion">0</span>/300</div>
                     </div>
 
                     <div class="mb-3">
@@ -134,6 +139,18 @@
                     </div>
                     
 
+                    <div class="mb-3">
+                        <label for="id_coor" class="form-label">Coordinador asignado <span class="text-danger">*</span></label>
+                        <select class="form-select" id="id_coor" name="id_coor" required>
+                            <option value="" selected disabled>Selecciona un coordinador</option>
+                            <?php foreach ($coord as $usu): ?>
+                                <option value="<?php echo $usu['id_usuario']; ?>" <?php echo (($old['id_coor'] ?? '') == $usu['id_usuario']) ? 'selected' : ''; ?>>
+                                    <?php echo $usu['primer_nombre'] . " " . $usu['segundo_nombre'] . " " . $usu['primer_apellido'] . " " . $usu['segundo_apellido']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
                     <div class="mb-4">
                         <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
                         <select class="form-select" id="estado" name="estado" required>
@@ -156,3 +173,16 @@
         </div>
     </div>
 </div>
+
+<!-- AGREGADO: contador en vivo de caracteres de la descripcion -->
+<script>
+    (function() {
+        const textarea = document.getElementById('descripcion');
+        const contador = document.getElementById('contadorDescripcion');
+        if (textarea && contador) {
+            const actualizar = () => contador.textContent = textarea.value.length;
+            actualizar();
+            textarea.addEventListener('input', actualizar);
+        }
+    })();
+</script>
