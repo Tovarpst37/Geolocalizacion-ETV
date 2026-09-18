@@ -13,11 +13,15 @@
 
                     <input type="hidden" name="id" value="<?php echo $d['id_sitio_deposito']; ?>">
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label for="codigo_sitio_deposito" class="form-label">Código del sitio de depósito <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="codigo_sitio_deposito" name="codigo_sitio_deposito" placeholder="Ingresa el código del sitio de depósito" required value="<?php echo $d['codigo_sitio_deposito']; ?>">
-                        </div>
+                   <div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <label for="codigo_sitio_deposito" class="form-label">Código del sitio de depósito</label>
+        <input type="text" class="form-control" id="codigo_sitio_deposito" value="<?php echo $d['codigo_sitio_deposito']; ?>" disabled readonly>
+        <input type="hidden" name="codigo_sitio_deposito" value="<?php echo $d['codigo_sitio_deposito']; ?>">
+    </div>
+
+
+                        
                         <div class="col-md-6">
                             <label for="nombre_sitio" class="form-label">Sitio <span class="text-danger">*</span></label>
                             <select class="form-select" id="nombre_sitio" name="nombre_sitio" required>

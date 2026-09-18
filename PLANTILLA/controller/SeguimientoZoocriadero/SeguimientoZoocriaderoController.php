@@ -64,6 +64,9 @@
         $sql = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql);
 
+        $sql3 = "SELECT MAX(id_seguimiento_zoo) FROM seguimiento_zoocriadero";
+        $id_seg = $obj->select($sql3);
+        
         $sql2 = "SELECT * from estado";
         $estados = $obj->select($sql2);
 
@@ -79,7 +82,7 @@
 
     $obj = new SeguimientoZoocriaderoModel();
 
-    $codigo = mb_strtoupper($_POST['codigo_Seguimiento']) ?? '';
+    $codigo = mb_strtoupper($_POST['codigo']) ?? '';
     $zoo = $_POST['select_zoo'] ?? '';
     $estado = $_POST['id_estado'];
     $usuario = $_POST['selectUsuarios'] ?? '';

@@ -1,11 +1,11 @@
 <style>
-.sidebar{
+
+.sidebar {
   width: 256px;
   height: 100vh;
   background-color: #fff;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
-
 }
 
 .logo-header{
@@ -14,11 +14,6 @@
   background-color: #0dcaf0;
   border-top-right-radius: 20px;
 }
-
-.menu{
-  background-color: #fff;
-}
-
 </style>
 <div class="sidebar">
   <div class="sidebar-logo">
@@ -264,9 +259,9 @@
           </a>
           <div class="collapse" id="actividadTerrono">
             <ul class="nav nav-collapse">
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Registrar actividad</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getRegistrar") ?>"><span class="sub-item">Registrar actividad</span><span
                     class="badge-pending">Próximo</span></a></li>
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Consultar actividad</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar") ?>"><span class="sub-item">Consultar actividad</span><span
                     class="badge-pending">Próximo</span></a></li>
             </ul>
           </div>
