@@ -6,14 +6,19 @@
             <div>
                 <label>Zoocriadero</label>
                 <select name="zoocriadero">
-                    <option value="">Todos</option>
-                    
+                   <option value="">Todos</option>
+                    <?php foreach ($zoocriaderos as $zoo): ?>
+                        <option value="<?= $zoo['id_zoocriadero'] ?>"><?= $zoo['cod_zoocriadero'] ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div>
                 <label>Actividad</label>
                 <select name="actividad">
-                    <option value="">Todas</option>
+                    <option value="">Todos</option>
+                    <<?php foreach ($actividades as $act): ?>
+                        <option value="<?= $act['id_actividad_zoo'] ?>"><?= $act['cod_actividad'] ?></option>
+                    <?php endforeach; ?>
                     
                 </select>
             </div>
@@ -38,28 +43,28 @@
         <div class="icono icono-azul">📋</div>
         <div>
             <p>Actividades Totales</p>
-            <span class="numero azul"><?= $totalActividades ?></span>
+            <!-- <span class="numero azul"><?= $totalActividades ?></span> -->
         </div>
     </div>
     <div class="tarjeta">
         <div class="icono icono-verde">✔</div>
         <div>
             <p>Actividades Completas</p>
-            <span class="numero verde"><?= $totalCompletas ?></span>
+            <!-- <span class="numero verde"><?= $totalCompletas ?></span> -->
         </div>
     </div>
     <div class="tarjeta">
         <div class="icono icono-naranja">⏱</div>
         <div>
             <p>En Progreso</p>
-            <span class="numero naranja"><?= $totalEnProgreso ?></span>
+            <!-- <span class="numero naranja"><?= $totalEnProgreso ?></span> -->
         </div>
     </div>
     <div class="tarjeta">
         <div class="icono icono-rojo">✖</div>
         <div>
             <p>Retrasadas</p>
-            <span class="numero rojo"><?= $totalRetrasadas ?></span>
+            <!-- <span class="numero rojo"><?= $totalRetrasadas ?></span> -->
         </div>
     </div>
 </div>
