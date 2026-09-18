@@ -131,7 +131,7 @@
 
                     <div class="mb-4">
                         <label class="form-label">Auxiliares asignados</label>
-                        <div class="border rounded p-3 overflow-auto" style="max-height: 250px;">
+                        <div class="border rounded p-3 overflow-auto" id="auxiliares-container" style="max-height: 250px;">
                             <?php foreach ($auxi as $usu) {
                                 $checked = in_array($usu['id_usuario'], $auxi_actuales ?? []) ? "checked" : "";
                             ?>
