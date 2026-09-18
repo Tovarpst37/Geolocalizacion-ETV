@@ -426,8 +426,15 @@ class SitiosController
             $this->postUpdate((int) $id, $nombre, $direccion, $barrio, $estado, $id_coor_final, $usuarios_asignados, $obj);
         }
     }
+
     public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado, ?int $id_coor, array $auxiliares, SitiosModel $obj)
     {
+        
+        if (empty($id_coor)) {
+            $estado = 2;
+        }
+        
+
         $sql = "UPDATE sitio SET 
         nombre_sitio = '$nombre',
         direccion = '$direccion',
@@ -439,11 +446,9 @@ class SitiosController
 
         if ($ejecutar) {
 
-            
             $sql_liberar = "UPDATE usuarios SET id_sitio = NULL WHERE id_sitio = $id";
             $obj->update($sql_liberar);
 
-           
             if (!empty($id_coor)) {
                 $sql_coor = "UPDATE usuarios SET id_sitio = $id WHERE id_usuario = $id_coor";
                 $obj->update($sql_coor);
