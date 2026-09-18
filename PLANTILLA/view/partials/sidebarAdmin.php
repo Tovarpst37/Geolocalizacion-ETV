@@ -1,19 +1,19 @@
 <style>
-  .sidebar {
-    width: 256px;
-    height: 100vh;
-    background-color: #fff;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
 
-  }
+.sidebar {
+  width: 256px;
+  height: 100vh;
+  background-color: #fff;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
 
-  .logo-header {
-    gap: 10;
-    width: 256px;
-    background-color: #0B79D9;
-    border-top-right-radius: 20px;
-  }
+.logo-header{
+  gap: 10;
+  width: 256px;
+  background-color: #0dcaf0;
+  border-top-right-radius: 20px;
+}
 </style>
 <div class="sidebar">
   <div class="sidebar-logo">
@@ -24,14 +24,14 @@
       </a>
       <div class="nav-toggle">
         <button class="btn btn-toggle toggle-sidebar">
-          <i class="gg-menu-right"></i>
+          <i class="gg-menu-right menu"></i>
         </button>
         <button class="btn btn-toggle sidenav-toggler">
-          <i class="gg-menu-left"></i>
+          <i class="gg-menu-left menu"></i>
         </button>
       </div>
       <button class="topbar-toggler more">
-        <i class="gg-more-vertical-alt"></i>
+        <i class="gg-more-vertical-alt menu"></i>
       </button>
     </div>
   </div>
