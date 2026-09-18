@@ -10,7 +10,9 @@
 
           <div class="mb-3">
             <label for="Codigo Actividad" class="form-label">Codigo de la actividad<span class="text-danger fs-4"> *</span></label>
-            <input type="text" class="form-control" id="Codigo Actividad" name="cod_actividad" placeholder="Ej: AZ-001" required>
+            
+            <input type="text" class="form-control" id="codigo_Actividad" name="codigo_Actividad" value = "AZ- <?php echo $id_seg[0]['max'] + 1;  ?>" disabled>
+            <input type="hidden" name="codigo" value = "AZ-<?php echo $id_seg[0]['max'] + 1;  ?>">
           </div>
 
           

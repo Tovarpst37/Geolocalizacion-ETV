@@ -8,7 +8,9 @@ class ActividadZoocriaderoController
 
     public function getRegistrar()
     {
-
+        $obj = new ActividadZoocriaderoModel();
+        $sql4 = "SELECT MAX(id_actividad_zoo) FROM actividad_zoocriadero";
+        $id_seg = $obj->select($sql4);
 
         include_once '../view/partials/ActividadZoocriadero/Registrar.php';
     }
@@ -21,7 +23,7 @@ class ActividadZoocriaderoController
         $cont = 0;
 
         $id = $_POST['id'] ?? '';
-        $codigo = mb_strtoupper($_POST['cod_actividad'] ?? '');
+        $codigo = mb_strtoupper($_POST['codigo'] ?? '');
         $nombre = $_POST['nombre_actividad'] ?? '';
 
         $errores = [];
@@ -32,10 +34,6 @@ class ActividadZoocriaderoController
 
         if (count($validar_exist) > 0) {
             $errores[] = "Ya existe una actividad con este codigo";
-        }
-
-        if (empty($codigo)) {
-            $errores[] = "El codigo de la actividad es obligatoria";
         }
 
         if (empty($nombre)) {
@@ -60,12 +58,6 @@ class ActividadZoocriaderoController
                 $errores[] = "El codigo debe contener un guion, como el siguiente Ejemplo: 'AZ-'";
             }
 
-            $resto_codigo = substr($codigo, 3);
-
-            // Validar que la parte restante sea EXACTAMENTE 3 números (ni más, ni menos)
-            if (!preg_match('/^\d{3}$/', $resto_codigo)) {
-                $errores[] = "El código debe contener una cantidad exacta de 3 números, como el siguiente Ejemplo: 'AZ-001'";
-            }
         }
 
         if (!empty($errores)) {
@@ -86,7 +78,7 @@ class ActividadZoocriaderoController
 
 
 
-        $codigo = mb_strtoupper($_POST['cod_actividad']);
+        $codigo = mb_strtoupper($_POST['codigo']);
         $nombre = $_POST['nombre_actividad'];
         $estado = 1;
 
@@ -121,7 +113,7 @@ class ActividadZoocriaderoController
             
             FROM actividad_zoocriadero a
             INNER JOIN estado e 
-            ON a.id_estado=e.id_estado";
+            ON a.id_estado=e.id_estado ORDER BY a.id_actividad_zoo";
 
         $datos = $obj->select($sql);
 
