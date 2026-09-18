@@ -57,91 +57,105 @@
                 <!-- sesion datos -->
 
 
+<div class="col">
+          <div class="card p-4 h-70 border-0 shadow rounded-4 text-start " style="max-width: 360px;">
 
-                <div class="col">
+            <!-- Badge de Estado -->
+            <div class="mb-2">
+              <span class="badge <?php echo $badgeClass; ?> rounded-pill px-3 py-2 fw-normal">
+                <?php echo ucfirst($o->getEstado()); ?>
+              </span>
+            </div>
 
-                    <div class="card p-3 h-100 text-center flex-column d-flex align-items-center justify-content-center" style="width: 100% !important; min-width: 0 !important; ">
+            <!-- Código e ID -->
+            <div class="mb-3">
+              <h4 class="fw-bold text-dark mb-0"><?php echo $o->getNombre(); ?></h4>
+              <small class="text-muted fw-semibold">ID <?php echo $o->getId(); ?></small>
+            </div>
 
-                        <ul class="list-group list-group-flush fs-3 w-100">
-                            <li class="list-group-item border-0 text-center p-1 d-flex justify-content-center align-items-center">
-                                <span class="badge fs-5 fw-bold <?php echo $badgeClass; ?> rounded-pill"><?php echo $o->getEstado(); ?></span>
-                            </li>
-                            <li class="list-group-item border-0 text-center fw-bolder p-1 d-flex justify-content-center align-items-center "><?php echo $o->getNombre(); ?></li>
-                            <li class="list-group-item fs-5 border-0 text-center p-1  d-flex justify-content-center align-items-center">Codigo: <?php echo $o->getCodigo(); ?></li>
+            <!-- Lista de datos con divisores -->
+            <ul class="list-group list-group-flush mb-4">
+              <li class="list-group-item px-1 py-2 border-top text-dark fw-medium" style="border-color: #e0e0e0 !important;">
+              Codigo: <?php echo $o->getCodigo(); ?>
+              </li>
+              <!-- Puedes agregar más elementos de lista si los requieres -->
+            </ul>
 
+            <!-- Botones de Acción -->
+            <div class="mt-auto d-flex gap-2">
+              <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEditar', array('id' => $o->getId())); ?>"
+                class="btn btn-primary w-50 py-2 fw-semibold">
+                Editar
+              </a>
 
-                        </ul>
-                        <div class="card-body ">
-                            <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEditar', array('id' => $o->getId())); ?>" class="btn btn-primary fs-4">
-                                Editar
-                            </a>
-
-                            <?php if ($estadoA):  ?>
-                                <button type="button" class="btn btn-danger fs-4" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $o->getId() ?>">
-                                    Inhabilitar
-                                </button>
-                            <?php else:  ?>
-                                <button type="button" class="btn btn-success fs-4" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $o->getId() ?>">
-                                    habilitar
-                                </button>
-                            <?php endif  ?>
-
-                        </div>
-
-
-                        <!-- sesion eliminar -->
-
-                        <div class="modal fade" id="exampleModal<?php echo $id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Inhabilitar Actividad</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>¿Estás seguro de inhabilitar?<?php echo $o->getNombre() ?></p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
-                                        <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'postDelete', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- sesion habilitar -->
-
-                        <div class="modal fade" id="exampleModalHabilitar<?php echo $id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">habilitar Actividad</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>¿Estás seguro de habilitar? <?php echo $o->getNombre() ?></p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
-                                        <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'postHabilitar', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+              <?php if ($estadoA): ?>
+                <button type="button" class="btn btn-danger w-50 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $o->getId(); ?>">
+                  Inhabilitar
+                </button>
+              <?php else: ?>
+                <button type="button" class="btn btn-success w-50 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $o->getId(); ?>">
+                  Habilitar
+                </button>
+              <?php endif; ?>
+            </div>
 
 
+            <!-- sesion eliminar -->
 
-
-
-                    </div>
-
+            <div class="modal fade" id="exampleModal<?php echo $id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Inhabilitar Actividad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>¿Estás seguro de inhabilitar? <?php echo $o->getNombre() ?></p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'postDelete', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
+                  </div>
                 </div>
-            <?php
-            }
-            ?>
+              </div>
+            </div>
+
+            <!-- sesion habilitar -->
+
+            <div class="modal fade" id="exampleModalHabilitar<?php echo $id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">habilitar Actividad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>¿Estás seguro de habilitar? <?php echo $o->getNombre() ?></p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'postHabilitar', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+          </div>
+
+        </div>
+      <?php
+      }
+      ?>
 
     </div>
-</div>
+  </div>
+
+
+
 
 
 <?php

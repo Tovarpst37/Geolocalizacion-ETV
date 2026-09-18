@@ -32,8 +32,8 @@
             LEFT JOIN sitio_deposito sd ON s.id_sitio = sd.id_sitio
             LEFT JOIN actividad_seg_terreno ast ON s.id_seguimiento_terreno = ast.id_seguimiento_terreno
             LEFT JOIN actividad_terreno at ON ast.id_actividad_terreno = at.id_actividad_terreno 
-                                        AND at.id_estado = 1          -- Solo actividades activas
-            WHERE r.nombre_rol IN ('Auxiliar Terreno', 'Coordinador Terreno')
+                                        AND at.id_estado = 1          
+            WHERE r.nombre_rol IN ('Auxiliar', 'Coordinador')
             GROUP BY 
                 s.id_seguimiento_terreno, 
                 s.cod_seguimiento, 
@@ -76,6 +76,9 @@
         $sql = "SELECT * from sitio";
         $sitio = $obj->select($sql);
 
+        $sql4 = "SELECT MAX(id_seguimiento_terreno) FROM seguimiento_terreno";
+        $id_seg = $obj->select($sql4);
+
         $sql2 = "SELECT * from estado";
         $estados = $obj->select($sql2);
 
@@ -91,7 +94,7 @@
 
     $obj = new SeguimientoTerrenoModel();
 
-    $codigo = mb_strtoupper($_POST['nombre_seguimiento']) ?? '';
+    $codigo = mb_strtoupper($_POST['codigo']) ?? '';
     $sitio = $_POST['select_ter'] ?? '';
     $estado = $_POST['id_estado'];
     $usuario = $_POST['selectUsuarios'] ?? '';
@@ -422,7 +425,7 @@ public function getSitios(){
     $sql = "SELECT id_sitio_deposito, codigo_sitio_deposito from sitio_deposito WHERE id_sitio = $1";
     $terreno = $obj->select($sql,[$id_sitio]);
     
-    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1 AND id_rol = 5";
+    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
     $usuarios = $obj->select($sql2,[$id_sitio]);
     
     $resultado = [

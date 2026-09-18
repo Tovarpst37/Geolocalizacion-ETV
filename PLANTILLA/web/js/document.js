@@ -9,7 +9,12 @@ function validarDocumento() {
     const valor = documento.value.trim();
 
     if (valor.length < 8) {
-        documentoError.textContent = 'El documento debe tener minimo 8 digitos';
+        documentoError.textContent = 'Dcumento minimo de 8 digitos';
+        documentoError.classList.remove('d-none');
+        return false;
+    }
+    if(!expreNt.test(valor)){
+        documentoError.textContent = 'Formato invalido de documento';
         documentoError.classList.remove('d-none');
         return false;
     }

@@ -10,7 +10,8 @@
 
           <div class="mb-3">
             <label for="codigo_tanque" class="form-label">Código del tanque</label>
-            <input type="text" class="form-control" id="codigo_tanque" name="codigo_tanque" placeholder="Ej: TQ-001" value="<?php echo $old['codigo_tanque'] ?? ''; ?>" required>
+            <input type="text" class="form-control" id="codigo_tanque" name="codigo_tanque" value = "TANQUE# <?php echo $id_tan[0]['max'] + 1;  ?>" disabled>
+            <input type="hidden" name="codigo" value = "TANQUE# <?php echo $id_tan[0]['max'] + 1;  ?>">
           </div>
 
           <div class="mb-3">

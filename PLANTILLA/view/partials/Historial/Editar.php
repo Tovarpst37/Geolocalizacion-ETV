@@ -22,7 +22,7 @@
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Código del Seguimiento</label>
                             <input type="text" class="form-control" name="cod_seguimiento"
-                                   value="<?php echo $seguimiento['cod_seguimiento']; ?>" required>
+                                   value="<?php echo $seguimiento['cod_seguimiento']; ?>" disabled>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Fecha</label>

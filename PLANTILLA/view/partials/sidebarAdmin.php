@@ -1,20 +1,19 @@
 <style>
-.sidebar{
+
+.sidebar {
   width: 256px;
   height: 100vh;
   background-color: #fff;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
-
 }
 
 .logo-header{
   gap: 10;
   width: 256px;
-  background-color: #0B79D9;
+  background-color: #0dcaf0;
   border-top-right-radius: 20px;
 }
-
 </style>
 <div class="sidebar">
   <div class="sidebar-logo">
@@ -25,14 +24,14 @@
       </a>
       <div class="nav-toggle">
         <button class="btn btn-toggle toggle-sidebar">
-          <i class="gg-menu-right"></i>
+          <i class="gg-menu-right menu"></i>
         </button>
         <button class="btn btn-toggle sidenav-toggler">
-          <i class="gg-menu-left"></i>
+          <i class="gg-menu-left menu"></i>
         </button>
       </div>
       <button class="topbar-toggler more">
-        <i class="gg-more-vertical-alt"></i>
+        <i class="gg-more-vertical-alt menu"></i>
       </button>
     </div>
   </div>
@@ -260,9 +259,9 @@
           </a>
           <div class="collapse" id="actividadTerrono">
             <ul class="nav nav-collapse">
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Registrar actividad</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getRegistrar") ?>"><span class="sub-item">Registrar actividad</span><span
                     class="badge-pending">Próximo</span></a></li>
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Consultar actividad</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar") ?>"><span class="sub-item">Consultar actividad</span><span
                     class="badge-pending">Próximo</span></a></li>
             </ul>
           </div>

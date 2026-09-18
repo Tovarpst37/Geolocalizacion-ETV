@@ -9,10 +9,10 @@
                 <form action="<?php echo getUrl("Terreno", "Terreno", "validarRegistrar") ?>" method="POST">
 
                     <div class="mb-3">
-                        <label for="codigo_sitio_deposito" class="form-label">Código de terreno <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="codigo_sitio_deposito" name="codigo_sitio_deposito" placeholder="Ingresa el código del terreno" value="<?php echo $old['codigo_sitio_deposito'] ?? ''; ?>" required>
+                        <label for="codigo_sitio_deposito" class="form-label">Código de terreno</label>
+                        <input type="text" class="form-control" id="codigo_sitio_deposito" value="<?php echo $codigo_generado; ?>" disabled readonly>
+                        <input type="hidden" name="codigo_sitio_deposito" value="<?php echo $codigo_generado; ?>">
                     </div>
-
                     <div class="mb-3">
                         <label for="nombre_sitio" class="form-label">Sitio <span class="text-danger">*</span></label>
                         <select class="form-select" id="nombre_sitio" name="nombre_sitio" required>
