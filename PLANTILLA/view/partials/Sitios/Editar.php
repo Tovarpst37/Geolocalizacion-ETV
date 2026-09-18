@@ -116,6 +116,25 @@
                         </div>
                     </div>
 
+                 
+                    <div class="mb-3">
+                        <label for="id_tipo_deposito" class="form-label">Tipo de depósito <span class="text-danger">*</span></label>
+                        <select class="form-select" id="id_tipo_deposito" name="id_tipo_deposito" required>
+                            <option value="" selected disabled>Selecciona un tipo de depósito</option>
+                            <?php foreach ($tipos_deposito as $td) {
+                                $selected = ($d['id_tipo_deposito'] == $td['id_tipo_deposito']) ? "selected" : "";
+                                echo "<option value='" . $td['id_tipo_deposito'] . "' $selected>" . $td['nombre'] . "</option>";
+                            } ?>
+                        </select>
+                    </div>
+
+                    <!-- AGREGADO: descripción (máx. 300 caracteres) -->
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" maxlength="300" placeholder="Descripción del sitio (máx. 300 caracteres)"><?php echo $d['descripcion'] ?? ''; ?></textarea>
+                        <div class="form-text text-end"><span id="contadorDescripcion">0</span>/300</div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="id_coor" class="form-label">Coordinador asignado</label>
                         <select class="form-select" id="id_coor" name="id_coor">
@@ -131,7 +150,7 @@
 
                     <div class="mb-4">
                         <label class="form-label">Auxiliares asignados</label>
-                        <div class="border rounded p-3 overflow-auto" style="max-height: 250px;">
+                        <div class="border rounded p-3 overflow-auto" id="auxiliares-container" style="max-height: 250px;">
                             <?php foreach ($auxi as $usu) {
                                 $checked = in_array($usu['id_usuario'], $auxi_actuales ?? []) ? "checked" : "";
                             ?>
@@ -165,3 +184,16 @@
         </div>
     </div>
 </div>
+
+<!-- AGREGADO: contador en vivo de caracteres de la descripción -->
+<script>
+    (function() {
+        const textarea = document.getElementById('descripcion');
+        const contador = document.getElementById('contadorDescripcion');
+        if (textarea && contador) {
+            const actualizar = () => contador.textContent = textarea.value.length;
+            actualizar();
+            textarea.addEventListener('input', actualizar);
+        }
+    })();
+</script>

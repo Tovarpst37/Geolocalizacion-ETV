@@ -6,88 +6,63 @@ class TerrenoController
 {
 
     public function getCreate()
-    {
-        $obj = new TerrenoModel();
+{
+    $obj = new TerrenoModel();
 
-        $sql1 = "SELECT * FROM estado";
-        $estados = $obj->select($sql1);
-        $sql2 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
-        $tipos_deposito = $obj->select($sql2);
+    $sql1 = "SELECT * FROM estado";
+    $estados = $obj->select($sql1);
+    $sql2 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
+    $tipos_deposito = $obj->select($sql2);
+    $sql3 = "SELECT id_sitio, nombre_sitio FROM sitio";
+    $sitios = $obj->select($sql3);
 
-        $sql3 = "SELECT id_sitio, nombre_sitio FROM sitio";
-        $sitios = $obj->select($sql3);
+    
+    $sql_max = "SELECT MAX(id_sitio_deposito) AS max_id FROM sitio_deposito";
+    $resultado_max = $obj->select($sql_max);
+    $siguiente_id = (int) ($resultado_max[0]['max_id'] ?? 0) + 1;
+    $codigo_generado = "Terreno_ID-" . $siguiente_id;
 
-        $old = $_SESSION['old_input'] ?? [];
-        unset($_SESSION['old_input']);
+    $old = $_SESSION['old_input'] ?? [];
+    unset($_SESSION['old_input']);
 
-        include_once '../view/partials/Terreno/Registrar.php';
+    include_once '../view/partials/Terreno/Registrar.php';
+}
+  public function validarRegistrar()
+{
+    $obj = new TerrenoModel();
+    $_SESSION['old_input'] = $_POST;
+    $cont = 0;
+
+    $codigo_sitio_deposito = trim($_POST['codigo_sitio_deposito'] ?? '');
+    $nombre_sitio = $_POST['nombre_sitio'] ?? '';
+    $nombre_tipo_deposito = $_POST['nombre_tipo_deposito'] ?? '';
+    $estado = $_POST['estado'] ?? '';
+    $descripcion = trim($_POST['descripcion'] ?? '');
+
+    $errores = [];
+
+    if (empty($nombre_sitio)) {
+        $errores[] = "Debe seleccionar un sitio.";
+    }
+    if (empty($nombre_tipo_deposito)) {
+        $errores[] = "Debe seleccionar un tipo de depósito.";
+    }
+    if (empty($estado)) {
+        $errores[] = "Debe seleccionar un estado.";
     }
 
-    public function validarRegistrar()
-    {
-        $obj = new TerrenoModel();
-        $_SESSION['old_input'] = $_POST;
-        $cont = 0;
-
-        $codigo_sitio_deposito = mb_strtoupper(trim($_POST['codigo_sitio_deposito'] ?? ''));
-        $nombre_sitio = $_POST['nombre_sitio'] ?? '';
-        $nombre_tipo_deposito = $_POST['nombre_tipo_deposito'] ?? '';
-        $estado = $_POST['estado'] ?? '';
-        $descripcion = trim($_POST['descripcion'] ?? '');
-
-        // validación por si ya existe el código
-        $sql_validar = "SELECT id_sitio  FROM sitio_deposito WHERE codigo_sitio_deposito = '$codigo_sitio_deposito'";
-        $existe = $obj->select($sql_validar);
-
-        $errores = [];
-
-        if (!empty($existe)) {
-            $errores[] = "Ya existe un terreno con ese código de sitio de depósito.";
-        }
-
-        if (empty($codigo_sitio_deposito)) {
-            $errores[] = "El código del sitio de depósito es obligatorio.";
-        }
-        if (empty($nombre_sitio)) {
-            $errores[] = "Debe seleccionar un sitio.";
-        }
-        if (empty($nombre_tipo_deposito)) {
-            $errores[] = "Debe seleccionar un tipo de depósito.";
-        }
-        if (empty($estado)) {
-            $errores[] = "Debe seleccionar un estado.";
-        }
-
-        $codigo_validar = '/^[a-zA-Z0-9\- ]+$/';
-
-        if (!empty($codigo_sitio_deposito) && !preg_match($codigo_validar, $codigo_sitio_deposito)) {
-            $errores[] = "El código solo puede contener letras, números, espacios y guiones.";
-        }
-
-        if (!empty($errores)) {
-
-            $sql2 = "SELECT * FROM estado";
-            $estados = $obj->select($sql2);
-
-            $sql3 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
-            $tipos_deposito = $obj->select($sql3);
-
-            $sql4 = "SELECT id_sitio, nombre_sitio FROM sitio";
-            $sitios = $obj->select($sql4);
-
-            include_once '../model/Errores/ErrorModal.php';
-
-            ErrorModal::verError($errores, getUrl('Terreno', 'Terreno', 'getCreate'));
-
-            return;
-        } else {
-            $cont = 1;
-        }
-
-        if ($cont == 1) {
-            $this->postInsert($codigo_sitio_deposito, (int) $nombre_sitio, (int) $nombre_tipo_deposito, (int) $estado, $descripcion, $obj);
-        }
+    if (!empty($errores)) {
+        include_once '../model/Errores/ErrorModal.php';
+        ErrorModal::verError($errores, getUrl('Terreno', 'Terreno', 'getCreate'));
+        return;
     }
+
+    $cont = 1;
+
+    if ($cont == 1) {
+        $this->postInsert($codigo_sitio_deposito, (int) $nombre_sitio, (int) $nombre_tipo_deposito, (int) $estado, $descripcion, $obj);
+    }
+}   
 
     public function postInsert(string $codigo_sitio_deposito1, int $nombre_sitio1, int $nombre_tipo_deposito1, int $estado1, string $descripcion1, TerrenoModel $obj)
     {
@@ -160,74 +135,45 @@ class TerrenoController
         include_once '../view/partials/Terreno/Editar.php';
     }
 
-    public function validarUpdate()
-    {
-        $obj = new TerrenoModel();
-        $cont = 0;
+  public function validarUpdate()
+{
+    $obj = new TerrenoModel();
+    $cont = 0;
 
-        $id = $_POST['id'] ?? '';
-        $codigo_sitio_deposito = mb_strtoupper(trim($_POST['codigo_sitio_deposito'] ?? ''));
-        $nombre_sitio = $_POST['nombre_sitio'] ?? '';
-        $nombre_tipo_deposito = $_POST['nombre_tipo_deposito'] ?? '';
-        $estado = $_POST['estado'] ?? '';
-        $descripcion = trim($_POST['descripcion'] ?? '');
+    $id = $_POST['id'] ?? '';
+    $codigo_sitio_deposito = trim($_POST['codigo_sitio_deposito'] ?? '');
+    $nombre_sitio = $_POST['nombre_sitio'] ?? '';
+    $nombre_tipo_deposito = $_POST['nombre_tipo_deposito'] ?? '';
+    $estado = $_POST['estado'] ?? '';
+    $descripcion = trim($_POST['descripcion'] ?? '');
 
-        $sql_validar = "SELECT id_sitio_deposito FROM sitio_deposito WHERE codigo_sitio_deposito = '$codigo_sitio_deposito' AND id_sitio_deposito != $id";
-        $existe = $obj->select($sql_validar);
+    $errores = [];
 
-        $errores = [];
-
-        if (!empty($existe)) {
-            $errores[] = "Ya existe otro terreno con ese código de sitio de depósito.";
-        }
-
-        if (empty($id)) {
-            $errores[] = "No se identificó el terreno a editar.";
-        }
-        if (empty($codigo_sitio_deposito)) {
-            $errores[] = "El código del sitio de depósito es obligatorio.";
-        }
-        if (empty($nombre_sitio)) {
-            $errores[] = "Debe seleccionar un sitio.";
-        }
-        if (empty($nombre_tipo_deposito)) {
-            $errores[] = "Debe seleccionar un tipo de depósito.";
-        }
-        if (empty($estado)) {
-            $errores[] = "Debe seleccionar un estado.";
-        }
-
-        $codigo_validar = '/^[a-zA-Z0-9\- ]+$/';
-        if (!empty($codigo_sitio_deposito) && !preg_match($codigo_validar, $codigo_sitio_deposito)) {
-            $errores[] = "El código solo puede contener letras, números, espacios y guiones.";
-        }
-
-        if (!empty($errores)) {
-
-            $sql = "SELECT * FROM sitio_deposito WHERE id_sitio_deposito = $id";
-            $datos = $obj->select($sql);
-
-            $sql2 = "SELECT id_sitio, nombre_sitio FROM sitio";
-            $sitios = $obj->select($sql2);
-
-            $sql3 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
-            $tipos_deposito = $obj->select($sql3);
-
-            $sql4 = "SELECT * FROM estado";
-            $estados = $obj->select($sql4);
-
-            include_once '../model/Errores/ErrorModal.php';
-            ErrorModal::verError($errores, getUrl('Terreno', 'Terreno', 'getEdit', array('id' => $id)));
-
-            return;
-        } else {
-            $cont = 1;
-        }
-
-        if ($cont == 1) {
-            $this->postUpdate((int) $id, $codigo_sitio_deposito, (int) $nombre_sitio, (int) $nombre_tipo_deposito, (int) $estado, $descripcion, $obj);
-        }
+    if (empty($id)) {
+        $errores[] = "No se identificó el terreno a editar.";
     }
+    if (empty($nombre_sitio)) {
+        $errores[] = "Debe seleccionar un sitio.";
+    }
+    if (empty($nombre_tipo_deposito)) {
+        $errores[] = "Debe seleccionar un tipo de depósito.";
+    }
+    if (empty($estado)) {
+        $errores[] = "Debe seleccionar un estado.";
+    }
+
+    if (!empty($errores)) {
+        include_once '../model/Errores/ErrorModal.php';
+        ErrorModal::verError($errores, getUrl('Terreno', 'Terreno', 'getEdit', array('id' => $id)));
+        return;
+    }
+
+    $cont = 1;
+
+    if ($cont == 1) {
+        $this->postUpdate((int) $id, $codigo_sitio_deposito, (int) $nombre_sitio, (int) $nombre_tipo_deposito, (int) $estado, $descripcion, $obj);
+    }
+}
 
     public function postUpdate(int $id, string $codigo_sitio_deposito, int $nombre_sitio, int $nombre_tipo_deposito, int $estado, string $descripcion, TerrenoModel $obj)
     {

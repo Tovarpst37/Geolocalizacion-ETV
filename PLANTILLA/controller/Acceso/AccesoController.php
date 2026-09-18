@@ -15,14 +15,7 @@ class AccesoController {
         $documento = trim($_POST['documento'] ?? '');
         $password  = $_POST['password'] ?? '';
 
-        if (strlen($documento) <= 7) {
-            $_SESSION['error'] = "El documento debe tener mas de 7 caracteres";
-            redirect("login.php");
-            return;
-        }
-
-        if (strlen($password) <= 7) {
-            $_SESSION['error'] = "La contrasena debe tener mas de 7 caracteres";
+        if (strlen($documento) <= 7 || strlen($password) <= 7) {
             redirect("login.php");
             return;
         }
