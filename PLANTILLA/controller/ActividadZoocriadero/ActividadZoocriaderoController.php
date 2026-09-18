@@ -113,7 +113,9 @@ class ActividadZoocriaderoController
             
             FROM actividad_zoocriadero a
             INNER JOIN estado e 
-            ON a.id_estado=e.id_estado ORDER BY a.id_actividad_zoo";
+            ON a.id_estado=e.id_estado 
+            WHERE e.tipo_estado = 'general'
+            ORDER BY a.id_actividad_zoo  ";
 
         $datos = $obj->select($sql);
 

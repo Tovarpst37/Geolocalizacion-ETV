@@ -70,6 +70,7 @@
                 <?php foreach ($estados as $est) {
                   $selected = ($d['id_estado'] == $est['id_estado']) ? "selected" : "";
                   echo "<option value='" . $est['id_estado'] . "' $selected>" . $est['nombre_estado'] . "</option>";
+                  
                 }; ?>
               </select>
             </div>

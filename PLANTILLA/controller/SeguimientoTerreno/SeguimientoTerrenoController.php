@@ -51,10 +51,10 @@
 
     
         $sql2 = "UPDATE seguimiento_terreno
-                SET id_estado = 2 
+                SET id_estado = 3 
                 WHERE fecha = CURRENT_DATE 
                 AND hora_fin < LOCALTIME 
-                AND id_estado = 1";
+                AND id_estado =  4";
 
         $ejecutar = $obj->update($sql2);
         
@@ -79,7 +79,7 @@
         $sql4 = "SELECT MAX(id_seguimiento_terreno) FROM seguimiento_terreno";
         $id_seg = $obj->select($sql4);
 
-        $sql2 = "SELECT * from estado";
+        $sql2 = "SELECT * from estado where tipo_estado = 'seguimiento'";
         $estados = $obj->select($sql2);
 
         $sql3 = "SELECT * from actividad_terreno WHERE id_estado = 1";
@@ -169,11 +169,11 @@
                 }
 
                 $_SESSION['mensaje_exito'] = "El Seguimiento de Terreno se registro correctamente.";
-                $sql2 = "UPDATE seguimiento_terreno 
-                        SET id_estado = 2 
-                        WHERE fecha = CURRENT_DATE 
-                        AND hora_fin < LOCALTIME 
-                        AND id_estado = 1";
+                $sql2 = "UPDATE seguimiento_terreno
+                SET id_estado = 3 
+                WHERE fecha = CURRENT_DATE 
+                AND hora_fin < LOCALTIME 
+                AND id_estado =  4";
 
                 $ejecutar2 = $obj->update($sql2);
                 redirect(getUrl("SeguimientoTerreno","SeguimientoTerreno","getConsultar"));
@@ -195,7 +195,7 @@ public function getEditar()
                 WHERE id_seguimiento_terreno = '$id'";
         $datos = $obj->select($sql);
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado WHERE tipo_estado = 'seguimiento'";
             $estados = $obj->select($sql3);
 
             $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1";
@@ -258,11 +258,11 @@ public function getEditar()
 
         $ejecutar = $obj->update($sql); 
 
-        $sql2 = "UPDATE seguimiento_terreno 
-                SET id_estado = 2 
+        $sql2 = "UPDATE seguimiento_terreno
+                SET id_estado = 3 
                 WHERE fecha = CURRENT_DATE 
                 AND hora_fin < LOCALTIME 
-                AND id_estado = 1";
+                AND id_estado =  4";
 
         $ejecutar2 = $obj->update($sql2);
 
@@ -301,7 +301,7 @@ public function getEditar()
                 echo '<script>alert("¡Este Seguimiento ya esta inhabilitado!");</script>';
                 redirect(getUrl("SeguimientoTerreno", "SeguimientoTerreno", "getConsultar"));
             } else if ($s['id_estado'] == 1) {
-                $sql = "UPDATE seguimiento_Terreno SET id_estado = 2 WHERE id_seguimiento_terreno = $id";
+                $sql = "UPDATE seguimiento_Terreno SET id_estado = 3 WHERE id_seguimiento_terreno = $id";
 
                 $ejecutar = $obj->delete($sql);
                 if ($ejecutar) {
@@ -401,10 +401,10 @@ public function getBuscar(){
 
     
         $sql2 = "UPDATE seguimiento_terreno
-                SET id_estado = 2 
+                SET id_estado = 3 
                 WHERE fecha = CURRENT_DATE 
                 AND hora_fin < LOCALTIME 
-                AND id_estado = 1";
+                AND id_estado =  4";
 
         $ejecutar = $obj->update($sql2);
         
