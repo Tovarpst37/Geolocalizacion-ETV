@@ -17,25 +17,35 @@
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Numero de Documento</label>
-                        <input type="text" class="form-control" id="docM" name="docM" placeholder="Numero de documento"
-                            required>
+                        <input type="text" class="form-control" id="docM" name="docM"
+                            value="<?php echo $documentoSesion; ?>" readonly required>
                     </div>
+
+
+
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Cantidad de peces nacidos</label>
-                        <input type="text" class="form-control" id="canpez" name="canpez"
-                            placeholder="Cantidad de peces" required>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="canpez" name="canpez"
+                                placeholder="Cantidad de peces" min="0" max="100" required>
+                        </div>
                     </div>
+
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Cantidad de peces machos muertos</label>
-                        <input type="text" class="form-control" id="muerto_Macho" name="muerto_Macho"
-                            placeholder="Ingrese el codigo del seguimiento" required>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="muerto_Macho" name="muerto_Macho"
+                                placeholder="Ingrese el codigo del seguimiento" min="0" max="100" required>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Cantidad de peces hembra muertos</label>
-                        <input type="text" class="form-control" id="muerto_Hembra" name="muerto_Hembra"
-                            placeholder="Ingrese el codigo del seguimiento" required>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="muerto_Hembra" name="muerto_Hembra"
+                                placeholder="Ingrese el codigo del seguimiento" min="0" max="100" required>
+                        </div>
                     </div>
 
                     <div class="mb-3">

@@ -17,7 +17,7 @@
                     <div class="mb-3">
                         <label for="documen" class="form-label">Número de documento</label>
                         <input type="text" class="form-control" id="documen" name="documen"
-                            placeholder="Ingrese el numero de documento" required>
+                            value="<?php echo $documentoSesion; ?>" readonly required>
                     </div>
 
                     <div class="mb-3">

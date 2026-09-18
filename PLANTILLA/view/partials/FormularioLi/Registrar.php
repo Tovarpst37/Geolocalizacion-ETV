@@ -17,8 +17,9 @@
                     <div class="mb-3">
                         <label for="docLi" class="form-label">Numero de documento</label>
                         <input type="text" class="form-control" id="docLi" name="docLi"
-                            placeholder="Ingrese el numero de documento" required>
+                            value="<?php echo $documentoSesion; ?>" readonly required>
                     </div>
+
 
                     <div class="mb-3">
                         <label for="fecha_horaLi" class="form-label">Fecha y hora de Limpieza</label>
@@ -26,8 +27,12 @@
                             <i class="fa-solid fa-calendar"></i>
                         </span>
                         <input type="datetime-local" class="form-control" id="fecha_horaLi" name="fecha_horaLi"
+                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
+                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;"
                             required>
                     </div>
+
+
 
                     <div class="mb-3">
                         <label class="form-label">Tipo de Limpieza</label>
