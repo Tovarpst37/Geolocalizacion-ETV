@@ -260,9 +260,9 @@
           </a>
           <div class="collapse" id="actividadTerrono">
             <ul class="nav nav-collapse">
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Registrar actividad</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getRegistrar") ?>"><span class="sub-item">Registrar actividad</span><span
                     class="badge-pending">Próximo</span></a></li>
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Consultar actividad</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar") ?>"><span class="sub-item">Consultar actividad</span><span
                     class="badge-pending">Próximo</span></a></li>
             </ul>
           </div>
