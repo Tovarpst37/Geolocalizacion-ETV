@@ -43,7 +43,7 @@ class ActividadZoocriaderoController
         }
 
         if (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u', $nombre)) {
-            
+
             $errores[] = "El nombre de la actividad solo debe contener letras y espacios (sin números ni símbolos).";
         }
 
@@ -241,7 +241,7 @@ class ActividadZoocriaderoController
     {
 
 
-        
+
         $nombre = $_POST['nombre_actividad'];
         $id = $_POST['id'];
 
