@@ -18,28 +18,37 @@
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Numero de documento</label>
                         <input type="text" class="form-control" id="num" name="num"
-                            placeholder="Ingrese el numero de documento" required>
+                            value="<?php echo $documentoSesion; ?>" readonly required>
                     </div>
 
 
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Nivel de agua adicionado</label>
-                        <input type="text" class="form-control" id="nv" name="nv"
-                            placeholder="Ingrese la adicción proporcionada al tanque" required>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="nv" name="nv" placeholder="Cantidad de peces"
+                                min="0" max="100" required>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">PH medido</label>
-                        <input type="text" class="form-control" id="ph" name="ph" placeholder="Ingrese el Ph del tanque"
-                            required>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="ph" name="ph"
+                                placeholder="Ingrese el Ph del tanque" placeholder="Cantidad de peces" min="0" max="100"
+                                required>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Temperatura</label>
-                        <input type="text" class="form-control" id="tem" name="tem" placeholder="Ingrese la temperatura"
-                            required>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="tem" name="tem"
+                                placeholder="Ingrese la temperatura" placeholder="Cantidad de peces" min="0" max="100"
+                                required>
+                        </div>
                     </div>
+
 
                     <div class="mb-3">
                         <label for="formulariocod" class="form-label">Observaciones</label>

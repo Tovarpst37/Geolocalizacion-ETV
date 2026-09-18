@@ -24,10 +24,12 @@
                     <div class="mb-3">
                         <label for="fecha_hora" class="form-label">Fecha y hora de alimentación</label>
                         <span class="icono">
-                            <i class="fa-solid fa-calender">
-                            </i>
+                            <i class="fa-solid fa-calendar-days"></i>
                         </span>
-                        <input type="date" class="form-control" id="fecha_hora" name="fecha_hora" required>
+                        <input type="datetime-local" class="form-control" id="fecha_hora" name="fecha_hora"
+                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
+                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;"
+                            required>
                     </div>
 
                     <div class="mb-3">

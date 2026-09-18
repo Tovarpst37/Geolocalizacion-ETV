@@ -17,7 +17,7 @@
                     <div class="mb-3">
                         <label for="docLa" class="form-label">Número de documento</label>
                         <input type="text" class="form-control" id="docLa" name="docLa"
-                            placeholder="Ingrese el numero de documento" required>
+                            value="<?php echo $documentoSesion; ?>" readonly required>
                     </div>
 
                     <div class="mb-3">
@@ -26,6 +26,8 @@
                             <i class="fa-solid fa-calendar"></i>
                         </span>
                         <input type="datetime-local" class="form-control" id="fecha_horaLa" name="fecha_horaLa"
+                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
+                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;"
                             required>
                     </div>
 
@@ -34,7 +36,6 @@
                         <div class="input-group">
                             <input type="number" class="form-control" id="porcAgua" name="porcAgua" placeholder="Ej. 20"
                                 min="0" max="100" required>
-                            <span class="input-group-text">%</span>
                         </div>
                     </div>
 
