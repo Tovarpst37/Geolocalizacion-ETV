@@ -348,7 +348,7 @@
           </a>
           <div class="collapse" id="reportesTerrono">
             <ul class="nav nav-collapse">
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Seguimiento de actividades</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("Reportes","Reportes","report");  ?>"><span class="sub-item">Seguimiento de actividades</span><span
                     class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a href="#"><span class="sub-item">Peces nacidos/muertos por
                     tanque</span><span class="badge-pending">Próximo</span></a></li>
