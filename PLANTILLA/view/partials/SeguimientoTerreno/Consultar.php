@@ -66,8 +66,15 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <span class="badge <?php echo $s['id_estado'] == 1 ? 'bg-success' : 'bg-danger'; ?>">
-                    <?php echo $s['id_estado'] == 1 ? 'Activo' : 'Inactivo'; ?>
+<span class="badge <?php echo $s['id_estado'] == 3 ? 'bg-danger' : ($s['id_estado'] == 4 ? 'bg-primary' : ($s['id_estado'] == 5 ? 'bg-success' : '')); ?>">
+                  
+                    <?php    
+                    switch($s['id_estado']){
+                      case 3: echo 'Pendiente'; break;
+                      case 4: echo 'En proceso'; break;
+                      case 5: echo 'Finalizado'; break; 
+                      
+                    } ?>
                 </span>
                 <a href="<?php echo getUrl("SeguimientoTerreno","SeguimientoTerreno","getEditar",array('id'=>$s['id_seguimiento_terreno']))?>" class="btn btn-primary">Editar</a>
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#seg<?php echo $s['id_seguimiento_terreno'] ?>">

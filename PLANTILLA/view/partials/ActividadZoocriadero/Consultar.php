@@ -39,9 +39,6 @@ else:
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
 
 
-
-
-
       <div class="d-flex justify-content-end w-100">
         <div class="input-group" style="max-width: 350px;">
           <form class="input-group" action="index.php" method="GET">
@@ -88,35 +85,34 @@ else:
       ?>
 
 
-        <!-- sesion datos -->
+        
 
 
 
         <div class="col">
           <div class="card p-4 h-70 border-0 shadow rounded-4 text-start " style="max-width: 360px;">
 
-            <!-- Badge de Estado -->
             <div class="mb-2">
               <span class="badge <?php echo $badgeClass; ?> rounded-pill px-3 py-2 fw-normal">
                 <?php echo ucfirst($o->getEstado()); ?>
               </span>
             </div>
 
-            <!-- Código e ID -->
+          
             <div class="mb-3">
               <h4 class="fw-bold text-dark mb-0"><?php echo $o->getNombre(); ?></h4>
               <small class="text-muted fw-semibold">ID <?php echo $o->getId(); ?></small>
             </div>
 
-            <!-- Lista de datos con divisores -->
+            
             <ul class="list-group list-group-flush mb-4">
               <li class="list-group-item px-1 py-2 border-top text-dark fw-medium" style="border-color: #e0e0e0 !important;">
               Codigo: <?php echo $o->getCodigo(); ?>
               </li>
-              <!-- Puedes agregar más elementos de lista si los requieres -->
+             
             </ul>
 
-            <!-- Botones de Acción -->
+            
             <div class="mt-auto d-flex gap-2">
               <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEditar', array('id' => $o->getId())); ?>"
                 class="btn btn-primary w-50 py-2 fw-semibold">
@@ -135,7 +131,7 @@ else:
             </div>
 
 
-            <!-- sesion eliminar -->
+           
 
             <div class="modal fade" id="exampleModal<?php echo $id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog">
@@ -155,7 +151,7 @@ else:
               </div>
             </div>
 
-            <!-- sesion habilitar -->
+            
 
             <div class="modal fade" id="exampleModalHabilitar<?php echo $id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog">
