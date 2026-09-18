@@ -9,7 +9,7 @@ class ReportesAeguimiento extends MasterModel{
 
     public function getZoocriaderos(){
 
-    return $this->select("SELECT id_zoocriadero, cod_zoocriadero FROM zoocriadero");
+    return $this->select("SELECT id_zoocriadero, cod_zoocriadero FROM actividad_zoocriadero");
         
     }
 
@@ -18,7 +18,7 @@ class ReportesAeguimiento extends MasterModel{
         return $this ->select("SELECT id_actividad_zoo, cod_actividad FROM actividad_zoocriadero");
     }   
 
-
+    
 
 
 
