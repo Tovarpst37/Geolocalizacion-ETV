@@ -3,11 +3,11 @@
 class ActividadTerreno
 {
      private int $id;
-     private String $codigo;
-     private String $nombre;
-     private String $estado;
+     private string $codigo;
+     private string $nombre;
+     private string $estado;
 
-     public function__construct(int $id,  String $nombre, String $estado)
+     public function__construct(int $id,  string $nombre, string $estado)
      {
         $this->id = $id;
         $this->codigo = $codigo;
