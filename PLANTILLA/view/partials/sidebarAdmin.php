@@ -1,20 +1,19 @@
 <style>
-.sidebar{
-  width: 256px;
-  height: 100vh;
-  background-color: #fff;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
+  .sidebar {
+    width: 256px;
+    height: 100vh;
+    background-color: #fff;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
 
-}
+  }
 
-.logo-header{
-  gap: 10;
-  width: 256px;
-  background-color: #0B79D9;
-  border-top-right-radius: 20px;
-}
-
+  .logo-header {
+    gap: 10;
+    width: 256px;
+    background-color: #0B79D9;
+    border-top-right-radius: 20px;
+  }
 </style>
 <div class="sidebar">
   <div class="sidebar-logo">
