@@ -17,12 +17,15 @@ class ZoocriaderoController
 
         $estados = $obj->select($sql3);
 
+        $sql4 = "SELECT MAX(id_zoocriadero) FROM zoocriadero";
+        $id_zoo = $obj->select($sql4);
 
-         $sql = "SELECT * from usuarios WHERE id_rol = 2 AND id_zoocriadero IS null";
+
+         $sql = "SELECT * from usuarios WHERE id_rol = 2 AND id_zoocriadero IS null AND id_sitio IS null";
 
         $coord = $obj->select($sql);
 
-        $sql2 = "SELECT * from usuarios WHERE id_rol = 4 AND id_zoocriadero IS null";
+        $sql2 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero IS null AND id_sitio IS null";
         $auxi = $obj->select($sql2);
 
         include_once '../model/Direcciones/direcciones.php';
@@ -34,7 +37,7 @@ class ZoocriaderoController
 
     $obj = new ZoocriaderoModel();
         $cont = 0;
-        $codigo = $_POST['codigo_zoocriadero'] ?? '';
+        $codigo = $_POST['codigo'] ?? '';
         $via_principal = $_POST['via_principal'] ?? '';
         $numero_via = $_POST['numero_via'] ?? '';
         $via_generadora = $_POST['via_generadora'] ?? '';
@@ -101,11 +104,11 @@ class ZoocriaderoController
 
             
 
-            $sql = "SELECT * from usuarios WHERE id_rol = 2 AND id_zoocriadero IS null";
+            $sql = "SELECT * from usuarios WHERE id_rol = 2 AND id_zoocriadero IS null AND id_sitio IS null";
 
             $coord = $obj->select($sql);
 
-            $sql2 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero IS null";
+            $sql2 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero IS null AND id_sitio IS null";
             $auxi = $obj->select($sql2);
 
             include_once '../model/Direcciones/direcciones.php';
@@ -264,16 +267,16 @@ class ZoocriaderoController
 
         $obj = new ZoocriaderoModel();
 
-        $sql = "SELECT * from usuarios WHERE id_rol = 2 AND id_zoocriadero IS null";
+        $sql = "SELECT * from usuarios WHERE id_rol = 2 AND id_zoocriadero IS null AND id_sitio IS null";
         $coord = $obj->select($sql);
 
         $sql7 = "SELECT * from usuarios WHERE id_rol = 2 AND id_zoocriadero = $1";
         $coordS = $obj->select($sql7,[$id]);
 
-        $sql2 = "SELECT * from usuarios WHERE id_rol = 4 AND id_zoocriadero IS null";
+        $sql2 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero IS null AND id_sitio IS null";
         $auxi = $obj->select($sql2);
 
-        $sql8 = "SELECT * from usuarios WHERE id_rol = 4 AND id_zoocriadero = $1";
+        $sql8 = "SELECT * from usuarios WHERE id_rol = 3 AND id_zoocriadero = $1";
         $auxiS = $obj->select($sql8,[$id]);
 
         $sql9 = "SELECT * from zoocriadero WHERE id_zoocriadero = $1";
