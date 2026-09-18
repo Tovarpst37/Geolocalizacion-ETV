@@ -1,26 +1,47 @@
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+  font-family: "Inter",sans-serif;
+}
+.logo-header{
+  gap: 10;
+  width: 256px;
+  background-color: #286cff;
+  border-top-right-radius: 20px;
+}
+
+.logo-header h3{
+  font-family: "Montserrat", sans-serif;
+  font-family: 40px; 
+  color: white;
+}
 
 .sidebar {
   width: 256px;
   height: 100vh;
-  background-color: #fff;
+  background-color: #F0F3F4;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
 }
 
-.logo-header{
-  gap: 10;
-  width: 256px;
-  background-color: #0dcaf0;
-  border-top-right-radius: 20px;
+.nav-item {
+  display:flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #757575;
+  text-decoration: none;
+  padding: 12px 8px;
+  border-radius: 8px;
 }
+
 </style>
 <div class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-header">
       <a href="index.php" class="logo">
-        <img src="assets/img/LogoProye.png" alt="navbar brand" class="navbar-brand"
-          style="width: 80px; height: 55px; border-radius: 50%; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast;" />
+        <h3>Hola, <?php echo $_SESSION['primer_nombre']; ?></h3>
       </a>
       <div class="nav-toggle">
         <button class="btn btn-toggle toggle-sidebar">

@@ -1,3 +1,20 @@
+<style>
+.btn-2::after {
+	content: "";
+	width: 100%;
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: calc(-100% - 80px);
+	border-bottom: 80px solid #286cff;
+	border-right: 80px solid transparent;
+	transition: .4s ease-in-out all;
+}
+
+.btn-2:hover::after {
+	left: 0;
+}
+</style>
 <div class="main-header">
   <div class="main-header-logo">
     <!-- Logo Header -->
@@ -25,9 +42,6 @@
 
       <!-- Saludo fijo al usuario (sin estilo, texto normal) -->
       <div class="lc-navbar-greeting">
-        <h3 class="mb-0">
-          Hola, <?php echo $_SESSION['primer_nombre']; ?>
-        </h3>
       </div>
 
       <ul class="navbar-nav topbar-nav align-items-center lc-navbar-actions">
@@ -113,7 +127,7 @@
 
         <!-- Botón fijo de cerrar sesión -->
         <li class="nav-item lc-logout-item ms-3">
-          <a href="<?php echo getUrl("Acceso","Acceso","logout")?>" class="btn btn-outline-primary lc-logout-btn">
+          <a href="<?php echo getUrl("Acceso","Acceso","logout")?>" class="btn btn-2 lc-logout-btn">
             <i class="fa fa-sign-out-alt me-1"></i> Cerrar Sesión
           </a>
         </li>
@@ -122,58 +136,4 @@
     </div>
   </nav>
   <!-- End Navbar -->
-
-  <style>
-    .lc-navbar {
-      background-color: #ffffff !important;
-      border-bottom: 1px solid #e6eefc !important;
-    }
-
-    .lc-logout-btn {
-      border-radius: 6px;
-      padding: 6px 16px;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    @media (max-width: 991.98px) {
-      .lc-navbar-actions {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        left: 0;
-        margin-top: 0;
-        background-color: #ffffff;
-        border: 1px solid #e6eefc;
-        border-radius: 0 0 10px 10px;
-        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.12);
-        padding: 12px 16px;
-        flex-direction: column;
-        align-items: stretch !important;
-        gap: 10px;
-        z-index: 1000;
-      }
-
-      .lc-navbar-actions .nav-item {
-        width: 100%;
-        margin-left: 0 !important; 
-      }
-
-      .lc-navbar-actions .topbar-icon {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .lc-logout-item {
-        border-top: 1px solid #e6eefc;
-        padding-top: 10px;
-      }
-
-      .lc-logout-btn {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-  </style>
 </div>

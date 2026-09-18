@@ -12,67 +12,6 @@
 
         <h4 class="mb-0">Modulos</h4>
 
-        <div class="mb-2">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="cb1" name="remember">
-                <label class="form-check-label" for="cb1">Zoocriadero</label>
-            </div>
-            <div class="container text-center mb-3 d-none" id="moduloszoocriadero">
-                <div class="row shadow round-3">
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">IN</label>
-                    </div>
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">SE</label>
-                    </div>
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">UP</label>
-                    </div>
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">DEL</label>
-                    </div>
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">?</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-         <div class="mb-2">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="cb2" name="remember">
-                <label class="form-check-label" for="cb2">Seguimiento</label>
-            </div>
-            <div class="container text-center mb-3 d-none" id="modulosseguimiento" >
-                <div class="row shadow round-3">
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">?</label>
-                    </div>
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">?</label>
-                    </div>
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">?</label>
-                    </div>
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">?</label>
-                    </div>
-                    <div class="col mb-1">
-                        <input type="checkbox" class="form-check-input">
-                        <label for="from-check-label" for="">?</label>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="d-flex justify-content-end gap-2">
             <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
@@ -81,4 +20,3 @@
 
     </form>
 <?php include_once '../view/partials/formulari/footer.php';?>   
-<script src="../view/Roles/js/checkbox.js"></script>

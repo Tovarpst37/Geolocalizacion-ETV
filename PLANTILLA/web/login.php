@@ -17,7 +17,6 @@ include_once '../view/partials/head.php';
                             id="documento"
                             name="documento"
                             placeholder="Numero de identificacion"
-                            tabindex="1"
                             required
                         >
                 </div>
@@ -32,7 +31,6 @@ include_once '../view/partials/head.php';
                             id="password"
                             name="password"
                             placeholder="Contrasena"
-                            tabindex="2"
                             required
                         >
                 </div>
