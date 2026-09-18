@@ -25,6 +25,9 @@ class TanqueController
         $sql = "SELECT * from tipo_tanque";
         $tiposTanque = $obj->select($sql);
 
+        $sql4 = "SELECT MAX(id_tanque) FROM tanque";
+        $id_tan = $obj->select($sql4);
+
         $sql2 = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql2);
 
@@ -43,7 +46,7 @@ class TanqueController
     {
         $obj = new TanqueModel();
         $cont = 0;
-        $codigo = mb_strtoupper($_POST['codigo_tanque'] ?? '');
+        $codigo = mb_strtoupper($_POST['codigo'] ?? '');
         $tipo = $_POST['id_tipo_tanque'] ?? '';
         $zoocriadero = $_POST['id_zoocriadero'] ?? '';
         $estado = $_POST['id_estado'] ?? '';
@@ -78,10 +81,7 @@ class TanqueController
             }
         }
 
-        $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
-        if (!empty($codigo) && !preg_match($codigo_validar, $codigo)) {
-            $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
-        }
+       
 
         if (!empty($errores)) {
             $_SESSION['old_input'] = $_POST;
@@ -116,7 +116,7 @@ class TanqueController
         move_uploaded_file($_FILES['img']['tmp_name'], $rutaCompleta);
 
         $tipo = $_POST['id_tipo_tanque'];
-        $codigo = mb_strtoupper($_POST['codigo_tanque']);
+        $codigo = mb_strtoupper($_POST['codigo']);
         $zoocriadero = $_POST['id_zoocriadero'];
         $estado = $_POST['id_estado'];
 
@@ -191,7 +191,7 @@ class TanqueController
         $obj = new TanqueModel();
         $cont = 0;
         $id = $_POST['id'] ?? '';
-        $codigo = mb_strtoupper($_POST['codigo_tanque'] ?? '');
+        $codigo = mb_strtoupper($_POST['codigo'] ?? '');
         $tipo = $_POST['id_tipo_tanque'] ?? '';
         $zoocriadero = $_POST['id_zoocriadero'] ?? '';
         $estado = $_POST['id_estado'] ?? '';
@@ -230,11 +230,7 @@ class TanqueController
             }
         }
 
-        $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
-        if (!empty($codigo) && !preg_match($codigo_validar, $codigo)) {
-            $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
-        }
-
+        
         if (!empty($errores)) {
 
 
@@ -272,7 +268,7 @@ class TanqueController
         move_uploaded_file($_FILES['img']['tmp_name'], $rutaCompleta);
 
         $tipo = $_POST['id_tipo_tanque'];
-        $codigo = mb_strtoupper($_POST['codigo_tanque']);
+        $codigo = mb_strtoupper($_POST['codigo']);
         $zoocriadero = $_POST['id_zoocriadero'];
         $estado = $_POST['id_estado'];
         $id = $_POST['id'];

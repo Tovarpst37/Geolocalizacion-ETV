@@ -82,7 +82,7 @@
 
     $obj = new SeguimientoZoocriaderoModel();
 
-    $codigo = mb_strtoupper($_POST['codigo_Seguimiento']) ?? '';
+    $codigo = mb_strtoupper($_POST['codigo']) ?? '';
     $zoo = $_POST['select_zoo'] ?? '';
     $estado = $_POST['id_estado'];
     $usuario = $_POST['selectUsuarios'] ?? '';

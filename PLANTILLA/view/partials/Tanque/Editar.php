@@ -14,14 +14,18 @@
             <input type="hidden" name="id" value="<?php echo $d['id_tanque']; ?>">
 
             <div class="mb-3">
+              <label class="form-label">Código del tanque</label>
+             
+              <input type="text" class="form-control" id="codigo_tanque" name="codigo_tanque" value="<?php echo $d['codigo_tanque']; ?>" disabled>
+            <input type="hidden" name="codigo" value="<?php echo $d['codigo_tanque']; ?>">
+            </div>
+
+            <div class="mb-3">
               <label for="img" class="form-label">Imagen del tanque</label>
               <input type="file" class="form-control" id="img" name="img" accept="image/*">
             </div>
 
-            <div class="mb-3">
-              <label class="form-label">Código del tanque</label>
-              <input type="text" class="form-control" name="codigo_tanque" value="<?php echo $d['codigo_tanque']; ?>">
-            </div>
+            
 
 
             <div class="mb-3">

@@ -76,6 +76,9 @@
         $sql = "SELECT * from sitio";
         $sitio = $obj->select($sql);
 
+        $sql4 = "SELECT MAX(id_seguimiento_terreno) FROM seguimiento_terreno";
+        $id_seg = $obj->select($sql4);
+
         $sql2 = "SELECT * from estado";
         $estados = $obj->select($sql2);
 
@@ -91,7 +94,7 @@
 
     $obj = new SeguimientoTerrenoModel();
 
-    $codigo = mb_strtoupper($_POST['nombre_seguimiento']) ?? '';
+    $codigo = mb_strtoupper($_POST['codigo']) ?? '';
     $sitio = $_POST['select_ter'] ?? '';
     $estado = $_POST['id_estado'];
     $usuario = $_POST['selectUsuarios'] ?? '';
