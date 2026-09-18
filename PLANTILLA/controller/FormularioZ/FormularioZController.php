@@ -29,7 +29,6 @@ class FormularioZController
     public function validarRegistrar()
     {
         $obj = new FormulariosModel();
-        $cont = 0;
 
         $codigose = trim($_POST['codigose'] ?? '');
         $documen = trim($_SESSION['documento'] ?? '');
@@ -37,29 +36,37 @@ class FormularioZController
         $tipo_pez = $_POST['tipo_pez'] ?? '';
         $tipo_alimen = $_POST['tipo_alimen'] ?? '';
         $ob = trim($_POST['ob'] ?? '');
+        $ob = strip_tags($ob);
 
         $errores = [];
 
+        // 1. Validar código ingresado
         if (empty($codigose)) {
             $errores[] = "El código de seguimiento es obligatorio.";
-        } else {
-            // Validar que el código solo tenga caracteres válidos
-            $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
-            if (!preg_match($codigo_validar, $codigose)) {
-                $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
-            } else {
-                
-                $sql_validar_seg = "SELECT id_estado FROM seguimiento_zoocriadero WHERE cod_seguimiento = '$1'";
-                $segExiste = $obj->select($sql_validar_seg, [$codigose]);
+        }
 
-                if (empty($segExiste)) {
-                    $errores[] = "El código de seguimiento no existe. No se puede crear uno nuevo desde este formulario.";
-                } elseif ($segExiste[0]['id_estado'] != 1) {
-                    $errores[] = "El seguimiento existe pero no se encuentra en estado ACTIVO.";
-                }
+        $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
+        if (!empty($codigose) && !preg_match($codigo_validar, $codigose)) {
+            $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
+        }
+
+        // 2. Validar existencia y estado del seguimiento en BD
+        $id_seguimiento_zoo = null;
+        if (!empty($codigose) && preg_match($codigo_validar, $codigose)) {
+            $sql_validar_seg = "SELECT id_seguimiento_zoo, id_estado FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1";
+            $existeSeg = $obj->select($sql_validar_seg, [$codigose]);
+
+            if (empty($existeSeg)) {
+                $errores[] = "No existe ningún seguimiento registrado con ese código.";
+            } elseif ($existeSeg[0]['id_estado'] != 1) {
+                // Mensaje exacto cuando no está activo:
+                $errores[] = "Lo siento, el seguimiento no está activo.";
+            } else {
+                $id_seguimiento_zoo = $existeSeg[0]['id_seguimiento_zoo'];
             }
         }
 
+        // 3. Validar Documento de usuario
         if (empty($documen)) {
             $errores[] = "El número de documento es obligatorio.";
         } else {
@@ -71,6 +78,7 @@ class FormularioZController
             }
         }
 
+        // 4. Validar campos del formulario
         if (empty($fecha_hora)) {
             $errores[] = "La fecha y hora son obligatorias.";
         }
@@ -86,7 +94,11 @@ class FormularioZController
         if (empty($ob)) {
             $errores[] = "Las observaciones son obligatorias.";
         }
+        if (strlen($ob) > 250) {
+            $errores[] = "Las observaciones no pueden superar los 250 caracteres.";
+        }
 
+        // 5. Manejo de errores y redirección a la vista registrar
         if (!empty($errores)) {
             $_SESSION['old_input'] = $_POST;
 
@@ -107,82 +119,62 @@ class FormularioZController
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError($errores, getUrl('FormularioZ', 'FormularioZ', 'getRegistrar'));
 
-            return;
-        } else {
-            $cont = 1;
+            return; // Detiene la ejecución aquí para no insertar datos
         }
 
-        if ($cont == 1) {
-            $this->postInsert();
-        }
+        // Si no hay errores, procede con la inserción
+        $this->postInsert($id_seguimiento_zoo);
     }
 
     private function getOrCreateActividadZoo($obj, $nombre, $codigoDefault)
     {
-        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad = '$nombre'";
-        $res = $obj->select($sqlBuscar);
+        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad = $1";
+        $res = $obj->select($sqlBuscar, [$nombre]);
 
         if (!empty($res)) {
             return $res[0]['id_actividad_zoo'];
         }
 
         $sqlCrear = "INSERT INTO actividad_zoocriadero (cod_actividad, nombre_actividad, id_estado) 
-                     VALUES ('$codigoDefault', '$nombre', 1) 
+                     VALUES ($1, $2, 1) 
                      RETURNING id_actividad_zoo";
-        $creado = $obj->select($sqlCrear);
+        $creado = $obj->select($sqlCrear, [$codigoDefault, $nombre]);
 
         return !empty($creado) ? $creado[0]['id_actividad_zoo'] : null;
     }
 
-    public function postInsert()
+    public function postInsert($id_seguimiento_zoo = null)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $obj = new FormulariosModel();
 
-            $codigose = $_POST['codigose'] ?? '';
-            $documen = $_SESSION['documento'] ?? '';
-            $fecha_hora = $_POST['fecha_hora'] ?? '';
+            $codigose = trim($_POST['codigose'] ?? '');
             $tipo_pez = $_POST['tipo_pez'] ?? '';
             $tipo_alimen = $_POST['tipo_alimen'] ?? '';
-            $ob = $_POST['ob'] ?? '';
+            $ob = trim($_POST['ob'] ?? '');
+            $ob = strip_tags($ob);
+            $fecha_hora = $_POST['fecha_hora'] ?? '';
 
             $fecha_array = explode(" ", $fecha_hora);
             $fecha = !empty($fecha_array[0]) ? $fecha_array[0] : date('Y-m-d');
-            $hora = !empty($fecha_array[1]) ? $fecha_array[1] : date('H:i:s');
 
-            $sqlExiste = "SELECT id_seguimiento_zoo, cod_seguimiento 
-                      FROM seguimiento_zoocriadero 
-                      WHERE cod_seguimiento = '$codigose'";
-            $existe = $obj->select($sqlExiste);
+            if (empty($id_seguimiento_zoo)) {
+                $sqlExiste = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1 AND id_estado = 1";
+                $existe = $obj->select($sqlExiste, [$codigose]);
 
-            $id_seguimiento_zoo = null;
-
-            if (!empty($existe)) {
-                $id_seguimiento_zoo = $existe[0]['id_seguimiento_zoo'];
-            } else {
-                $sqlUser = "SELECT id_usuario FROM usuarios WHERE documento = '$documen'";
-                $userResult = $obj->select($sqlUser);
-                $id_usuario = !empty($userResult) ? $userResult[0]['id_usuario'] : 1;
-
-                $sqlTanque = "SELECT id_tanque FROM tanque LIMIT 1";
-                $tanqueResult = $obj->select($sqlTanque);
-                $id_tanque = !empty($tanqueResult) ? $tanqueResult[0]['id_tanque'] : 1;
-
-                $sqlInsertSeg = "INSERT INTO seguimiento_zoocriadero 
-                             (cod_seguimiento, fecha, id_tanque, id_usuario, id_estado, hora_inicio) 
-                             VALUES ('$codigose', '$fecha', $id_tanque, $id_usuario, 1, '$hora') 
-                             RETURNING id_seguimiento_zoo";
-
-                $resSeg = $obj->insert($sqlInsertSeg);
-
-                if ($resSeg) {
-                    $nuevoSeg = $obj->select("SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = '$codigose'");
-                    $id_seguimiento_zoo = $nuevoSeg[0]['id_seguimiento_zoo'];
+                if (empty($existe)) {
+                    include_once '../model/Errores/ErrorModal.php';
+                    ErrorModal::verError(
+                        ["Lo siento, el seguimiento no está activo."],
+                        getUrl('FormularioZ', 'FormularioZ', 'getRegistrar')
+                    );
+                    return;
                 }
+
+                $id_seguimiento_zoo = $existe[0]['id_seguimiento_zoo'];
             }
 
-            if ($id_seguimiento_zoo) {
-                $sqlSub = "INSERT INTO sub_actividades 
+            $sqlSub = "INSERT INTO sub_actividades 
                (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
                 can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
                 estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
@@ -190,37 +182,32 @@ class FormularioZController
                 estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
                 id_estado, id_seguimiento_zoo, cod_seguimiento) 
                VALUES 
-               ('$tipo_alimen', '$fecha', '$tipo_pez', '$ob', 
+               ($1, $2, $3, $4, 
                 NULL, NULL, NULL, NULL, 
                 NULL, NULL, NULL, NULL, NULL, 
                 NULL, NULL, NULL, NULL, NULL, 
                 NULL, NULL, NULL, NULL, 
-                1, $id_seguimiento_zoo, '$codigose')
+                1, $5, $6)
                RETURNING id_sub_actividad";
 
-                $resSub = $obj->select($sqlSub);
+            $resSub = $obj->select($sqlSub, [$tipo_alimen, $fecha, $tipo_pez, $ob, $id_seguimiento_zoo, $codigose]);
 
-                if (!empty($resSub)) {
-                    $id_sub_actividad = $resSub[0]['id_sub_actividad'];
+            if (!empty($resSub)) {
+                $id_sub_actividad = $resSub[0]['id_sub_actividad'];
 
-                    // Vincular con el catálogo de tipos de actividad
-                    $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Alimentacion', 'ALI001');
-                    if ($id_actividad_zoo) {
-                        $obj->insert("INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) 
-                                      VALUES ($id_actividad_zoo, $id_sub_actividad)");
-                    }
-
-                    redirect(getUrl("FormularioZ", "FormularioZ", "getRegistrar"));
-                } else {
-                    echo "Error al guardar el detalle en sub_actividades.";
+                $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Alimentacion', 'ALI001');
+                if ($id_actividad_zoo) {
+                    $obj->insert(
+                        "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
+                        [$id_actividad_zoo, $id_sub_actividad]
+                    );
                 }
+
+                redirect(getUrl("FormularioZ", "FormularioZ", "getRegistrar"));
             } else {
-                echo "Error al procesar el código de seguimiento.";
+                echo "Error al guardar el detalle en sub_actividades.";
             }
         }
     }
-
-
-
 }
 ?>
