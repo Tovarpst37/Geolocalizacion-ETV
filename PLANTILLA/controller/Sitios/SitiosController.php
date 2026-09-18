@@ -4,7 +4,6 @@ include_once '../model/Sitios/SitiosModel.php';
 class SitiosController
 {
 
-    // AGREGADO: genera "$2,$3,$4..." para armar cláusulas IN (...) con cantidad variable de valores
     private function inPlaceholders(array $items, int $start = 1): array
     {
         $placeholders = [];
@@ -63,7 +62,7 @@ class SitiosController
               WHERE id_rol = 5 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
         $auxi = $obj->select($sql5);
 
-        // AGREGADO: catálogo de tipos de depósito para el select del formulario
+        
         $sql6 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
         $tipos_deposito = $obj->select($sql6);
 
@@ -94,11 +93,11 @@ class SitiosController
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
-        // AGREGADO: tipo de depósito y descripción
+        
         $id_tipo_deposito = $_POST['id_tipo_deposito'] ?? '';
         $descripcion = trim($_POST['descripcion'] ?? '');
 
-        // PARAMETRIZADO
+       
         $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = $1";
         $existe = $obj->select($sql_validar, [$nombre]);
 
@@ -142,7 +141,6 @@ class SitiosController
             $errores[] = "Debe seleccionar un coordinador.";
         }
 
-        // AGREGADO: validación de tipo de depósito y longitud de descripción
         if (empty($id_tipo_deposito)) {
             $errores[] = "Debe seleccionar un tipo de depósito.";
         }
@@ -155,7 +153,7 @@ class SitiosController
             $errores[] = "El nombre solo puede contener letras y espacios.";
         }
 
-        // el coordinador debe ser rol 3 (Coordinador Terreno) y no estar ya asignado — PARAMETRIZADO
+      
         if (!empty($id_coor)) {
             $sql_coor = "SELECT id_usuario FROM usuarios 
                      WHERE id_usuario = $1 
@@ -167,7 +165,7 @@ class SitiosController
             }
         }
 
-        // los auxiliares deben ser rol 5 (Auxiliar Terreno) y no estar ya asignados — PARAMETRIZADO (IN dinámico)
+       
         if (!empty($usuarios_asignados)) {
             $ids_aux = array_map('intval', $usuarios_asignados);
             $placeholders = implode(',', $this->inPlaceholders($ids_aux));
@@ -197,7 +195,7 @@ class SitiosController
                   FROM usuarios WHERE id_rol = 5 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
             $auxi = $obj->select($sql5);
 
-            // AGREGADO: recargar tipos de depósito para volver a pintar el formulario con errores
+            
             $sql6 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
             $tipos_deposito = $obj->select($sql6);
 
@@ -226,7 +224,7 @@ class SitiosController
         $id_tipo_deposito = $id_tipo_deposito1;
         $descripcion = $descripcion1;
 
-        // PARAMETRIZADO
+     
         $sql = "INSERT INTO sitio (nombre_sitio, direccion, id_barrio, id_estado, id_tipo_deposito, descripcion) 
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING id_sitio";
@@ -301,7 +299,6 @@ class SitiosController
 
         $obj = new SitiosModel();
 
-        // PARAMETRIZADO
         $sql = "SELECT * from sitio WHERE id_sitio = $1";
         $datos = $obj->select($sql, [$id]);
         include_once '../model/Direcciones/direcciones.php';
@@ -331,7 +328,7 @@ class SitiosController
         $auxi_result = $obj->select($sql7, [$id]);
         $auxi_actuales = array_column($auxi_result, 'id_usuario');
 
-        // AGREGADO: catálogo de tipos de depósito (id_tipo_deposito y descripcion actuales ya vienen en $datos[0])
+      
         $sql8 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
         $tipos_deposito = $obj->select($sql8);
 
@@ -358,11 +355,10 @@ class SitiosController
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
-        // AGREGADO: tipo de depósito y descripción
+      
         $id_tipo_deposito = $_POST['id_tipo_deposito'] ?? '';
         $descripcion = trim($_POST['descripcion'] ?? '');
 
-        // PARAMETRIZADO
         $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = $1 AND id_sitio != $2";
         $existe = $obj->select($sql_validar, [$nombre, $id]);
 
@@ -396,7 +392,7 @@ class SitiosController
             $errores[] = "Debe seleccionar un estado.";
         }
 
-        // AGREGADO: validación de tipo de depósito y longitud de descripción
+       
         if (empty($id_tipo_deposito)) {
             $errores[] = "Debe seleccionar un tipo de depósito.";
         }
@@ -409,7 +405,6 @@ class SitiosController
             $errores[] = "El nombre solo puede contener letras y espacios.";
         }
 
-        // PARAMETRIZADO
         if (!empty($id_coor)) {
             $sql_coor = "SELECT id_usuario FROM usuarios 
                      WHERE id_usuario = $1 
@@ -421,7 +416,7 @@ class SitiosController
             }
         }
 
-        // PARAMETRIZADO (IN dinámico + exclusión del sitio actual)
+       
         if (!empty($usuarios_asignados)) {
             $ids_aux = array_map('intval', $usuarios_asignados);
             $placeholders = implode(',', $this->inPlaceholders($ids_aux, 2));
@@ -464,7 +459,7 @@ class SitiosController
             $auxi_result = $obj->select($sql7, [$id]);
             $auxi_actuales = array_column($auxi_result, 'id_usuario');
 
-            // AGREGADO: recargar tipos de depósito para volver a pintar el formulario con errores
+           
             $sql8 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
             $tipos_deposito = $obj->select($sql8);
 
@@ -490,7 +485,7 @@ class SitiosController
             $estado = 2;
         }
 
-        // PARAMETRIZADO
+        
         $sql = "UPDATE sitio SET 
         nombre_sitio = $1,
         direccion = $2,
