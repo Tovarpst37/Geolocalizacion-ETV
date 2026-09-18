@@ -18,7 +18,9 @@
 
             <div class="mb-3">
               <label class="form-label">Código del Zoocriadero</label>
-              <input type="text" class="form-control" name="cod_zoocriadero" value="<?php echo $d['cod_zoocriadero']; ?>">
+
+              <input type="text" class="form-control" id="cod_zoocriadero" name="codigo_zoocriadero" value="<?php echo $d['cod_zoocriadero']; ?>" disabled>
+            <input type="hidden" name="codigo" value="<?php echo $d['cod_zoocriadero']; ?>">
             </div>
 
 <?php
