@@ -17,7 +17,7 @@
 
             <div class="mb-3">
               <label class="form-label">Código de la actividad</label>
-              <input type="text" class="form-control" name="cod_actividad" value="<?php echo $d['cod_actividad']; ?>">
+              <input type="text" class="form-control" name="cod_actividad" value="<?php echo $d['cod_actividad']; ?>"readonly>
             </div>
 
              <div class="mb-3">
