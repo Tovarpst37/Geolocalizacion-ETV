@@ -10,7 +10,7 @@
   .logo-header {
     gap: 10;
     width: 256px;
-    background-color: #0dcaf0;
+    background-color: #6695F2;
     border-top-right-radius: 20px;
   }
 </style>
@@ -258,10 +258,12 @@
           </a>
           <div class="collapse" id="actividadTerrono">
             <ul class="nav nav-collapse">
-              <li class="sub-item-pending"><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getRegistrar") ?>"><span class="sub-item">Registrar actividad</span><span
-                    class="badge-pending">Próximo</span></a></li>
-              <li class="sub-item-pending"><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar") ?>"><span class="sub-item">Consultar actividad</span><span
-                    class="badge-pending">Próximo</span></a></li>
+              <li class="sub-item-pending"><a
+                  href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getRegistrar") ?>"><span
+                    class="sub-item">Registrar actividad</span><span class="badge-pending">Próximo</span></a></li>
+              <li class="sub-item-pending"><a
+                  href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar") ?>"><span
+                    class="sub-item">Consultar actividad</span><span class="badge-pending">Próximo</span></a></li>
             </ul>
           </div>
         </li>
@@ -346,12 +348,14 @@
           </a>
           <div class="collapse" id="reportesTerrono">
             <ul class="nav nav-collapse">
-              <li class="sub-item-pending"><a href="<?php echo getUrl("Reportes", "Reportes", "report");  ?>"><span class="sub-item">Seguimiento de actividades</span><span
-                    class="badge-pending">Próximo</span></a></li>
+              <li class="sub-item-pending"><a href="<?php echo getUrl("Reportes", "Reportes", "report"); ?>"><span
+                    class="sub-item">Seguimiento de actividades</span><span class="badge-pending">Próximo</span></a>
+              </li>
               <li class="sub-item-pending"><a href="#"><span class="sub-item">Peces nacidos/muertos por
                     tanque</span><span class="badge-pending">Próximo</span></a></li>
-              <li class="sub-item-pending"><a href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques");  ?>"><span class="sub-item">Tanques por zoocriadero</span><span
-                    class="badge-pending">Próximo</span></a></li>
+              <li class="sub-item-pending"><a
+                  href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques"); ?>"><span
+                    class="sub-item">Tanques por zoocriadero</span><span class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a href="#"><span class="sub-item">Sitios registrados</span><span
                     class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a href="#"><span class="sub-item">Actividades de terreno por
