@@ -67,6 +67,24 @@ class ReportesController{
         $totalActividades = count($seguimientos);
         $conteoEstado = [];
 
+        $totalRetrasadas = 0;
+        $hoy =date("Y-m-d");
+
+        foreach($seguimientos as $s){
+    $estado = $s['estado'];
+
+     if(!isset($conteoEstado[$estado])){
+        $conteoEstado[$estado] = 0;
+    }
+    $conteoEstado[$estado]++;
+
+    // Retrasada: no está finalizada y su fecha ya pasó
+    if($estado != $finalizado && $s['fecha_registro'] < $hoy){
+        $totalRetrasadas++;
+    }
+}
+
+
         foreach($seguimientos as $s){
             $estado = $s['estado'];
 
@@ -82,7 +100,7 @@ class ReportesController{
         $totalPendientes = $conteoEstado[$pendiente] ?? 0;
 
         // Pendiente por definir: todavia no hay logica para calcular las retrasadas
-        $totalRetrasadas = 0;
+        
 
         include_once '../view/reportes/reportes.php';
     }
@@ -102,7 +120,7 @@ class ReportesController{
 
     public function consultarSeguimiento($obj, $zoocriadero, $actividad, $fechaIni, $fechaFin){
 
-        // Una fila por cada actividad enlazada a un seguimiento (sin sub_actividades)
+    
         $sql = "SELECT
             az.nombre_actividad AS actividad,
             z.cod_zoocriadero   AS zoocriadero,
@@ -164,11 +182,31 @@ class ReportesController{
                 'fecha_fin'    => $filtroFechaFin,
             ]));
             exit;
+
         }
 
-        $seguimientos = $this->consultarSeguimiento(
+            $seguimientos = $this->consultarSeguimiento(
             $obj, $filtroZoocriadero, $filtroActividad, $filtroFechaInicio, $filtroFechaFin
-        );
+          );
+
+          if(empty($seguimientos)){
+
+            // Se vuelve a la pantalla del reporte, que muestra el mensaje de error
+            $url = getUrl('Reportes', 'Reportes', 'report');
+            $separador = (strpos($url, '?') === false) ? '?' : '&';
+
+            header('Location: ' . $url . $separador . http_build_query([
+                'zoocriadero'  => $filtroZoocriadero,
+                'actividad'    => $filtroActividad,
+                'fecha_inicio' => $filtroFechaInicio,
+                'fecha_fin'    => $filtroFechaFin,
+            ]));
+            exit;
+
+
+        }
+
+        
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();

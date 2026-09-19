@@ -63,7 +63,7 @@ $urlLimpiar = $urlReporte . (strpos($urlReporte, '?') === false ? '?' : '&') . '
                 <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
                 <button type="button" class="btn-limpiar"
                         onclick="location.href='<?= $urlLimpiar ?>'">Limpiar Filtros</button>
-                <button type="button" class="btn-reportes"
+                <button type="button" class="btn-reportes"<?= empty($seguimientos) ? 'disabled' : '' ?>
                         onclick="location.href='<?= $urlExcel ?>'">Generar Reportes</button>
             </div>
         </div>
