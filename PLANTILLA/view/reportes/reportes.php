@@ -13,6 +13,9 @@ $urlExcel .= (strpos($urlExcel, '?') === false ? '?' : '&') . http_build_query([
     'fecha_inicio' => $filtroFechaInicio,
     'fecha_fin'    => $filtroFechaFin,
 ]);
+
+$urlLimpiar = $urlReporte . (strpos($urlReporte, '?') === false ? '?' : '&') . 'limpiar=1';
+
 ?>
 
 <div class="caja">
@@ -43,32 +46,32 @@ $urlExcel .= (strpos($urlExcel, '?') === false ? '?' : '&') . http_build_query([
                     <?php foreach ($actividades as $act): ?>
                         <option value="<?= $act['id_actividad_zoo'] ?>"
                             <?= $filtroActividad == $act['id_actividad_zoo'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($act['nombre_actividad']) ?>
+                            <?= ($act['nombre_actividad'] ?? '') ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div>
                 <label>Fecha Inicio</label>
-                <input type="date" name="fecha_inicio" value="<?= htmlspecialchars($filtroFechaInicio) ?>">
+                <input type="date" name="fecha_inicio" value="<?= ($filtroFechaInicio) ?>">
             </div>
             <div>
                 <label>Fecha Fin</label>
-                <input type="date" name="fecha_fin" value="<?= htmlspecialchars($filtroFechaFin) ?>">
+                <input type="date" name="fecha_fin" value="<?= ($filtroFechaFin) ?>">
             </div>
             <div>
                 <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
                 <button type="button" class="btn-limpiar"
-                        onclick="location.href='<?= htmlspecialchars($urlReporte) ?>'">Limpiar Filtros</button>
+                        onclick="location.href='<?= $urlLimpiar ?>'">Limpiar Filtros</button>
                 <button type="button" class="btn-reportes"
-                        onclick="location.href='<?= htmlspecialchars($urlExcel) ?>'">Generar Reportes</button>
+                        onclick="location.href='<?= $urlExcel ?>'">Generar Reportes</button>
             </div>
         </div>
     </form>
 </div>
 
 <?php if ($mensajeError): ?>
-    <div class="caja mensaje-error"><?= htmlspecialchars($mensajeError) ?></div>
+    <div class="caja mensaje-error"><?= ($mensajeError) ?></div>
 <?php endif; ?>
 
 <div class="caja tarjetas">
@@ -127,16 +130,17 @@ $urlExcel .= (strpos($urlExcel, '?') === false ? '?' : '&') . http_build_query([
                         $claseBadge = 'badge-rojo';
                     }
 
-                    $fechaInicio = date('d/m/Y', strtotime($s['fecha_inicio']));
-                    $fechaFin    = $s['fecha_fin'] ? date('d/m/Y', strtotime($s['fecha_fin'])) : '-';
+                    $fecha       = date('d/m/Y', strtotime($s['fecha_registro']));
+                    $fechaInicio = $fecha . ($s['hora_inicio'] ? ' ' . substr($s['hora_inicio'], 0, 5) : '');
+                    $fechaFin    = $s['hora_fin'] ? $fecha . ' ' . substr($s['hora_fin'], 0, 5) : '-';
                 ?>
                 <tr>
-                    <td><?= htmlspecialchars($s['actividad']) ?></td>
-                    <td><?= htmlspecialchars($s['zoocriadero']) ?></td>
+                    <td><?= $s['actividad'] ?? '' ?></td>
+                    <td><?= $s['zoocriadero'] ?? ''?></td>
                     <td><?= $fechaInicio ?></td>
                     <td><?= $fechaFin ?></td>
-                    <td><?= htmlspecialchars($s['responsable']) ?></td>
-                    <td><span class="badge <?= $claseBadge ?>"><?= htmlspecialchars($s['estado']) ?></span></td>
+                    <td><?= $s['responsable'] ?? ''?></td>
+                    <td><span class="badge <?= $claseBadge ?>"><?= $s['estado'] ?? '' ?></span></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

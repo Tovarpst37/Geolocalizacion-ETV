@@ -22,6 +22,8 @@ class ReportesController{
         $actividades = $obj->select("SELECT id_actividad_zoo, nombre_actividad FROM
             actividad_zoocriadero ORDER BY nombre_actividad");
 
+        $limpiar = isset($_GET['limpiar']);
+
         // name de los input del formulario
         $filtroZoocriadero  = $_GET['zoocriadero'] ?? '';
         $filtroActividad    = $_GET['actividad'] ?? '';
@@ -31,7 +33,13 @@ class ReportesController{
         // llama al metodo de validar fechas
         $errores = $this->validarFiltros($filtroFechaInicio, $filtroFechaFin);
 
-        if(!empty($errores)){
+
+        if($limpiar){
+
+        $seguimientos=[];
+       
+
+        }elseif(!empty($errores)){
 
             // si hay errores no se consulta
             $seguimientos = [];
@@ -46,6 +54,8 @@ class ReportesController{
                 $errores[] = "No se encontraron registros con los filtros de busqueda seleccionados.";
             }
         }
+
+        
 
         $mensajeError = !empty($errores) ? implode(' ', $errores) : null;
 
@@ -92,13 +102,14 @@ class ReportesController{
 
     public function consultarSeguimiento($obj, $zoocriadero, $actividad, $fechaIni, $fechaFin){
 
-        // Solo seguimientos con limpieza registrada (sub_actividades) y estado 5
+        // Una fila por cada actividad enlazada a un seguimiento (sin sub_actividades)
         $sql = "SELECT
             az.nombre_actividad AS actividad,
             z.cod_zoocriadero   AS zoocriadero,
             t.codigo_tanque     AS tanque,
-            s.fecha             AS fecha_inicio,
-            sa.fecha_limpieza   AS fecha_fin,
+            s.fecha             AS fecha_registro,
+            s.hora_inicio,
+            s.hora_fin,
             TRIM(CONCAT_WS(' ', u.primer_nombre, u.primer_apellido)) AS responsable,
             e.nombre_estado     AS estado
         FROM seguimiento_zoocriadero s
@@ -106,16 +117,13 @@ class ReportesController{
         INNER JOIN tanque t            ON s.id_tanque            = t.id_tanque
         INNER JOIN zoocriadero z       ON t.id_zoocriadero       = z.id_zoocriadero
         INNER JOIN estado e            ON s.id_estado            = e.id_estado
-        INNER JOIN sub_actividades sa  ON sa.id_seguimiento_zoo  = s.id_seguimiento_zoo
-        LEFT JOIN actividad_seg_zoo asz    ON asz.id_seguimiento_zoo = s.id_seguimiento_zoo
-        LEFT JOIN actividad_zoocriadero az ON az.id_actividad_zoo    = asz.id_actividad_zoo
-        WHERE sa.fecha_limpieza IS NOT NULL
-          AND s.id_estado = 5
-          AND ($1::int  IS NULL OR z.id_zoocriadero    = $1)
+        INNER JOIN actividad_seg_zoo asz    ON asz.id_seguimiento_zoo = s.id_seguimiento_zoo
+        INNER JOIN actividad_zoocriadero az ON az.id_actividad_zoo    = asz.id_actividad_zoo
+        WHERE ($1::int  IS NULL OR z.id_zoocriadero    = $1)
           AND ($2::int  IS NULL OR az.id_actividad_zoo = $2)
           AND ($3::date IS NULL OR s.fecha            >= $3)
           AND ($4::date IS NULL OR s.fecha            <= $4)
-        ORDER BY s.fecha DESC, sa.fecha_limpieza DESC";
+        ORDER BY s.fecha DESC, s.hora_inicio DESC";
 
         $param = [
             $zoocriadero !== '' ? (int) $zoocriadero : null,
@@ -199,8 +207,9 @@ class ReportesController{
             $sheet->setCellValue("A$fila", $s['zoocriadero']);
             $sheet->setCellValue("B$fila", $s['actividad']);
             $sheet->setCellValue("C$fila", $s['tanque']);
-            $sheet->setCellValue("D$fila", date('d/m/Y', strtotime($s['fecha_inicio'])));
-            $sheet->setCellValue("E$fila", date('d/m/Y', strtotime($s['fecha_fin'])));
+            $fecha = date('d/m/Y', strtotime($s['fecha_registro']));
+            $sheet->setCellValue("D$fila", $fecha . ($s['hora_inicio'] ? ' ' . substr($s['hora_inicio'], 0, 5) : ''));
+            $sheet->setCellValue("E$fila", $s['hora_fin'] ? $fecha . ' ' . substr($s['hora_fin'], 0, 5) : '-');
             $sheet->setCellValue("F$fila", $s['responsable']);
             $sheet->setCellValue("G$fila", $s['estado']);
             $fila++;
