@@ -54,12 +54,12 @@ class SitiosController
 
         $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
-              WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
+              WHERE id_rol = 2 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
         $coord = $obj->select($sql4);
 
         $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
-              WHERE id_rol = 5 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
+              WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
         $auxi = $obj->select($sql5);
 
         
