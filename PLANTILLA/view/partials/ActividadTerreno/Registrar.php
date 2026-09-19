@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-center">
     <div class="card shadow" style="width: 100%; max-width: 700px;">
       <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Registrar Actividades de Terreno  </h4>
+        <h4 class="mb-0">Registrar Actividades de Terreno</h4>
       </div>
 
       <div class="card-body p-4">
