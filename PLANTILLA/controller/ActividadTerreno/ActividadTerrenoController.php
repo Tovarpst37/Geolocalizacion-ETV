@@ -41,7 +41,7 @@ class ActividadTerrenoController
         }
 
         if (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u', $nombre)) {
-            
+
             $errores[] = "El nombre de la actividad solo debe contener letras y espacios (sin números ni símbolos).";
         }
 
@@ -73,17 +73,15 @@ class ActividadTerrenoController
         }
     }
 
-    public function postRegistrar(ActividadTerrenoModel $obj)
+    public function postRegistrar()
     {
-
-
+        $obj = new ActividadTerrenoModel();
 
         $codigo = mb_strtoupper($_POST['codigo']);
         $nombre = $_POST['nombre_actividad'];
         $estado = 1;
 
-        $sql = "INSERT INTO actividad_terreno (cod_actividad_terreno, nombre_actividad, id_estado) VALUES
-    ($1,$2,$3)";
+        $sql = "INSERT INTO actividad_terreno (cod_actividad_terreno, nombre_actividad, id_estado) VALUES ($1, $2, $3)";
 
         $ejecutar = $obj->insert($sql, [$codigo, $nombre, $estado]);
 
@@ -93,6 +91,7 @@ class ActividadTerrenoController
             echo "No se pudo registrar la actividad";
         }
     }
+
 
     public function getConsultar()
     {
@@ -233,7 +232,7 @@ class ActividadTerrenoController
     {
 
 
-        
+
         $nombre = $_POST['nombre_actividad'];
         $id = $_POST['id'];
 
