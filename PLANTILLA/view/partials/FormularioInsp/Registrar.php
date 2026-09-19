@@ -23,9 +23,11 @@
                     <div class="mb-3">
                         <label for="fecha_horaInsp" class="form-label">Fecha y hora de inspección</label>
                         <span class="icono">
-                            <i class="fa-solid fa-calendar"></i>
+                            <i class="fa-solid fa-calendar-days"></i>
                         </span>
                         <input type="datetime-local" class="form-control" id="fecha_horaInsp" name="fecha_horaInsp"
+                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
+                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;"
                             required>
                     </div>
 
