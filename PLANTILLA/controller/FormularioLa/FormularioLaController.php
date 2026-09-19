@@ -23,9 +23,26 @@ class FormularioLaController
         include_once '../view/partials/FormularioLa/registrar.php';
     }
 
+    // Quita espacios invisibles (copiar/pegar) y espacios al inicio y al final
+    private function limpiarCodigo($codigo)
+    {
+        $codigo = preg_replace('/[\x{00A0}\x{2007}\x{202F}]/u', ' ', (string) $codigo);
+        $codigo = preg_replace('/[\x{200B}\x{200C}\x{200D}\x{FEFF}]/u', '', $codigo);
+        return trim($codigo);
+    }
+
+    // Devuelve la lista de caracteres no permitidos en el código
+    private function caracteresInvalidos($codigo)
+    {
+        preg_match_all('/[^\p{L}\p{N}\-_ .\/#]/u', $codigo, $m);
+        return array_values(array_unique($m[0]));
+    }
+
+    // CORREGIDO: usa ILIKE para encontrar "Lavado" sin importar mayúsculas
+    // y así no crear una actividad duplicada
     private function getOrCreateActividadZoo($obj, $nombre, $codigoDefault)
     {
-        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad = $1";
+        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad ILIKE $1";
         $res = $obj->select($sqlBuscar, [$nombre]);
 
         if (!empty($res)) {
@@ -40,12 +57,29 @@ class FormularioLaController
         return !empty($creado) ? $creado[0]['id_actividad_zoo'] : null;
     }
 
+    // NUEVO: verifica que el seguimiento tenga asignada la actividad "Lavado"
+    // (existe una fila en actividad_seg_zoo que lo relaciona con esa actividad)
+    private function seguimientoTieneLavado($obj, $id_seguimiento_zoo)
+    {
+        $sql = "SELECT 1
+                FROM actividad_seg_zoo asz
+                INNER JOIN actividad_zoocriadero a
+                    ON a.id_actividad_zoo = asz.id_actividad_zoo
+                WHERE asz.id_seguimiento_zoo = $1
+                  AND a.nombre_actividad ILIKE 'Lavado'
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_zoo]);
+
+        return !empty($res);
+    }
+
     public function postInsert()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $obj = new FormulariosModel();
 
-            $codM = trim($_POST['codLa'] ?? '');
+            $codM = $this->limpiarCodigo($_POST['codLa'] ?? '');
             $docM = trim($_SESSION['documento'] ?? '');
             $fechaHora = $_POST['fecha_horaLa'] ?? '';
             $porcAgua = $_POST['porcAgua'] ?? '';
@@ -60,23 +94,30 @@ class FormularioLaController
                 $errores[] = "El código de seguimiento es obligatorio.";
             }
 
-            $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
-            if (!empty($codM) && !preg_match($codigo_validar, $codM)) {
-                $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
+            $invalidos = !empty($codM) ? $this->caracteresInvalidos($codM) : [];
+            if (!empty($invalidos)) {
+                $errores[] = "El código contiene caracteres no permitidos: "
+                    . htmlspecialchars(implode(' ', $invalidos))
+                    . ". Solo se permiten letras, números, guiones, puntos, barras y espacios.";
             }
 
-            // 2. Validar existencia y estado del seguimiento en BD
+            // 2. Validar existencia, estado y actividad de Lavado del seguimiento
             $id_seguimiento_zoo = null;
-            if (!empty($codM) && preg_match($codigo_validar, $codM)) {
+            if (!empty($codM) && empty($invalidos)) {
                 $sql_validar_seg = "SELECT id_seguimiento_zoo, id_estado FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1";
                 $existeSeg = $obj->select($sql_validar_seg, [$codM]);
 
                 if (empty($existeSeg)) {
                     $errores[] = "No existe ningún seguimiento registrado con ese código.";
-                } elseif ($existeSeg[0]['id_estado'] != 1) {
+                } elseif ($existeSeg[0]['id_estado'] != 4) {
                     $errores[] = "Lo siento, el seguimiento no está activo.";
                 } else {
                     $id_seguimiento_zoo = $existeSeg[0]['id_seguimiento_zoo'];
+
+                    // NUEVO: el seguimiento debe tener asignada la actividad de Lavado
+                    if (!$this->seguimientoTieneLavado($obj, $id_seguimiento_zoo)) {
+                        $errores[] = "Este seguimiento no tiene asignada la actividad de Lavado, por lo que no se puede registrar el formulario.";
+                    }
                 }
             }
 
@@ -143,7 +184,7 @@ class FormularioLaController
             if (!empty($resSub)) {
                 $id_sub_actividad = $resSub[0]['id_sub_actividad'];
 
-                $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Lavado', 'LAV001');
+                $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Lavado', 'AZ-5');
                 if ($id_actividad_zoo) {
                     $obj->insert(
                         "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
