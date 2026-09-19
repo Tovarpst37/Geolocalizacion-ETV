@@ -52,17 +52,19 @@ class SitiosController
         $sql3 = "SELECT * from estado";
         $estados = $obj->select($sql3);
 
+        // Coordinador = id_rol 2
         $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
               WHERE id_rol = 2 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
         $coord = $obj->select($sql4);
 
+        // Auxiliar = id_rol 3
         $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
               WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
         $auxi = $obj->select($sql5);
 
-        
+
         $sql6 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
         $tipos_deposito = $obj->select($sql6);
 
@@ -93,11 +95,11 @@ class SitiosController
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
-        
+
         $id_tipo_deposito = $_POST['id_tipo_deposito'] ?? '';
         $descripcion = trim($_POST['descripcion'] ?? '');
 
-       
+
         $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = $1";
         $existe = $obj->select($sql_validar, [$nombre]);
 
@@ -153,11 +155,11 @@ class SitiosController
             $errores[] = "El nombre solo puede contener letras y espacios.";
         }
 
-      
+        // Coordinador = id_rol 2
         if (!empty($id_coor)) {
             $sql_coor = "SELECT id_usuario FROM usuarios 
                      WHERE id_usuario = $1 
-                     AND id_rol = 3
+                     AND id_rol = 2
                      AND (id_zoocriadero IS NOT NULL OR id_sitio IS NOT NULL)";
             $coor_ocupado = $obj->select($sql_coor, [(int) $id_coor]);
             if (!empty($coor_ocupado)) {
@@ -165,13 +167,13 @@ class SitiosController
             }
         }
 
-       
+        // Auxiliar = id_rol 3
         if (!empty($usuarios_asignados)) {
             $ids_aux = array_map('intval', $usuarios_asignados);
             $placeholders = implode(',', $this->inPlaceholders($ids_aux));
             $sql_aux = "SELECT id_usuario FROM usuarios 
                     WHERE id_usuario IN ($placeholders) 
-                    AND id_rol = 5
+                    AND id_rol = 3
                     AND (id_zoocriadero IS NOT NULL OR id_sitio IS NOT NULL)";
             $aux_ocupados = $obj->select($sql_aux, $ids_aux);
             if (!empty($aux_ocupados)) {
@@ -188,14 +190,14 @@ class SitiosController
             $estados = $obj->select($sql3);
 
             $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
+                  FROM usuarios WHERE id_rol = 2 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
             $coord = $obj->select($sql4);
 
             $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 5 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
+                  FROM usuarios WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
             $auxi = $obj->select($sql5);
 
-            
+
             $sql6 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
             $tipos_deposito = $obj->select($sql6);
 
@@ -224,7 +226,7 @@ class SitiosController
         $id_tipo_deposito = $id_tipo_deposito1;
         $descripcion = $descripcion1;
 
-     
+
         $sql = "INSERT INTO sitio (nombre_sitio, direccion, id_barrio, id_estado, id_tipo_deposito, descripcion) 
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING id_sitio";
@@ -275,12 +277,12 @@ class SitiosController
     LEFT JOIN (
         SELECT id_sitio, CONCAT(primer_nombre, ' ', primer_apellido) AS nombre_coor
         FROM usuarios
-        WHERE id_rol = 3
+        WHERE id_rol = 2
     ) coor ON coor.id_sitio = s.id_sitio
     LEFT JOIN (
         SELECT id_sitio, STRING_AGG(CONCAT(primer_nombre, ' ', primer_apellido), ', ') AS nombres_aux
         FROM usuarios
-        WHERE id_rol = 5
+        WHERE id_rol = 3
         GROUP BY id_sitio
     ) aux ON aux.id_sitio = s.id_sitio
     ORDER BY s.id_sitio";
@@ -310,25 +312,27 @@ class SitiosController
         $sql3 = "SELECT * from estado";
         $estados = $obj->select($sql3);
 
+        // Coordinador = id_rol 2
         $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
-              WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
+              WHERE id_rol = 2 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
         $coord = $obj->select($sql4, [$id]);
 
+        // Auxiliar = id_rol 3
         $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
-              WHERE id_rol = 5 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
+              WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
         $auxi = $obj->select($sql5, [$id]);
 
-        $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
+        $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 2";
         $coor_result = $obj->select($sql6, [$id]);
         $coor_actual = $coor_result[0] ?? null;
 
-        $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 5";
+        $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
         $auxi_result = $obj->select($sql7, [$id]);
         $auxi_actuales = array_column($auxi_result, 'id_usuario');
 
-      
+
         $sql8 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
         $tipos_deposito = $obj->select($sql8);
 
@@ -355,7 +359,7 @@ class SitiosController
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
-      
+
         $id_tipo_deposito = $_POST['id_tipo_deposito'] ?? '';
         $descripcion = trim($_POST['descripcion'] ?? '');
 
@@ -392,7 +396,7 @@ class SitiosController
             $errores[] = "Debe seleccionar un estado.";
         }
 
-       
+
         if (empty($id_tipo_deposito)) {
             $errores[] = "Debe seleccionar un tipo de depósito.";
         }
@@ -405,10 +409,11 @@ class SitiosController
             $errores[] = "El nombre solo puede contener letras y espacios.";
         }
 
+        // Coordinador = id_rol 2
         if (!empty($id_coor)) {
             $sql_coor = "SELECT id_usuario FROM usuarios 
                      WHERE id_usuario = $1 
-                     AND id_rol = 3
+                     AND id_rol = 2
                      AND (id_zoocriadero IS NOT NULL OR (id_sitio IS NOT NULL AND id_sitio != $2))";
             $coor_ocupado = $obj->select($sql_coor, [(int) $id_coor, $id]);
             if (!empty($coor_ocupado)) {
@@ -416,13 +421,13 @@ class SitiosController
             }
         }
 
-       
+        // Auxiliar = id_rol 3
         if (!empty($usuarios_asignados)) {
             $ids_aux = array_map('intval', $usuarios_asignados);
             $placeholders = implode(',', $this->inPlaceholders($ids_aux, 2));
             $sql_aux = "SELECT id_usuario FROM usuarios 
                     WHERE id_usuario IN ($placeholders) 
-                    AND id_rol = 5
+                    AND id_rol = 3
                     AND (id_zoocriadero IS NOT NULL OR (id_sitio IS NOT NULL AND id_sitio != $1))";
             $aux_ocupados = $obj->select($sql_aux, array_merge([$id], $ids_aux));
             if (!empty($aux_ocupados)) {
@@ -444,22 +449,22 @@ class SitiosController
             $estados = $obj->select($sql3);
 
             $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
+                  FROM usuarios WHERE id_rol = 2 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
             $coord = $obj->select($sql4, [$id]);
 
             $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
-                  FROM usuarios WHERE id_rol = 5 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
+                  FROM usuarios WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
             $auxi = $obj->select($sql5, [$id]);
 
-            $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
+            $sql6 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 2";
             $coor_result = $obj->select($sql6, [$id]);
             $coor_actual = $coor_result[0] ?? null;
 
-            $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 5";
+            $sql7 = "SELECT id_usuario FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
             $auxi_result = $obj->select($sql7, [$id]);
             $auxi_actuales = array_column($auxi_result, 'id_usuario');
 
-           
+
             $sql8 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
             $tipos_deposito = $obj->select($sql8);
 
@@ -485,7 +490,7 @@ class SitiosController
             $estado = 2;
         }
 
-        
+
         $sql = "UPDATE sitio SET 
         nombre_sitio = $1,
         direccion = $2,
@@ -521,46 +526,46 @@ class SitiosController
         }
     }
 
-   public function getBuscar()
-{
-    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
-    if (!empty($busqueda)) {
-        $palabra = $_GET['busqueda'];
-        $obj = new SitiosModel();
+    public function getBuscar()
+    {
+        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        if (!empty($busqueda)) {
+            $palabra = $_GET['busqueda'];
+            $obj = new SitiosModel();
 
-        $sql = "SELECT 
-            s.id_sitio,
-            s.nombre_sitio,
-            s.direccion,
-            b.nombre_barrio AS barrio,
-            e.nombre_estado AS estado,
-            coor.nombre_coor AS coordinador,
-            aux.nombres_aux AS auxiliares,
-            td.nombre AS tipo_deposito,
-            s.descripcion
-        FROM sitio s
-        INNER JOIN barrio b ON s.id_barrio = b.id_barrio
-        INNER JOIN estado e ON s.id_estado = e.id_estado
-        LEFT JOIN tipo_de_deposito td ON s.id_tipo_deposito = td.id_tipo_deposito
-        LEFT JOIN (
-            SELECT id_sitio, CONCAT(primer_nombre, ' ', primer_apellido) AS nombre_coor
-            FROM usuarios
-            WHERE id_rol = 3
-        ) coor ON coor.id_sitio = s.id_sitio
-        LEFT JOIN (
-            SELECT id_sitio, STRING_AGG(CONCAT(primer_nombre, ' ', primer_apellido), ', ') AS nombres_aux
-            FROM usuarios
-            WHERE id_rol = 5
-            GROUP BY id_sitio
-        ) aux ON aux.id_sitio = s.id_sitio
-        WHERE s.nombre_sitio ILIKE $1
-        ORDER BY s.id_sitio";
+            $sql = "SELECT 
+                s.id_sitio,
+                s.nombre_sitio,
+                s.direccion,
+                b.nombre_barrio AS barrio,
+                e.nombre_estado AS estado,
+                coor.nombre_coor AS coordinador,
+                aux.nombres_aux AS auxiliares,
+                td.nombre AS tipo_deposito,
+                s.descripcion
+            FROM sitio s
+            INNER JOIN barrio b ON s.id_barrio = b.id_barrio
+            INNER JOIN estado e ON s.id_estado = e.id_estado
+            LEFT JOIN tipo_de_deposito td ON s.id_tipo_deposito = td.id_tipo_deposito
+            LEFT JOIN (
+                SELECT id_sitio, CONCAT(primer_nombre, ' ', primer_apellido) AS nombre_coor
+                FROM usuarios
+                WHERE id_rol = 2
+            ) coor ON coor.id_sitio = s.id_sitio
+            LEFT JOIN (
+                SELECT id_sitio, STRING_AGG(CONCAT(primer_nombre, ' ', primer_apellido), ', ') AS nombres_aux
+                FROM usuarios
+                WHERE id_rol = 3
+                GROUP BY id_sitio
+            ) aux ON aux.id_sitio = s.id_sitio
+            WHERE s.nombre_sitio ILIKE $1
+            ORDER BY s.id_sitio";
 
-        $datos = $obj->select($sql, ['%' . $busqueda . '%']);
+            $datos = $obj->select($sql, ['%' . $busqueda . '%']);
 
-        include_once "../view/partials/Sitios/Busqueda.php";
-    } else {
-        include_once '../view/partials/Sitios/Consultar.php';
+            include_once "../view/partials/Sitios/Busqueda.php";
+        } else {
+            include_once '../view/partials/Sitios/Consultar.php';
+        }
     }
-}
 }
