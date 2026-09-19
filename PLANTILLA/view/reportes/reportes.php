@@ -5,18 +5,18 @@
         <div class="fila-filtros">
             <div>
                 <label>Zoocriadero</label>
-                <select name="zoocriadero">
-                   <option value="">Todos</option>
-                    <?php foreach ($zoocriaderos as $zoo): ?>
-                        <option value="<?= $zoo['id_zoocriadero'] ?>"><?= $zoo['cod_zoocriadero'] ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <select name="actividad">
+    <option value="">Todos</option>
+    <?php foreach ($actividades as $act): ?>
+        <option value="<?= $act['id_actividad_zoo'] ?>"><?= $act['cod_actividad'] ?></option>
+    <?php endforeach; ?>
+</select>
             </div>
             <div>
                 <label>Actividad</label>
                 <select name="actividad">
                     <option value="">Todos</option>
-                    <<?php foreach ($actividades as $act): ?>
+                    <?php foreach ($actividades as $act): ?>
                         <option value="<?= $act['id_actividad_zoo'] ?>"><?= $act['cod_actividad'] ?></option>
                     <?php endforeach; ?>
                     
