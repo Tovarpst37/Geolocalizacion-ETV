@@ -1,19 +1,18 @@
 <style>
+  .sidebar {
+    width: 256px;
+    height: 100vh;
+    background-color: #fff;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
 
-.sidebar {
-  width: 256px;
-  height: 100vh;
-  background-color: #fff;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-}
-
-.logo-header{
-  gap: 10;
-  width: 256px;
-  background-color: #0dcaf0;
-  border-top-right-radius: 20px;
-}
+  .logo-header {
+    gap: 10;
+    width: 256px;
+    background-color: #0dcaf0;
+    border-top-right-radius: 20px;
+  }
 </style>
 <div class="sidebar">
   <div class="sidebar-logo">
@@ -347,11 +346,11 @@
           </a>
           <div class="collapse" id="reportesTerrono">
             <ul class="nav nav-collapse">
-              <li class="sub-item-pending"><a href="<?php echo getUrl("Reportes","Reportes","report");  ?>"><span class="sub-item">Seguimiento de actividades</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("Reportes", "Reportes", "report");  ?>"><span class="sub-item">Seguimiento de actividades</span><span
                     class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a href="#"><span class="sub-item">Peces nacidos/muertos por
                     tanque</span><span class="badge-pending">Próximo</span></a></li>
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Tanques por zoocriadero</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques");  ?>"><span class="sub-item">Tanques por zoocriadero</span><span
                     class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a href="#"><span class="sub-item">Sitios registrados</span><span
                     class="badge-pending">Próximo</span></a></li>

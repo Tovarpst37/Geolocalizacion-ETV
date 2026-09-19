@@ -1,5 +1,4 @@
 <?php
-
 class ErrorModal
 {
     public static function verError(array $errores, string $urlRegreso)
