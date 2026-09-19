@@ -1,70 +1,103 @@
+<?php
+// Ruta de esta misma pantalla. Se separa en "action" + campos ocultos para que
+// al enviar el formulario por GET no se pierdan los parametros que usa index.php
+$urlReporte = getUrl('Reportes', 'Reportes', 'report');
+$partesUrl  = parse_url($urlReporte);
+parse_str($partesUrl['query'] ?? '', $paramsRuta);
+
+// URL del Excel con los mismos filtros que tiene la pantalla
+$urlExcel = getUrl('Reportes', 'Reportes', 'exportarSeguimientosExcel');
+$urlExcel .= (strpos($urlExcel, '?') === false ? '?' : '&') . http_build_query([
+    'zoocriadero'  => $filtroZoocriadero,
+    'actividad'    => $filtroActividad,
+    'fecha_inicio' => $filtroFechaInicio,
+    'fecha_fin'    => $filtroFechaFin,
+]);
+?>
+
 <div class="caja">
     <h2 class="titulo-pagina">Seguimiento de Actividades en los Zoocriaderos</h2>
     <h3>Filtros</h3>
-    <form method="GET">
+    <form method="GET" action="<?= htmlspecialchars($partesUrl['path'] ?? '') ?>">
+        <?php foreach ($paramsRuta as $nombre => $valor): ?>
+            <input type="hidden" name="<?= htmlspecialchars($nombre) ?>" value="<?= htmlspecialchars((string) $valor) ?>">
+        <?php endforeach; ?>
+
         <div class="fila-filtros">
             <div>
                 <label>Zoocriadero</label>
-                <select name="actividad">
-    <option value="">Todos</option>
-    <?php foreach ($actividades as $act): ?>
-        <option value="<?= $act['id_actividad_zoo'] ?>"><?= $act['cod_actividad'] ?></option>
-    <?php endforeach; ?>
-</select>
+                <select name="zoocriadero">
+                    <option value="">Todos</option>
+                    <?php foreach ($zoocriaderos as $z): ?>
+                        <option value="<?= $z['id_zoocriadero'] ?>"
+                            <?= $filtroZoocriadero == $z['id_zoocriadero'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($z['cod_zoocriadero']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div>
                 <label>Actividad</label>
                 <select name="actividad">
                     <option value="">Todos</option>
                     <?php foreach ($actividades as $act): ?>
-                        <option value="<?= $act['id_actividad_zoo'] ?>"><?= $act['cod_actividad'] ?></option>
+                        <option value="<?= $act['id_actividad_zoo'] ?>"
+                            <?= $filtroActividad == $act['id_actividad_zoo'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($act['nombre_actividad']) ?>
+                        </option>
                     <?php endforeach; ?>
-                    
                 </select>
             </div>
             <div>
                 <label>Fecha Inicio</label>
-                <input type="date" name="fecha_inicio" value="<?= $filtroFechaInicio ?>">
+                <input type="date" name="fecha_inicio" value="<?= htmlspecialchars($filtroFechaInicio) ?>">
             </div>
             <div>
                 <label>Fecha Fin</label>
-                <input type="date" name="fecha_fin" value="<?= $filtroFechaFin ?>">
+                <input type="date" name="fecha_fin" value="<?= htmlspecialchars($filtroFechaFin) ?>">
             </div>
             <div>
                 <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
-                <button type="button" class="btn-reportes">Generar Reportes</button>
+                <button type="button" class="btn-limpiar"
+                        onclick="location.href='<?= htmlspecialchars($urlReporte) ?>'">Limpiar Filtros</button>
+                <button type="button" class="btn-reportes"
+                        onclick="location.href='<?= htmlspecialchars($urlExcel) ?>'">Generar Reportes</button>
             </div>
         </div>
     </form>
 </div>
+
+<?php if ($mensajeError): ?>
+    <div class="caja mensaje-error"><?= htmlspecialchars($mensajeError) ?></div>
+<?php endif; ?>
 
 <div class="caja tarjetas">
     <div class="tarjeta">
         <div class="icono icono-azul">📋</div>
         <div>
             <p>Actividades Totales</p>
-            <!-- <span class="numero azul"><?= $totalActividades ?></span> -->
+            <span class="numero azul"><?= $totalActividades ?></span>
         </div>
     </div>
     <div class="tarjeta">
         <div class="icono icono-verde">✔</div>
         <div>
             <p>Actividades Completas</p>
-            <!-- <span class="numero verde"><?= $totalCompletas ?></span> -->
+            <span class="numero verde"><?= $totalCompletas ?></span>
         </div>
     </div>
     <div class="tarjeta">
         <div class="icono icono-naranja">⏱</div>
         <div>
             <p>En Progreso</p>
-            <!-- <span class="numero naranja"><?= $totalEnProgreso ?></span> -->
+            <span class="numero naranja"><?= $totalEnProgreso ?></span>
         </div>
     </div>
     <div class="tarjeta">
         <div class="icono icono-rojo">✖</div>
         <div>
             <p>Retrasadas</p>
-            <!-- <span class="numero rojo"><?= $totalRetrasadas ?></span> -->
+            <span class="numero rojo"><?= $totalRetrasadas ?></span>
         </div>
     </div>
 </div>
@@ -83,7 +116,29 @@
             </tr>
         </thead>
         <tbody>
-            
+            <?php foreach ($seguimientos as $s): ?>
+                <?php
+                    // Color del badge según el estado
+                    if ($s['estado'] == $finalizado) {
+                        $claseBadge = 'badge-verde';
+                    } elseif ($s['estado'] == $enProceso) {
+                        $claseBadge = 'badge-naranja';
+                    } else {
+                        $claseBadge = 'badge-rojo';
+                    }
+
+                    $fechaInicio = date('d/m/Y', strtotime($s['fecha_inicio']));
+                    $fechaFin    = $s['fecha_fin'] ? date('d/m/Y', strtotime($s['fecha_fin'])) : '-';
+                ?>
+                <tr>
+                    <td><?= htmlspecialchars($s['actividad']) ?></td>
+                    <td><?= htmlspecialchars($s['zoocriadero']) ?></td>
+                    <td><?= $fechaInicio ?></td>
+                    <td><?= $fechaFin ?></td>
+                    <td><?= htmlspecialchars($s['responsable']) ?></td>
+                    <td><span class="badge <?= $claseBadge ?>"><?= htmlspecialchars($s['estado']) ?></span></td>
+                </tr>
+            <?php endforeach; ?>
         </tbody>
     </table>
 </div>
@@ -108,6 +163,12 @@
     .caja h3 {
         margin-top: 0;
         margin-bottom: 16px;
+    }
+
+    .mensaje-error {
+        background-color: #fde6e6;
+        color: #e64545;
+        font-weight: bold;
     }
 
     .fila-filtros {
@@ -145,6 +206,17 @@
         background-color: #ffffff;
         color: #2f7dfa;
         border: 1px solid #2f7dfa;
+        padding: 10px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-left: 8px;
+    }
+
+    .btn-limpiar {
+        background-color: #eef1f8;
+        color: #555555;
+        border: 1px solid #d7dbe3;
         padding: 10px 18px;
         border-radius: 8px;
         cursor: pointer;
