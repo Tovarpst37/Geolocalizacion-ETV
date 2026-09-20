@@ -35,7 +35,7 @@ class SeguimientoZoocriaderoController
                                             AND az.id_estado = 1  
             GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
                     z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
-            ORDER BY s.id_seguimiento_zoo";
+            ORDER BY s.id_seguimiento_zoo DESC";
 
         $seguimientosnew = $obj->select($sql);
 

@@ -45,7 +45,7 @@
                 td.nombre,
                 u.primer_nombre, 
                 u.primer_apellido
-            ORDER BY s.id_seguimiento_terreno";
+            ORDER BY s.id_seguimiento_terreno DESC";
 
     
 
@@ -249,7 +249,7 @@ public function getEditar()
         $sql3 = "SELECT * from estado WHERE tipo_estado = 'seguimiento'";
             $estados = $obj->select($sql3);
 
-            $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1";
+            $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1 ORDER BY id_actividad_terreno";
         $actividades = $obj->select($sql4);
 
         
