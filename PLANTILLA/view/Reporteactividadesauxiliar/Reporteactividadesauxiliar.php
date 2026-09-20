@@ -1,41 +1,51 @@
 <?php
-$zoocriaderos = $zoocriaderos ?? [];
+
+$auxiliares = $auxiliares ?? [];
 $generar = $generar ?? false;
-$filtroZoocriadero = $filtroZoocriadero ?? '';
-$tanques = $tanques ?? [];
-$totalTanques = $totalTanques ?? 0;
-$encargado = $encargado ?? null;
+$filtroAuxiliar = $filtroAuxiliar ?? '';
+$filtroFecha = $filtroFecha ?? '';
+$actividades = $actividades ?? [];
 $mensajeVacio = $mensajeVacio ?? null;
 ?>
 <div class="caja">
-    <h2 class="titulo-pagina">Reporte de Tanques según Zoocriadero</h2>
+    <h2 class="titulo-pagina">Reporte de Actividades por Auxiliar</h2>
+    
     <form method="GET">
         <input type="hidden" name="modulo" value="<?= $_GET['modulo'] ?? '' ?>">
         <input type="hidden" name="controlador" value="<?= $_GET['controlador'] ?? '' ?>">
-        <input type="hidden" name="funcion" value="getReporteTanques">
+        <input type="hidden" name="funcion" value="getReporteActividadesAuxiliar">
         <input type="hidden" name="generar" value="1">
 
+        <!-- NUEVO DISEÑO DE FILTROS -->
         <div class="filtro-moderno">
             <div class="campo-filtro">
-                <label>Zoocriadero <span class="text-danger">*</span></label>
+                <label>Auxiliar <span class="text-danger">*</span></label>
                 <div class="select-wrapper">
-                    <span class="icono-select">🐟</span>
-                    <select name="zoocriadero" required>
-                        <option value="" selected disabled>Selecciona un zoocriadero</option>
-                        <?php foreach ($zoocriaderos as $zoo): ?>
-                            <option value="<?= $zoo['id_zoocriadero'] ?>" <?= (($filtroZoocriadero ?? '') == $zoo['id_zoocriadero']) ? 'selected' : '' ?>>
-                                <?= $zoo['cod_zoocriadero'] ?>
+                    <span class="icono-select">👤</span>
+                    <select name="auxiliar" required>
+                        <option value="" selected disabled>Selecciona un auxiliar</option>
+                        <?php foreach ($auxiliares as $aux): ?>
+                            <option value="<?= $aux['id_usuario'] ?>" <?= (($filtroAuxiliar ?? '') == $aux['id_usuario']) ? 'selected' : '' ?>>
+                                <?= trim($aux['primer_nombre'] . ' ' . $aux['segundo_nombre'] . ' ' . $aux['primer_apellido'] . ' ' . $aux['segundo_apellido']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
             </div>
 
+            <div class="campo-filtro">
+                <label>Fecha</label>
+                <div class="select-wrapper">
+                    <span class="icono-select">📅</span>
+                    <input type="date" name="fecha" value="<?= $filtroFecha ?>">
+                </div>
+            </div>
+
             <div class="botones-accion">
                 <button type="submit" class="btn-aplicar">Generar Reporte</button>
-                <?php if ($generar && !empty($tanques)): ?>
+                <?php if ($generar && !empty($actividades)): ?>
                     <button type="button" class="btn-reportes"
-                        onclick="location.href='<?= getUrl('ReportesTanquesZoocriadero', 'ReportesTanquesZoocriadero', 'exportarTanquesExcel') ?>&zoocriadero=<?= urlencode($filtroZoocriadero) ?>'">
+                        onclick="location.href='<?= getUrl('Reporteactividadesauxiliar', 'Reporteactividadesauxiliar', 'exportarActividadesExcel') ?>&auxiliar=<?= urlencode($filtroAuxiliar) ?>&fecha=<?= urlencode($filtroFecha) ?>'">
                         Exportar a Excel
                     </button>
                 <?php endif; ?>
@@ -44,36 +54,9 @@ $mensajeVacio = $mensajeVacio ?? null;
     </form>
 </div>
 
-<?php if ($generar && empty($mensajeVacio)): ?>
-    <div class="caja tarjetas">
-        <div class="tarjeta">
-            <div class="icono icono-azul">🛢️</div>
-            <div>
-                <p>Cantidad de tanques</p>
-                <span class="numero azul"><?= $totalTanques ?></span>
-            </div>
-        </div>
-        <div class="tarjeta">
-            <div class="icono icono-verde">👤</div>
-            <div>
-                <p>Encargado del zoocriadero</p>
-                <span class="numero verde" style="font-size:16px;">
-                    <?php
-                    if ($encargado) {
-                        echo trim($encargado['primer_nombre'] . ' ' . $encargado['segundo_nombre'] . ' ' . $encargado['primer_apellido'] . ' ' . $encargado['segundo_apellido']);
-                    } else {
-                        echo 'Sin asignar';
-                    }
-                    ?>
-                </span>
-            </div>
-        </div>
-    </div>
-<?php endif; ?>
-
 <?php if ($generar): ?>
     <div class="caja">
-        <h3>Tanques del zoocriadero</h3>
+        <h3>Actividades del auxiliar</h3>
 
         <?php if (!empty($mensajeVacio)): ?>
             <p style="text-align:center; color:#888;"><?= $mensajeVacio ?></p>
@@ -81,15 +64,23 @@ $mensajeVacio = $mensajeVacio ?? null;
             <table>
                 <thead>
                     <tr>
-                        <th>Código del tanque</th>
-                        <th>Tipo de tanque</th>
+                        <th>Auxiliar</th>
+                        <th>Tipo de actividad</th>
+                        <th>Fecha</th>
+                        <th>Comuna</th>
+                        <th>Barrio</th>
+                        <th>Sitio</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($tanques as $t): ?>
+                    <?php foreach ($actividades as $a): ?>
                         <tr>
-                            <td><?= $t['codigo'] ?></td>
-                            <td><?= $t['tipo_tanque'] ?></td>
+                            <td><?= $a['nombre_auxiliar'] ?></td>
+                            <td><?= $a['tipo_actividad'] ?></td>
+                            <td><?= $a['fecha'] ?></td>
+                            <td><?= $a['comuna'] ?></td>
+                            <td><?= $a['barrio'] ?></td>
+                            <td><?= $a['sitio'] ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -121,6 +112,7 @@ $mensajeVacio = $mensajeVacio ?? null;
         margin-bottom: 16px;
     }
 
+    /* ===== NUEVO DISEÑO DE FILTROS ===== */
     .filtro-moderno {
         display: flex;
         flex-wrap: wrap;
@@ -134,7 +126,7 @@ $mensajeVacio = $mensajeVacio ?? null;
 
     .campo-filtro {
         flex: 1;
-        min-width: 260px;
+        min-width: 220px;
     }
 
     .campo-filtro label {
@@ -159,7 +151,8 @@ $mensajeVacio = $mensajeVacio ?? null;
         z-index: 1;
     }
 
-    .select-wrapper select {
+    .select-wrapper select,
+    .select-wrapper input[type="date"] {
         width: 100%;
         padding: 12px 16px 12px 44px;
         border: 1px solid #cbd5e1;
@@ -172,7 +165,8 @@ $mensajeVacio = $mensajeVacio ?? null;
         transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .select-wrapper select:focus {
+    .select-wrapper select:focus,
+    .select-wrapper input[type="date"]:focus {
         outline: none;
         border-color: #2f7dfa;
         box-shadow: 0 0 0 3px rgba(47, 125, 250, 0.15);
@@ -182,6 +176,7 @@ $mensajeVacio = $mensajeVacio ?? null;
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
+        align-items: flex-end;
     }
 
     .text-danger {
@@ -220,58 +215,7 @@ $mensajeVacio = $mensajeVacio ?? null;
         background-color: #eff6ff;
     }
 
-    .tarjetas {
-        display: flex;
-        gap: 20px;
-    }
-
-    .tarjeta {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .icono {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        flex-shrink: 0;
-    }
-
-    .icono-azul {
-        background-color: #e5f0ff;
-        color: #2f7dfa;
-    }
-
-    .icono-verde {
-        background-color: #e3f9ec;
-        color: #21a666;
-    }
-
-    .tarjeta p {
-        margin: 0 0 4px 0;
-        color: #666;
-        font-size: 14px;
-    }
-
-    .numero {
-        font-size: 26px;
-        font-weight: bold;
-    }
-
-    .azul {
-        color: #2f7dfa;
-    }
-
-    .verde {
-        color: #21a666;
-    }
-
+    /* ===== TABLA (sin cambios) ===== */
     table {
         width: 100%;
         border-collapse: collapse;
