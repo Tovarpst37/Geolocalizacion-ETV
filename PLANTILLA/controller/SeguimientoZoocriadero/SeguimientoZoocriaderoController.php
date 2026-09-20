@@ -208,8 +208,7 @@ class SeguimientoZoocriaderoController
         $id = $_POST['id'];
         $fecha = $_POST['fecha'];
         $horario = $_POST['horario'];
-        $estado = $_POST['id_estado'];
-
+         $estado = $_POST['id_estado'];
         list($hora_inicio, $hora_fin) = explode('-', $horario);
 
 
@@ -267,6 +266,37 @@ class SeguimientoZoocriaderoController
 
             $ejecutar = $obj->update($sql2);
 
+
+
+            $sql15 = "SELECT 
+                        az.id_actividad_zoo, 
+                        az.nombre_actividad,
+                        CASE WHEN sa.id_sub_actividad IS NOT NULL THEN true ELSE false END AS ya_registrada
+                    FROM actividad_seg_zoo asz
+                    INNER JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
+                    LEFT JOIN actividad_zoo_subactividades azs ON az.id_actividad_zoo = azs.id_actividad_zoo
+                    LEFT JOIN sub_actividades sa ON azs.id_sub_actividades = sa.id_sub_actividad 
+                                                AND sa.id_seguimiento_zoo = asz.id_seguimiento_zoo
+                    WHERE asz.id_seguimiento_zoo = $1 ORDER BY id_actividad_zoo";
+            $act = $obj->select($sql15,[$id]);
+
+            $verify = true;
+
+            foreach($act as $a){
+               if ($a['ya_registrada']) {
+                    $verify = false;
+                    break;
+                }
+            }
+
+            if($verify && count($act) > 0){
+                $sql22 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 5 
+                WHERE id_seguimiento_zoo = $1";
+
+                $ejecutar2 = $obj->update($sql22,[$id]);
+
+            }
 
             redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
         } else {
