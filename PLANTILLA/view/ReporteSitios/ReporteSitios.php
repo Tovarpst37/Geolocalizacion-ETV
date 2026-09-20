@@ -117,6 +117,13 @@ $opcionesHallazgo = [
                     <span class="numero azul"><?= (int) $totalSitios ?></span>
                 </div>
             </div>
+            <div class="tarjeta tarjeta-indigo">
+                <div class="icono ">💧</div>
+                <div>
+                    <p>Deposito</p>
+                    <span class="numero"><?= (int) $totalDepositos ?></span>
+                </div>
+            </div>
             <div class="tarjeta tarjeta-verde">
                 <div class="icono icono-verde">✔</div>
                 <div>
@@ -207,7 +214,9 @@ filtrarBarrios();
 
 
 
-
+    .tarjeta-indigo{
+      background: linear-gradient(135deg, #3f5f9e, #6f8fd0);  
+    }                    
 
     .caja {
         background-color: #ffffff;

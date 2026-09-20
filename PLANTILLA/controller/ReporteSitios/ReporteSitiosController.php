@@ -35,6 +35,10 @@ class ReporteSitiosController
     FROM tipo_de_deposito ORDER BY nombre");
         $limpiar = isset($_GET['limpiar']);
 
+
+        $inicio = isset($_GET['comuna'] ) || isset($_GET['barrio'] ) || 
+        isset($_GET['tipo_deposito'] ) || isset($_GET['hallazgo'] );
+
         // name de los input del formulario
         $filtroComuna  = $_GET['comuna'] ?? '';
         $filtroBarrio    = $_GET['barrio'] ?? '';
@@ -45,7 +49,7 @@ class ReporteSitiosController
         $errores = $this->validarFiltros($obj, $filtroComuna, $filtroBarrio, $filtroHallazgo);
 
 
-        if ($limpiar) {
+        if ($limpiar || !$inicio ) {
 
             $sitios = [];
         } elseif (!empty($errores)) {
@@ -75,7 +79,7 @@ class ReporteSitiosController
         $totalConLarvas  = 0;
         $totalSinLarvas  = 0;
         $totalSinRegistros = 0;
-
+        $totalDepositos=0;
         $vistos = [];
 
 
@@ -85,16 +89,20 @@ class ReporteSitiosController
         foreach ($sitios as $s) {
 
 
-            if (isset($vistos[$s['id_sitio']])) {
-                continue;
-            }
-
+            
+            // el sitio solo esta una sola vez, aunque se encuentren varios depositos
             $vistos[$s['id_sitio']] = true;
+
+            if ($s['tipo_deposito']!==null) {
+                $totalDepositos++;
+            }
 
             if ((int) $s['num_registros'] === 0) {
                 $totalSinRegistros++;
             } elseif ((int) $s['con_larvas'] === 1) {
                 $totalConLarvas++;
+            }else{
+                $totalSinLarvas++;
             }
         }
 
@@ -156,6 +164,7 @@ class ReporteSitiosController
 
         $sql = "SELECT
                     s.id_sitio,
+                    sd.id_sitio_deposito,
                     s.nombre_sitio,
                     s.direccion,
                     b.nombre_barrio,
@@ -177,7 +186,7 @@ class ReporteSitiosController
                   AND ($2::int IS NULL OR b.id_barrio = $2)
                   AND ($3::int IS NULL OR td.id_tipo_deposito = $3)
                   $condicionHallazgo
-                GROUP BY s.id_sitio, s.nombre_sitio, s.direccion,
+                GROUP BY s.id_sitio, sd.id_sitio_deposito, s.nombre_sitio, s.direccion,
                          b.nombre_barrio, c.nombre_comuna, td.nombre
                 ORDER BY s.nombre_sitio";
 
@@ -198,13 +207,24 @@ class ReporteSitiosController
         }
         return (int) $fila['con_larvas'] === 1 ? 'Con larvas' : 'Sin larvas';
     }
- 
+    
+
+     // Título de sección del Excel: texto azul con una línea gruesa debajo
+    private function tituloSeccion($sheet, $fila, $texto)
+    {
+        $sheet->mergeCells("A$fila:F$fila");
+        $sheet->setCellValue("A$fila", $texto);
+        $sheet->getStyle("A$fila:F$fila")->getFont()->setBold(true)->setSize(11)->getColor()->setRGB('1B3B5F');
+        $sheet->getStyle("A$fila:F$fila")->getBorders()->getBottom()
+            ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM)
+            ->getColor()->setRGB('1B3B5F');
+    }
+
  
     // Descarga el reporte en Excel con los mismos filtros de la pantalla
-    public function exportarSitiosExcel()
+     public function exportarSitiosExcel()
     {
         // Se carga aqui para que la pantalla no dependa de Composer
-        // (deja la misma ruta que usa tu ReportesController)
         require_once __DIR__ . '/../../../vendor/autoload.php';
  
         $obj = new ReporteSitiosModel();
@@ -222,7 +242,7 @@ class ReporteSitiosController
  
         // Con errores o sin datos se vuelve a la pantalla del reporte
         if (!empty($errores) || empty($sitios)) {
-            $url = getUrl('Reportes', 'ReporteSitios', 'report');
+            $url = getUrl('ReporteSitios', 'ReporteSitios', 'getReporteSitios');
             $separador = (strpos($url, '?') === false) ? '?' : '&';
  
             header('Location: ' . $url . $separador . http_build_query([
@@ -234,35 +254,90 @@ class ReporteSitiosController
             exit;
         }
  
+        // ---- Colores del proyecto (los mismos del reporte de tanques) ----
+        $azulOscuro = '1B3B5F'; // banda superior
+        $azulMedio  = '2F6690'; // franja secundaria
+        $grisClaro  = 'F2F2F2'; // zebra
+        $grisTexto  = '6B6B6B';
+ 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Sitios');
  
-        // Titulo
+        // ================== BANDA SUPERIOR ==================
         $sheet->mergeCells('A1:F1');
         $sheet->setCellValue('A1', 'REPORTE DE SITIOS REGISTRADOS');
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14)->getColor()->setRGB('FFFFFF');
-        $sheet->getStyle('A1:F1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('1B3B5F');
-        $sheet->getRowDimension(1)->setRowHeight(30);
-        $sheet->getStyle('A1')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(15)->getColor()->setRGB('FFFFFF');
+        $sheet->getStyle('A1')->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+            ->setVertical(Alignment::VERTICAL_CENTER)
+            ->setIndent(9); // deja espacio a la izquierda para el logo
+        $sheet->getStyle('A1:F1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($azulOscuro);
+        $sheet->getRowDimension(1)->setRowHeight(46);
  
-        // Informacion general
-        $sheet->setCellValue('A2', 'Total de sitios:');
-        $sheet->setCellValue('B2', count(array_unique(array_column($sitios, 'id_sitio'))));
-        $sheet->setCellValue('A3', 'Fecha de generación:');
-        $sheet->setCellValue('B3', date('d/m/Y H:i'));
-        $sheet->getStyle('A2:A3')->getFont()->setBold(true);
-        $sheet->getStyle('B2:B3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->mergeCells('A2:F2');
+        $sheet->setCellValue('A2', 'Proyecto de Control Biológico · Geolocalización ETV');
+        $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(9)->getColor()->setRGB('FFFFFF');
+        $sheet->getStyle('A2')->getAlignment()->setIndent(9);
+        $sheet->getStyle('A2:F2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($azulMedio);
+        $sheet->getRowDimension(2)->setRowHeight(18);
  
-        // Encabezados de la tabla
-        $sheet->setCellValue('A5', 'Sitio');
-        $sheet->setCellValue('B5', 'Dirección');
-        $sheet->setCellValue('C5', 'Barrio');
-        $sheet->setCellValue('D5', 'Comuna');
-        $sheet->setCellValue('E5', 'Tipo de Depósito');
-        $sheet->setCellValue('F5', 'Hallazgo de Larvas');
-        $sheet->getStyle('A5:F5')->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
-        $sheet->getStyle('A5:F5')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('2F6690');
+        // ---- Logos (si la imagen no existe, se omite y el Excel se genera igual) ----
+        $rutaImg = __DIR__ . '/../../web/assets/img/';
+ 
+        if (file_exists($rutaImg . 'LogoProye.png')) {
+            $logoProyecto = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $logoProyecto->setName('Logo Geolocalización ETV');
+            $logoProyecto->setDescription('Logo del proyecto');
+            $logoProyecto->setPath($rutaImg . 'LogoProye.png');
+            $logoProyecto->setHeight(58);
+            $logoProyecto->setCoordinates('A1');
+            $logoProyecto->setOffsetX(6);
+            $logoProyecto->setOffsetY(4);
+            $logoProyecto->setWorksheet($sheet);
+        }
+ 
+        if (file_exists($rutaImg . 'logo_alcaldia.png')) {
+            $logoAlcaldia = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $logoAlcaldia->setName('Logo Alcaldía de Santiago de Cali');
+            $logoAlcaldia->setDescription('Logo institucional');
+            $logoAlcaldia->setPath($rutaImg . 'logo_alcaldia.png');
+            $logoAlcaldia->setHeight(26);
+            $logoAlcaldia->setCoordinates('F1');
+            $logoAlcaldia->setOffsetX(95);
+            $logoAlcaldia->setOffsetY(10);
+            $logoAlcaldia->setWorksheet($sheet);
+        }
+ 
+        // fila espaciadora
+        $sheet->getRowDimension(3)->setRowHeight(8);
+ 
+        // ================== INFORMACIÓN GENERAL ==================
+        $this->tituloSeccion($sheet, 4, 'INFORMACIÓN GENERAL');
+ 
+        $sheet->setCellValue('A5', 'Total de sitios:');
+        $sheet->setCellValue('B5', count(array_unique(array_column($sitios, 'id_sitio'))));
+        $sheet->setCellValue('A6', 'Fecha de generación:');
+        $sheet->setCellValue('B6', date('d/m/Y H:i'));
+        $sheet->getStyle('A5:A6')->getFont()->setBold(true)->getColor()->setRGB($grisTexto);
+        $sheet->getStyle('B5:B6')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+ 
+        $sheet->getRowDimension(7)->setRowHeight(10);
+ 
+        // ================== TABLA DE SITIOS ==================
+        $this->tituloSeccion($sheet, 8, 'SITIOS REGISTRADOS');
+ 
+        $filaEncabezado = 10;
+        $encabezados = ['Sitio', 'Dirección', 'Barrio', 'Comuna', 'Tipo de Depósito', 'Hallazgo de Larvas'];
+        foreach ($encabezados as $i => $texto) {
+            $sheet->setCellValue(chr(65 + $i) . $filaEncabezado, $texto);
+        }
+ 
+        $sheet->getStyle("A$filaEncabezado:F$filaEncabezado")->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
+        $sheet->getStyle("A$filaEncabezado:F$filaEncabezado")->getFill()
+            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($azulOscuro);
+        $sheet->getStyle("A$filaEncabezado:F$filaEncabezado")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($filaEncabezado)->setRowHeight(20);
  
         // Colores del hallazgo
         $colores = [
@@ -271,8 +346,8 @@ class ReporteSitiosController
             'Sin registros' => 'D5D8DC',
         ];
  
-        // Filas de datos
-        $fila = 6;
+        $fila = $filaEncabezado + 1;
+        $primeraFilaDatos = $fila;
         foreach ($sitios as $s) {
             $texto = $this->textoHallazgo($s);
  
@@ -282,15 +357,35 @@ class ReporteSitiosController
             $sheet->setCellValue("D$fila", $s['nombre_comuna']);
             $sheet->setCellValue("E$fila", $s['tipo_deposito'] ?? 'Sin depósito');
             $sheet->setCellValue("F$fila", $texto);
-            $sheet->getStyle("F$fila")->getFill()->setFillType(Fill::FILL_SOLID)
-                  ->getStartColor()->setRGB($colores[$texto]);
+ 
+            // zebra striping
+            if ((($fila - $primeraFilaDatos) % 2) === 1) {
+                $sheet->getStyle("A$fila:F$fila")->getFill()
+                    ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($grisClaro);
+            }
+ 
+            $sheet->getStyle("A$fila:F$fila")->getBorders()->getBottom()
+                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                ->getColor()->setRGB('D9D9D9');
+            $sheet->getStyle("C$fila:F$fila")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+ 
+            // color según el hallazgo
+            $sheet->getStyle("F$fila")->getFill()
+                ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($colores[$texto]);
+            $sheet->getStyle("F$fila")->getFont()->setBold(true);
+ 
             $fila++;
         }
  
-        // Ancho automatico de columnas
-        foreach (['A', 'B', 'C', 'D', 'E', 'F'] as $columna) {
-            $sheet->getColumnDimension($columna)->setAutoSize(true);
-        }
+        // ================== ANCHOS DE COLUMNA ==================
+        $sheet->getColumnDimension('A')->setWidth(28);
+        $sheet->getColumnDimension('B')->setWidth(30);
+        $sheet->getColumnDimension('C')->setWidth(22);
+        $sheet->getColumnDimension('D')->setWidth(16);
+        $sheet->getColumnDimension('E')->setWidth(26);
+        $sheet->getColumnDimension('F')->setWidth(24);
+ 
+        $sheet->setShowGridlines(false);
  
         // Descarga
         $nombreArchivo = 'reporte_sitios_' . date('Y-m-d') . '.xlsx';
