@@ -13,8 +13,8 @@
           <div class="mb-3">
             <label for="codigo_zoocriadero" class="form-label">Código del zoocriadero <span class="text-danger">*</span></label>
 
-            <input type="text" class="form-control" id="codigo_zoocriadero" name="codigo_zoocriadero" value = "ZOOCRIADERO# <?php echo $id_zoo[0]['max'] + 1;  ?>" disabled>
-            <input type="hidden" name="codigo" value = "ZOOCRIADERO# <?php echo $id_zoo[0]['max'] + 1;  ?>">
+            <input type="text" class="form-control" id="codigo_zoocriadero" name="codigo_zoocriadero" value = "ZOOCRIADERO#<?php echo $id_zoo[0]['max'] + 1;  ?>" disabled>
+            <input type="hidden" name="codigo" value = "ZOOCRIADERO#<?php echo $id_zoo[0]['max'] + 1;  ?>">
           </div>
 
           <div class="mb-3">

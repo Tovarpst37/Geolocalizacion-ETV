@@ -10,8 +10,8 @@
 
           <div class="mb-3">
             <label for="codigo_tanque" class="form-label">Codigo del Seguimiento</label>
-            <input type="text" class="form-control" id="codigo_Seguimiento" name="codigo_Seguimiento" value = "SEGUIMIENTO# <?php echo $id_seg[0]['max'] + 1;  ?>" disabled>
-            <input type="hidden" name="codigo" value = "SEGUIMIENTO# <?php echo $id_seg[0]['max'] + 1;  ?>">
+            <input type="text" class="form-control" id="codigo_Seguimiento" name="codigo_Seguimiento" value = "SEGUIMIENTO#<?php echo $id_seg[0]['max'] + 1;  ?>" disabled>
+            <input type="hidden" name="codigo" value = "SEGUIMIENTO#<?php echo $id_seg[0]['max'] + 1;  ?>">
             
           </div>
 
