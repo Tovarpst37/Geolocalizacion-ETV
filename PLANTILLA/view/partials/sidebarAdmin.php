@@ -199,7 +199,7 @@
                         <li><a href="<?php echo getUrl("Reportes", "Reportes", "report"); ?>"><span class="sub-item">Seguimiento de actividades</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReportePecesNacidosMuertos", "ReportePecesNacidosMuertos", "getReportePecesNacidosMuertos"); ?>"><span class="sub-item">Peces nacidos/muertos por tanque</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques"); ?>"><span class="sub-item">Tanques por zoocriadero</span> <span class="badge-pending">Próximo</span></a></li>
-                        <li><a href="#"><span class="sub-item">Sitios registrados</span> <span class="badge-pending">Próximo</span></a></li>
+                        <li><a href="<?php echo getUrl("ReporteSitios", "ReporteSitios", "getReporteSitios"); ?>"><span class="sub-item">Sitios registrados</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="#"><span class="sub-item">Actividades de terreno por tipo</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span class="sub-item">Actividades por auxiliar</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="#"><span class="sub-item">Tipo de depósitos</span> <span class="badge-pending">Próximo</span></a></li>
