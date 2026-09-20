@@ -1,209 +1,214 @@
-    <?php
-    // AGREGADO: valores por defecto para que la vista no truene si se carga sin pasar por el controlador
-    // (esto es un parche temporal — lo ideal es que el controlador SIEMPRE defina estas variables antes del include)
-    $TipoDeposito = $TipoDeposito ?? [];
-    $generar = $generar ?? false;
-    $TipoSeleccionado = $TipoSeleccionado ?? '';
-    $datosRepostes = $datosRepostes ?? [];
-    $mensajeVacio = $mensajeVacio ?? null;
-    ?>
-    <div class="caja">
-        <h2 class="titulo-pagina">Reporte de sitios por tipo de depósito</h2>
-        <form method="GET">
-            <!-- AGREGADO: sin estos campos, al enviar el formulario por GET se pierde la info de
-                enrutamiento (modulo/controlador/funcion) y la página cae al index -->
-            <input type="hidden" name="modulo" value="<?= $_GET['modulo'] ?? '' ?>">
-            <input type="hidden" name="controlador" value="<?= $_GET['controlador'] ?? '' ?>">
-            <input type="hidden" name="funcion" value="getReporteTipoDeposito">
-            <input type="hidden" name="generar" value="1">
-            <div class="fila-filtros">
-                <div>
-                    <label>Tipo de Deposito <span class="text-danger">*</span></label>
-                    <select name="Tipo_deposito[]"multiple required>
-                        <?php foreach ($TipoDeposito as $Tipo): ?>
-                            <option value="<?= $Tipo['id_tipo_deposito'] ?>"
-                                 <?= in_array($tipo['id_tipo_deposito'], $TipoSeleccionado) ? 'selected' : '' ?>>
-                                 <?= htmlspecialchars($tipo['nombre']) ?>
+<?php
+$tipoDeposito = $tipoDeposito ?? [];
+$generar = $generar ?? false;
+$filtroTipoDeposito = $filtroTipoDeposito ?? '';
+$datosReporte = $datosReporte ?? [];
+$mensajeVacio = $mensajeVacio ?? null;
+?>
+<div class="caja">
+    <h2 class="titulo-pagina">Reporte de sitios por tipo de depósito</h2>
+
+    <form method="GET">
+        <input type="hidden" name="modulo" value="<?= $_GET['modulo'] ?? '' ?>">
+        <input type="hidden" name="controlador" value="<?= $_GET['controlador'] ?? '' ?>">
+        <input type="hidden" name="funcion" value="getReporteTipoDeposito">
+        <input type="hidden" name="generar" value="1">
+
+        <div class="filtro-moderno">
+            <div class="selector-zoocriadero">
+                <label>Tipo de Deposito <span class="text-danger">*</span></label>
+                <div class="select-wrapper">
+                    <span class="icono-select">🪣</span>
+                    <select name="tipo_deposito" required>
+                        <option value="" selected disabled>Selecciona un tipo de depósito</option>
+                        <?php foreach ($tipoDeposito as $tipo): ?>
+                            <option value="<?= $tipo['id_tipo_deposito'] ?>" <?= (($filtroTipoDeposito ?? '') == $tipo['id_tipo_deposito']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($tipo['nombre']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div>
-                    <button type="submit" class="btn-aplicar">Generar Reporte</button>
-                    <?php if ($generar && !empty($datosRepostes)): ?>
-                        <button type="button" class="btn-reportes"
-                            onclick="location.href='<?= getUrl('ReportesTipoDeposito', 'ReportesTipoDeposito', 'exportarTipoDepositoExcel') ?><?php foreach ($TipoSeleccionado as $tipo): ?>&tipo_deposito[]=<?= urlencode($tipo) ?><?php endforeach; ?>'">
-                            Exportar a Excel
-                        </button>
-                    <?php endif; ?>
-                </div>
             </div>
-        </form>
-    </div>
+
+            <div class="botones-accion">
+                <button type="submit" class="btn-aplicar">Generar Reporte</button>
+                <?php if ($generar && !empty($datosReporte)): ?>
+                    <button type="button" class="btn-reportes"
+                        onclick="location.href='<?= getUrl('ReportesTipoDeposito', 'ReportesTipoDeposito', 'exportarTipoDepositoExcel') ?>&tipo_deposito=<?= urlencode($filtroTipoDeposito) ?>'">
+                        Exportar a Excel
+                    </button>
+                <?php endif; ?>
+            </div>
+        </div>
+    </form>
+</div>
 
 
-    <?php if ($generar): ?>
-        <div class="caja">
-            <h3>Sitios por tipo de deposito</h3>
+<?php if ($generar): ?>
+    <div class="caja">
+        <h3>Sitios por tipo de deposito</h3>
 
-            <?php if (!empty($mensajeVacio)): ?>
-                <p style="text-align:center; color:#888;"><?= $mensajeVacio ?></p>
-            <?php else: ?>
-                <table>
-                    <thead>
-                        <tr>
-                         <th>ID tipo de depósito</th>
+        <?php if (!empty($mensajeVacio)): ?>
+            <p style="text-align:center; color:#888;"><?= $mensajeVacio ?></p>
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID tipo de depósito</th>
                         <th>Tipo de depósito</th>
                         <th>Cantidad de sitios</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($datosRepostes as $dato): ?>
-                            <tr>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($datosReporte as $dato): ?>
+                        <tr>
                             <td><?= htmlspecialchars($dato['id_tipo_deposito']) ?></td>
                             <td><?= htmlspecialchars($dato['tipo_deposito']) ?></td>
                             <td><?= htmlspecialchars($dato['cantidad']) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
-        </div>
-    <?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
 
-    <style>
-        .caja {
-            background-color: #ffffff;
-            border-radius: 14px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.34);
-            font-family: Arial, Helvetica, sans-serif;
-        }
+<style>
+    .caja {
+        background-color: #ffffff;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.34);
+        font-family: Arial, Helvetica, sans-serif;
+    }
 
-        .titulo-pagina {
-            text-align: center;
-            font-size: 22px;
-            margin-top: 0;
-            margin-bottom: 24px;
-        }
+    .titulo-pagina {
+        text-align: center;
+        font-size: 22px;
+        margin-top: 0;
+        margin-bottom: 28px;
+        color: #1e293b;
+    }
 
-        .caja h3 {
-            margin-top: 0;
-            margin-bottom: 16px;
-        }
+    .caja h3 {
+        margin-top: 0;
+        margin-bottom: 16px;
+    }
 
-        .fila-filtros {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            gap: 20px;
-        }
+    .filtro-moderno {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 24px;
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
 
-        .fila-filtros label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
+    .selector-zoocriadero {
+        flex: 1;
+        min-width: 260px;
+    }
 
-        .fila-filtros select {
-            padding: 8px 12px;
-            border: 1px solid #d7dbe3;
-            border-radius: 8px;
-            min-width: 220px;
-        }
+    .selector-zoocriadero label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #334155;
+        font-size: 14px;
+    }
 
-        .text-danger {
-            color: #e64545;
-        }
+    .select-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
 
-        .btn-aplicar {
-            background-color: #2f7dfa;
-            color: #ffffff;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+    .icono-select {
+        position: absolute;
+        left: 14px;
+        font-size: 18px;
+        pointer-events: none;
+        z-index: 1;
+    }
 
-        .btn-reportes {
-            background-color: #ffffff;
-            color: #2f7dfa;
-            border: 1px solid #2f7dfa;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-left: 8px;
-        }
+    .select-wrapper select {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background-color: #ffffff;
+        font-size: 15px;
+        color: #1e293b;
+        appearance: none;
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-        .tarjetas {
-            display: flex;
-            gap: 20px;
-        }
+    .select-wrapper select:focus {
+        outline: none;
+        border-color: #2f7dfa;
+        box-shadow: 0 0 0 3px rgba(47, 125, 250, 0.15);
+    }
 
-        .tarjeta {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
+    .botones-accion {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
 
-        .icono {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
+    .text-danger {
+        color: #e64545;
+    }
 
-        .icono-azul {
-            background-color: #e5f0ff;
-            color: #2f7dfa;
-        }
+    .btn-aplicar {
+        background-color: #2f7dfa;
+        color: #ffffff;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
 
-        .icono-verde {
-            background-color: #e3f9ec;
-            color: #21a666;
-        }
+    .btn-aplicar:hover {
+        background-color: #1d6fe0;
+    }
 
-        .tarjeta p {
-            margin: 0 0 4px 0;
-            color: #666;
-            font-size: 14px;
-        }
+    .btn-reportes {
+        background-color: #ffffff;
+        color: #2f7dfa;
+        border: 1.5px solid #2f7dfa;
+        padding: 12px 22px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
 
-        .numero {
-            font-size: 26px;
-            font-weight: bold;
-        }
+    .btn-reportes:hover {
+        background-color: #eff6ff;
+    }
 
-        .azul {
-            color: #2f7dfa;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        .verde {
-            color: #21a666;
-        }
+    th {
+        text-align: left;
+        padding: 12px;
+        color: #555;
+        border-bottom: 2px solid #eef1f8;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            padding: 12px;
-            color: #555;
-            border-bottom: 2px solid #eef1f8;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #eef1f8;
-        }
-    </style>
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #eef1f8;
+    }
+</style>

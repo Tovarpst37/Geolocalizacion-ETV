@@ -202,7 +202,7 @@
                         <li><a href="#"><span class="sub-item">Sitios registrados</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="#"><span class="sub-item">Actividades de terreno por tipo</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span class="sub-item">Actividades por auxiliar</span> <span class="badge-pending">Próximo</span></a></li>
-                        <li><a href="#"><span class="sub-item">Tipo de depósitos</span> <span class="badge-pending">Próximo</span></a></li>
+                        <li><a href="<?php echo getUrl("ReportesTipoDeposito", "ReportesTipoDeposito", "getReporteTipoDeposito  "); ?>"><span class="sub-item">Tipo de depósitos</span> <span class="badge-pending">Próximo</span></a></li>
 
                         <li><a href="<?php echo getUrl('Auditoria', 'Auditoria', 'getConsultar'); ?>"><i class="bx bxs-file-export"></i><span class="sub-item">Auditoria</span></a></li>
                     </ul>

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../../vendor/autoload.php';
-include_once '../model/reportesTanquesZoocriadero/ReportesModel.php'; // ajusta a la ruta real de tu modelo
+include_once '../model/reportesTanquesZoocriadero/ReportesModel.php'; 
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
