@@ -6,6 +6,3 @@ class FormulariosModel extends MasterModel
 
 }
 ?>
-
-<?php
-

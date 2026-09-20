@@ -74,6 +74,20 @@ class FormularioLaController
         return !empty($res);
     }
 
+    // NUEVO: verifica si ya existe un registro previo de Lavado en sub_actividades para este seguimiento
+    private function yaRegistroLavado($obj, $id_seguimiento_zoo, $codM)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades 
+                WHERE (id_seguimiento_zoo = $1 OR cod_seguimiento = $2)
+                  AND (obser_lavado IS NOT NULL OR fecha_lavado IS NOT NULL OR estado_tanque IS NOT NULL OR agua_cambiada IS NOT NULL)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_zoo, $codM]);
+
+        return !empty($res);
+    }
+
     public function postInsert()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -117,6 +131,11 @@ class FormularioLaController
                     // NUEVO: el seguimiento debe tener asignada la actividad de Lavado
                     if (!$this->seguimientoTieneLavado($obj, $id_seguimiento_zoo)) {
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Lavado, por lo que no se puede registrar el formulario.";
+                    }
+
+                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    if ($this->yaRegistroLavado($obj, $id_seguimiento_zoo, $codM)) {
+                        $errores[] = "Ya existe un registro de lavado guardado para este código de seguimiento.";
                     }
                 }
             }

@@ -72,6 +72,20 @@ class FormularioLiController
         return !empty($res);
     }
 
+    // NUEVO: verifica si ya existe un registro previo de Limpieza en sub_actividades para este seguimiento
+    private function yaRegistroLimpieza($obj, $id_seguimiento_zoo, $codM)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades 
+                WHERE (id_seguimiento_zoo = $1 OR cod_seguimiento = $2)
+                  AND (obser_limpieza IS NOT NULL OR fecha_limpieza IS NOT NULL OR estregar_paredes = true OR aspirar = true OR succionador = true)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_zoo, $codM]);
+
+        return !empty($res);
+    }
+
     public function postInsert()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -116,6 +130,11 @@ class FormularioLiController
 
                     if (!$this->seguimientoTieneLimpieza($obj, $id_seguimiento_zoo)) {
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Limpieza, por lo que no se puede registrar el formulario.";
+                    }
+
+                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    if ($this->yaRegistroLimpieza($obj, $id_seguimiento_zoo, $codM)) {
+                        $errores[] = "Ya existe un registro de limpieza guardado para este código de seguimiento.";
                     }
                 }
             }
