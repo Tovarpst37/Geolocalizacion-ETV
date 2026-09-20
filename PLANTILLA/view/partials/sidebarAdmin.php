@@ -196,7 +196,7 @@
                         <i class="bx bx-chevron-down navCaret text"></i>
                     </a>
                     <ul class="submenu">
-                        <li><a href="<?php echo getUrl("Reportes", "Reportes", "report"); ?>"><span class="sub-item">Seguimiento de actividades</span> <span class="badge-pending">Próximo</span></a></li>
+                        <li><a href="<?php echo getUrl("Reportes", "Reportes", "getReport"); ?>"><span class="sub-item">Seguimiento de actividades</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReportePecesNacidosMuertos", "ReportePecesNacidosMuertos", "getReportePecesNacidosMuertos"); ?>"><span class="sub-item">Peces nacidos/muertos por tanque</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques"); ?>"><span class="sub-item">Tanques por zoocriadero</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReporteSitios", "ReporteSitios", "getReporteSitios"); ?>"><span class="sub-item">Sitios registrados</span> <span class="badge-pending">Próximo</span></a></li>

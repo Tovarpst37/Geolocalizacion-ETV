@@ -12,7 +12,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 class ReportesController
 {
 
-    public function report()
+    public function getReport()
     {
 
         $obj = new ReporteSeguimientoModel();
