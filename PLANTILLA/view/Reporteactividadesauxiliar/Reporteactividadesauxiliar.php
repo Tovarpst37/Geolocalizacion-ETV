@@ -9,29 +9,39 @@ $mensajeVacio = $mensajeVacio ?? null;
 ?>
 <div class="caja">
     <h2 class="titulo-pagina">Reporte de Actividades por Auxiliar</h2>
+    
     <form method="GET">
-
         <input type="hidden" name="modulo" value="<?= $_GET['modulo'] ?? '' ?>">
         <input type="hidden" name="controlador" value="<?= $_GET['controlador'] ?? '' ?>">
         <input type="hidden" name="funcion" value="getReporteActividadesAuxiliar">
         <input type="hidden" name="generar" value="1">
-        <div class="fila-filtros">
-            <div>
+
+        <!-- NUEVO DISEÑO DE FILTROS -->
+        <div class="filtro-moderno">
+            <div class="campo-filtro">
                 <label>Auxiliar <span class="text-danger">*</span></label>
-                <select name="auxiliar" required>
-                    <option value="" selected disabled>Selecciona un auxiliar</option>
-                    <?php foreach ($auxiliares as $aux): ?>
-                        <option value="<?= $aux['id_usuario'] ?>" <?= (($filtroAuxiliar ?? '') == $aux['id_usuario']) ? 'selected' : '' ?>>
-                            <?= trim($aux['primer_nombre'] . ' ' . $aux['segundo_nombre'] . ' ' . $aux['primer_apellido'] . ' ' . $aux['segundo_apellido']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <div class="select-wrapper">
+                    <span class="icono-select">👤</span>
+                    <select name="auxiliar" required>
+                        <option value="" selected disabled>Selecciona un auxiliar</option>
+                        <?php foreach ($auxiliares as $aux): ?>
+                            <option value="<?= $aux['id_usuario'] ?>" <?= (($filtroAuxiliar ?? '') == $aux['id_usuario']) ? 'selected' : '' ?>>
+                                <?= trim($aux['primer_nombre'] . ' ' . $aux['segundo_nombre'] . ' ' . $aux['primer_apellido'] . ' ' . $aux['segundo_apellido']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
             </div>
-            <div>
+
+            <div class="campo-filtro">
                 <label>Fecha</label>
-                <input type="date" name="fecha" value="<?= $filtroFecha ?>">
+                <div class="select-wrapper">
+                    <span class="icono-select">📅</span>
+                    <input type="date" name="fecha" value="<?= $filtroFecha ?>">
+                </div>
             </div>
-            <div>
+
+            <div class="botones-accion">
                 <button type="submit" class="btn-aplicar">Generar Reporte</button>
                 <?php if ($generar && !empty($actividades)): ?>
                     <button type="button" class="btn-reportes"
@@ -93,7 +103,8 @@ $mensajeVacio = $mensajeVacio ?? null;
         text-align: center;
         font-size: 22px;
         margin-top: 0;
-        margin-bottom: 24px;
+        margin-bottom: 28px;
+        color: #1e293b;
     }
 
     .caja h3 {
@@ -101,25 +112,71 @@ $mensajeVacio = $mensajeVacio ?? null;
         margin-bottom: 16px;
     }
 
-    .fila-filtros {
+    /* ===== NUEVO DISEÑO DE FILTROS ===== */
+    .filtro-moderno {
         display: flex;
         flex-wrap: wrap;
         align-items: flex-end;
         gap: 20px;
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
     }
 
-    .fila-filtros label {
+    .campo-filtro {
+        flex: 1;
+        min-width: 220px;
+    }
+
+    .campo-filtro label {
         display: block;
-        font-weight: bold;
-        margin-bottom: 6px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #334155;
+        font-size: 14px;
     }
 
-    .fila-filtros select,
-    .fila-filtros input[type="date"] {
-        padding: 8px 12px;
-        border: 1px solid #d7dbe3;
-        border-radius: 8px;
-        min-width: 180px;
+    .select-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .icono-select {
+        position: absolute;
+        left: 14px;
+        font-size: 16px;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .select-wrapper select,
+    .select-wrapper input[type="date"] {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background-color: #ffffff;
+        font-size: 15px;
+        color: #1e293b;
+        appearance: none;
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .select-wrapper select:focus,
+    .select-wrapper input[type="date"]:focus {
+        outline: none;
+        border-color: #2f7dfa;
+        box-shadow: 0 0 0 3px rgba(47, 125, 250, 0.15);
+    }
+
+    .botones-accion {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: flex-end;
     }
 
     .text-danger {
@@ -130,23 +187,35 @@ $mensajeVacio = $mensajeVacio ?? null;
         background-color: #2f7dfa;
         color: #ffffff;
         border: none;
-        padding: 10px 18px;
-        border-radius: 8px;
+        padding: 12px 22px;
+        border-radius: 10px;
         cursor: pointer;
-        font-weight: bold;
+        font-weight: 600;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+
+    .btn-aplicar:hover {
+        background-color: #1d6fe0;
     }
 
     .btn-reportes {
         background-color: #ffffff;
         color: #2f7dfa;
-        border: 1px solid #2f7dfa;
-        padding: 10px 18px;
-        border-radius: 8px;
+        border: 1.5px solid #2f7dfa;
+        padding: 12px 22px;
+        border-radius: 10px;
         cursor: pointer;
-        font-weight: bold;
-        margin-left: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s;
     }
 
+    .btn-reportes:hover {
+        background-color: #eff6ff;
+    }
+
+    /* ===== TABLA (sin cambios) ===== */
     table {
         width: 100%;
         border-collapse: collapse;
