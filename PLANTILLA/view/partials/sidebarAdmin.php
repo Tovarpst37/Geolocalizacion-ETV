@@ -360,7 +360,7 @@
                     class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a href="#"><span class="sub-item">Actividades de terreno por
                     tipo</span><span class="badge-pending">Próximo</span></a></li>
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Actividades por auxiliar</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span class="sub-item">Actividades por auxiliar</span><span
                     class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a href="#"><span class="sub-item">Tipo de depósitos</span><span
                     class="badge-pending">Próximo</span></a></li>
