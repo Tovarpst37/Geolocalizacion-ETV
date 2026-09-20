@@ -399,7 +399,7 @@ html, body{
 
 .contenedortext{
     background:var(--containercolor);
-
+    box-shadow: 0 0 10px rgba(0 0 0 / 30%);
 }
 .contenedortext h1{
     color : white;
