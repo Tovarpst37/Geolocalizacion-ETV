@@ -32,12 +32,58 @@ class SeguimientoZoocriaderoController
             INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
             LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
             LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo 
-                                            AND az.id_estado = 1   
+                                            AND az.id_estado = 1  
             GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
                     z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
             ORDER BY s.id_seguimiento_zoo";
 
-        $seguimientos = $obj->select($sql);
+        $seguimientosnew = $obj->select($sql);
+
+
+        foreach($seguimientosnew as $se){
+         $sql15 = "SELECT 
+                            az.id_actividad_zoo,
+                            az.nombre_actividad,
+                            EXISTS (
+                                SELECT 1
+                                FROM actividad_zoo_subactividades azs
+                                INNER JOIN sub_actividades sa 
+                                    ON sa.id_sub_actividad = azs.id_sub_actividades
+                                WHERE azs.id_actividad_zoo = az.id_actividad_zoo
+                                AND sa.id_seguimiento_zoo = asz.id_seguimiento_zoo
+                            ) AS ya_registrada
+                        FROM actividad_seg_zoo asz
+                        INNER JOIN actividad_zoocriadero az 
+                            ON asz.id_actividad_zoo = az.id_actividad_zoo
+                        WHERE asz.id_seguimiento_zoo = $1
+                        ORDER BY az.id_actividad_zoo";
+            $act = $obj->select($sql15,[$se['id_seguimiento_zoo']]);
+
+            $verify = true;
+
+            foreach($act as $a){
+                if ($a['ya_registrada'] !== true && $a['ya_registrada'] !== 't') {
+                    $verify = false;
+                    break;
+                }
+            }
+
+            if($verify && count($act) > 0){
+                $sql22 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 5 
+                WHERE id_seguimiento_zoo = $1 AND id_estado = 4";
+
+                $ejecutar2 = $obj->update($sql22,[$se['id_seguimiento_zoo']]);
+
+            }else{
+                $sql22 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 4 
+                WHERE id_seguimiento_zoo = $1 AND id_estado = 5";
+
+                $ejecutar2 = $obj->update($sql22,[$se['id_seguimiento_zoo']]);
+
+            }
+        }
 
 
         $sql2 = "UPDATE seguimiento_zoocriadero 
@@ -48,7 +94,8 @@ class SeguimientoZoocriaderoController
 
         $ejecutar = $obj->update($sql2);
 
-
+        $seguimientos = $obj->select($sql);
+        
         if (count($seguimientos) <= 0) {
             include_once '../view/partials/SeguimientoZoocriadero/notExist.php';
         } else {
@@ -164,6 +211,8 @@ class SeguimientoZoocriaderoController
                         WHERE fecha = CURRENT_DATE 
                         AND hora_fin < LOCALTIME 
                         AND id_estado = 4";
+
+                
 
                 $ejecutar2 = $obj->update($sql2);
                 redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
@@ -346,27 +395,28 @@ class SeguimientoZoocriaderoController
 
             $palabra = $_GET['busqueda'];
             $sql = "SELECT 
-            s.id_seguimiento_zoo,
-            s.cod_seguimiento,
-            s.fecha,
-            s.hora_inicio,
-            s.hora_fin,
-            s.id_estado,
-            z.cod_zoocriadero,
-            t.codigo_tanque,
-            u.primer_nombre,
-            u.primer_apellido,
-            STRING_AGG(az.nombre_actividad, ', ') AS actividades
-        FROM seguimiento_zoocriadero s
-        INNER JOIN tanque t ON s.id_tanque = t.id_tanque
-        INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
-        INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
-        LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
-        LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
-        WHERE s.cod_seguimiento ILIKE $1
-        GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
-                z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
-        ORDER BY s.id_seguimiento_zoo";
+                        s.id_seguimiento_zoo,
+                        s.cod_seguimiento,
+                        s.fecha,
+                        s.hora_inicio,
+                        s.hora_fin,
+                        s.id_estado,
+                        z.cod_zoocriadero,
+                        t.codigo_tanque,
+                        u.primer_nombre,
+                        u.primer_apellido,
+                        STRING_AGG(az.nombre_actividad, ', ') AS actividades
+                    FROM seguimiento_zoocriadero s
+                    INNER JOIN tanque t ON s.id_tanque = t.id_tanque
+                    INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
+                    INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
+                    LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
+                    LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
+                                                    AND az.id_estado = 1
+                    WHERE s.cod_seguimiento ILIKE $1
+                    GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado,
+                            z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
+                    ORDER BY s.id_seguimiento_zoo";
 
 
 
@@ -377,40 +427,89 @@ class SeguimientoZoocriaderoController
             $obj = new SeguimientoZoocriaderoModel();
 
             $sql = "SELECT 
-            s.id_seguimiento_zoo,
-            s.cod_seguimiento,
-            s.fecha,
-            s.hora_inicio,
-            s.hora_fin,
-            s.id_estado,
-            z.cod_zoocriadero,
-            t.codigo_tanque,
-            u.primer_nombre,
-            u.primer_apellido,
-            STRING_AGG(az.nombre_actividad, ', ') AS actividades
-        FROM seguimiento_zoocriadero s
-        INNER JOIN tanque t ON s.id_tanque = t.id_tanque
-        INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
-        INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
-        LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
-        LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo
-        GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
-                z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
-        ORDER BY s.id_seguimiento_zoo";
+                s.id_seguimiento_zoo,
+                s.cod_seguimiento,
+                s.fecha,
+                s.hora_inicio,
+                s.hora_fin,
+                s.id_estado,
+                z.cod_zoocriadero,
+                t.codigo_tanque,
+                u.primer_nombre,
+                u.primer_apellido,
+                STRING_AGG(az.nombre_actividad, ', ') AS actividades
+            FROM seguimiento_zoocriadero s
+            INNER JOIN tanque t ON s.id_tanque = t.id_tanque
+            INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
+            INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
+            LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
+            LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo 
+                                            AND az.id_estado = 1  
+            GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
+                    z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
+            ORDER BY s.id_seguimiento_zoo";
 
-            $seguimientos = $obj->select($sql);
+        $seguimientosnew = $obj->select($sql);
 
 
-            $sql2 = "UPDATE seguimiento_zoocriadero 
-                SET id_estado = 2 
+        foreach($seguimientosnew as $se){
+         $sql15 = "SELECT 
+                            az.id_actividad_zoo,
+                            az.nombre_actividad,
+                            EXISTS (
+                                SELECT 1
+                                FROM actividad_zoo_subactividades azs
+                                INNER JOIN sub_actividades sa 
+                                    ON sa.id_sub_actividad = azs.id_sub_actividades
+                                WHERE azs.id_actividad_zoo = az.id_actividad_zoo
+                                AND sa.id_seguimiento_zoo = asz.id_seguimiento_zoo
+                            ) AS ya_registrada
+                        FROM actividad_seg_zoo asz
+                        INNER JOIN actividad_zoocriadero az 
+                            ON asz.id_actividad_zoo = az.id_actividad_zoo
+                        WHERE asz.id_seguimiento_zoo = $1
+                        ORDER BY az.id_actividad_zoo";
+            $act = $obj->select($sql15,[$se['id_seguimiento_zoo']]);
+
+            $verify = true;
+
+            foreach($act as $a){
+                if ($a['ya_registrada'] !== true && $a['ya_registrada'] !== 't') {
+                    $verify = false;
+                    break;
+                }
+            }
+
+            if($verify && count($act) > 0){
+                $sql22 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 5 
+                WHERE id_seguimiento_zoo = $1 AND id_estado = 4";
+
+                $ejecutar2 = $obj->update($sql22,[$se['id_seguimiento_zoo']]);
+
+            }else{
+                $sql22 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 4 
+                WHERE id_seguimiento_zoo = $1 AND id_estado = 5";
+
+                $ejecutar2 = $obj->update($sql22,[$se['id_seguimiento_zoo']]);
+
+            }
+        }
+
+
+        $sql2 = "UPDATE seguimiento_zoocriadero 
+                SET id_estado = 3 
                 WHERE fecha = CURRENT_DATE 
                 AND hora_fin < LOCALTIME 
-                AND id_estado = 1";
+                AND id_estado = 4";
 
-            $ejecutar = $obj->update($sql2);
+        $ejecutar = $obj->update($sql2);
+
+        $seguimientos = $obj->select($sql);
 
 
-            include_once '../view/partials/SeguimientoZoocriadero/notExist.php';
+            include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
         }
 
     }
