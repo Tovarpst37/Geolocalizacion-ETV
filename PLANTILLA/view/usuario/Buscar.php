@@ -13,7 +13,6 @@ include_once '../view/usuario/disable.php';
           <input type="hidden" name="funcion" value="getBuscar">
 
           <input type="text" name="busqueda" placeholder="Search ..." class="form-control"  value = "<?php echo $palabra; ?>"/>
-
           <button type="submit" class="btn btn-outline-secondary">
             <i class="fa fa-search"></i>
           </button>
@@ -21,7 +20,9 @@ include_once '../view/usuario/disable.php';
       </div>
     </div>
 </div>
-
+<br>
+<br>
+<br>
 <?php if(!empty($usuarios)){?>
 <div class="card">
     <div class="card-body">
