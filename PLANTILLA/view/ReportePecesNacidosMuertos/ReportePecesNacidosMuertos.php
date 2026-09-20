@@ -1,22 +1,23 @@
 <?php
+
 $zoocriaderos = $zoocriaderos ?? [];
 $generar = $generar ?? false;
 $filtroZoocriadero = $filtroZoocriadero ?? '';
-$tanques = $tanques ?? [];
-$totalTanques = $totalTanques ?? 0;
-$encargado = $encargado ?? null;
+$datos = $datos ?? [];
 $mensajeVacio = $mensajeVacio ?? null;
 ?>
 <div class="caja">
-    <h2 class="titulo-pagina">Reporte de Tanques según Zoocriadero</h2>
+    <h2 class="titulo-pagina">Reporte de Peces Nacidos y Muertos por Tanque</h2>
+    
     <form method="GET">
         <input type="hidden" name="modulo" value="<?= $_GET['modulo'] ?? '' ?>">
         <input type="hidden" name="controlador" value="<?= $_GET['controlador'] ?? '' ?>">
-        <input type="hidden" name="funcion" value="getReporteTanques">
+        <input type="hidden" name="funcion" value="getReportePecesNacidosMuertos">
         <input type="hidden" name="generar" value="1">
 
+        <!-- NUEVO DISEÑO DE LA PARTE DE SELECCIÓN -->
         <div class="filtro-moderno">
-            <div class="campo-filtro">
+            <div class="selector-zoocriadero">
                 <label>Zoocriadero <span class="text-danger">*</span></label>
                 <div class="select-wrapper">
                     <span class="icono-select">🐟</span>
@@ -33,9 +34,9 @@ $mensajeVacio = $mensajeVacio ?? null;
 
             <div class="botones-accion">
                 <button type="submit" class="btn-aplicar">Generar Reporte</button>
-                <?php if ($generar && !empty($tanques)): ?>
+                <?php if ($generar && !empty($datos)): ?>
                     <button type="button" class="btn-reportes"
-                        onclick="location.href='<?= getUrl('ReportesTanquesZoocriadero', 'ReportesTanquesZoocriadero', 'exportarTanquesExcel') ?>&zoocriadero=<?= urlencode($filtroZoocriadero) ?>'">
+                        onclick="location.href='<?= getUrl('ReportePecesNacidosMuertos', 'ReportePecesNacidosMuertos', 'exportarPecesExcel') ?>&zoocriadero=<?= urlencode($filtroZoocriadero) ?>'">
                         Exportar a Excel
                     </button>
                 <?php endif; ?>
@@ -44,36 +45,9 @@ $mensajeVacio = $mensajeVacio ?? null;
     </form>
 </div>
 
-<?php if ($generar && empty($mensajeVacio)): ?>
-    <div class="caja tarjetas">
-        <div class="tarjeta">
-            <div class="icono icono-azul">🛢️</div>
-            <div>
-                <p>Cantidad de tanques</p>
-                <span class="numero azul"><?= $totalTanques ?></span>
-            </div>
-        </div>
-        <div class="tarjeta">
-            <div class="icono icono-verde">👤</div>
-            <div>
-                <p>Encargado del zoocriadero</p>
-                <span class="numero verde" style="font-size:16px;">
-                    <?php
-                    if ($encargado) {
-                        echo trim($encargado['primer_nombre'] . ' ' . $encargado['segundo_nombre'] . ' ' . $encargado['primer_apellido'] . ' ' . $encargado['segundo_apellido']);
-                    } else {
-                        echo 'Sin asignar';
-                    }
-                    ?>
-                </span>
-            </div>
-        </div>
-    </div>
-<?php endif; ?>
-
 <?php if ($generar): ?>
     <div class="caja">
-        <h3>Tanques del zoocriadero</h3>
+        <h3>Peces nacidos y muertos por tanque</h3>
 
         <?php if (!empty($mensajeVacio)): ?>
             <p style="text-align:center; color:#888;"><?= $mensajeVacio ?></p>
@@ -81,15 +55,21 @@ $mensajeVacio = $mensajeVacio ?? null;
             <table>
                 <thead>
                     <tr>
-                        <th>Código del tanque</th>
+                        <th>Tanque</th>
                         <th>Tipo de tanque</th>
+                        <th>Peces nacidos</th>
+                        <th>Muertos (machos)</th>
+                        <th>Muertos (hembras)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($tanques as $t): ?>
+                    <?php foreach ($datos as $d): ?>
                         <tr>
-                            <td><?= $t['codigo'] ?></td>
-                            <td><?= $t['tipo_tanque'] ?></td>
+                            <td><?= $d['codigo'] ?></td>
+                            <td><?= $d['tipo_tanque'] ?></td>
+                            <td><?= $d['nacidos'] ?></td>
+                            <td><?= $d['muertos_macho'] ?></td>
+                            <td><?= $d['muertos_hembra'] ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -121,23 +101,24 @@ $mensajeVacio = $mensajeVacio ?? null;
         margin-bottom: 16px;
     }
 
+    /* ===== NUEVO DISEÑO DEL SELECTOR ===== */
     .filtro-moderno {
         display: flex;
         flex-wrap: wrap;
         align-items: flex-end;
-        gap: 20px;
+        gap: 24px;
         background: #f8fafc;
         padding: 20px;
         border-radius: 12px;
         border: 1px solid #e2e8f0;
     }
 
-    .campo-filtro {
+    .selector-zoocriadero {
         flex: 1;
         min-width: 260px;
     }
 
-    .campo-filtro label {
+    .selector-zoocriadero label {
         display: block;
         font-weight: 600;
         margin-bottom: 8px;
@@ -154,7 +135,7 @@ $mensajeVacio = $mensajeVacio ?? null;
     .icono-select {
         position: absolute;
         left: 14px;
-        font-size: 16px;
+        font-size: 18px;
         pointer-events: none;
         z-index: 1;
     }
@@ -220,58 +201,7 @@ $mensajeVacio = $mensajeVacio ?? null;
         background-color: #eff6ff;
     }
 
-    .tarjetas {
-        display: flex;
-        gap: 20px;
-    }
-
-    .tarjeta {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .icono {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        flex-shrink: 0;
-    }
-
-    .icono-azul {
-        background-color: #e5f0ff;
-        color: #2f7dfa;
-    }
-
-    .icono-verde {
-        background-color: #e3f9ec;
-        color: #21a666;
-    }
-
-    .tarjeta p {
-        margin: 0 0 4px 0;
-        color: #666;
-        font-size: 14px;
-    }
-
-    .numero {
-        font-size: 26px;
-        font-weight: bold;
-    }
-
-    .azul {
-        color: #2f7dfa;
-    }
-
-    .verde {
-        color: #21a666;
-    }
-
+    /* ===== TABLA (sin cambios) ===== */
     table {
         width: 100%;
         border-collapse: collapse;

@@ -77,26 +77,21 @@ class ReportesController
             $estado = $s['estado'];
             
 
-            if (!isset($conteoEstado[$estado])) {
-                $conteoEstado[$estado] = 0;
-            }
-            $conteoEstado[$estado]++;
+            $retrasada = ($estado ==$pendiente || $estado ==$enProceso)
+                            && $s['fecha_registro']< $hoy;
 
-            // Retrasada: no está finalizada y su fecha ya pasó
-            if ($estado != $finalizado && $s['fecha_registro'] < $hoy) {
+            if($retrasada){
                 $totalRetrasadas++;
+            }else{
+                $conteoEstado[$estado] =($conteoEstado[$estado]?? 0)+ 1;
             }
+
+            
+            
         }
 
 
-        foreach ($seguimientos as $s) {
-            $estado = $s['estado'];
-
-            if (!isset($conteoEstado[$estado])) {
-                $conteoEstado[$estado] = 0;
-            }
-            $conteoEstado[$estado]++;
-        }
+        
 
         // Fuera del foreach: asi siempre quedan definidos, aunque no haya filas
         $totalCompletas  = $conteoEstado[$finalizado] ?? 0;

@@ -19,132 +19,159 @@ $urlLimpiar = $urlReporte . (strpos($urlReporte, '?') === false ? '?' : '&') . '
 ?>
 
 <div class="caja">
-    <h2 class="titulo-pagina">Seguimiento de Actividades en los Zoocriaderos</h2>
-    <h3>Filtros</h3>
-    <form method="GET" action="<?= htmlspecialchars($partesUrl['path'] ?? '') ?>">
-        <?php foreach ($paramsRuta as $nombre => $valor): ?>
-            <input type="hidden" name="<?= htmlspecialchars($nombre) ?>" value="<?= htmlspecialchars((string) $valor) ?>">
-        <?php endforeach; ?>
 
-        <div class="fila-filtros">
-            <div>
-                <label>Zoocriadero</label>
-                <select name="zoocriadero">
-                    <option value="">Todos</option>
-                    <?php foreach ($zoocriaderos as $z): ?>
-                        <option value="<?= $z['id_zoocriadero'] ?>"
-                            <?= $filtroZoocriadero == $z['id_zoocriadero'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($z['cod_zoocriadero']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+         
+            <h2 class="titulo-pagina">Seguimiento de Actividades en los Zoocriaderos</h2>
+
+        
+            <h3>Filtros</h3>
+            <form method="GET" action="<?= htmlspecialchars($partesUrl['path'] ?? '') ?>">
+                <?php foreach ($paramsRuta as $nombre => $valor): ?>
+                    <input type="hidden" name="<?= htmlspecialchars($nombre) ?>" value="<?= htmlspecialchars((string) $valor) ?>">
+                <?php endforeach; ?>
+
+
+        <div class="caja2">    
+                    <div class="fila-filtros">
+                        <div>
+                            <label>Zoocriadero</label>
+                            <select name="zoocriadero">
+                                <option value="">Todos</option>
+                                <?php foreach ($zoocriaderos as $z): ?>
+                                    <option value="<?= $z['id_zoocriadero'] ?>"
+                                        <?= $filtroZoocriadero == $z['id_zoocriadero'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($z['cod_zoocriadero']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Actividad</label>
+                            <select name="actividad">
+                                <option value="">Todos</option>
+                                <?php foreach ($actividades as $act): ?>
+                                    <option value="<?= $act['id_actividad_zoo'] ?>"
+                                        <?= $filtroActividad == $act['id_actividad_zoo'] ? 'selected' : '' ?>>
+                                        <?= ($act['nombre_actividad'] ?? '') ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Fecha Inicio</label>
+                            <input type="date" name="fecha_inicio" value="<?= ($filtroFechaInicio) ?>">
+                        </div>
+                        <div>
+                            <label>Fecha Fin</label>
+                            <input type="date" name="fecha_fin" value="<?= ($filtroFechaFin) ?>">
+                        </div>
+                        <div class="botones-filtros">
+                            <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
+                            <button type="button" class="btn-limpiar"
+                                    onclick="location.href='<?= $urlLimpiar ?>'">Limpiar Filtros</button>
+                            <button type="button" class="btn-reportes"<?= empty($seguimientos) ? 'disabled' : '' ?>
+                                    onclick="location.href='<?= $urlExcel ?>'">Generar Reportes</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div>
-                <label>Actividad</label>
-                <select name="actividad">
-                    <option value="">Todos</option>
-                    <?php foreach ($actividades as $act): ?>
-                        <option value="<?= $act['id_actividad_zoo'] ?>"
-                            <?= $filtroActividad == $act['id_actividad_zoo'] ? 'selected' : '' ?>>
-                            <?= ($act['nombre_actividad'] ?? '') ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div>
-                <label>Fecha Inicio</label>
-                <input type="date" name="fecha_inicio" value="<?= ($filtroFechaInicio) ?>">
-            </div>
-            <div>
-                <label>Fecha Fin</label>
-                <input type="date" name="fecha_fin" value="<?= ($filtroFechaFin) ?>">
-            </div>
-            <div>
-                <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
-                <button type="button" class="btn-limpiar"
-                        onclick="location.href='<?= $urlLimpiar ?>'">Limpiar Filtros</button>
-                <button type="button" class="btn-reportes"<?= empty($seguimientos) ? 'disabled' : '' ?>
-                        onclick="location.href='<?= $urlExcel ?>'">Generar Reportes</button>
-            </div>
-        </div>
-    </form>
-</div>
+        </div> 
+        
 
 <?php if ($mensajeError): ?>
     <div class="caja mensaje-error"><?= ($mensajeError) ?></div>
 <?php endif; ?>
 
-<div class="caja tarjetas">
-    <div class="tarjeta">
-        <div class="icono icono-azul">📋</div>
-        <div>
-            <p>Actividades Totales</p>
-            <span class="numero azul"><?= $totalActividades ?></span>
-        </div>
-    </div>
-    <div class="tarjeta">
-        <div class="icono icono-verde">✔</div>
-        <div>
-            <p>Actividades Completas</p>
-            <span class="numero verde"><?= $totalCompletas ?></span>
-        </div>
-    </div>
-    <div class="tarjeta">
-        <div class="icono icono-naranja">⏱</div>
-        <div>
-            <p>En Progreso</p>
-            <span class="numero naranja"><?= $totalEnProgreso ?></span>
-        </div>
-    </div>
-    <div class="tarjeta">
-        <div class="icono icono-rojo">✖</div>
-        <div>
-            <p>Retrasadas</p>
-            <span class="numero rojo"><?= $totalRetrasadas ?></span>
-        </div>
-    </div>
-</div>
+<div class="caja ">
 
-<div class="caja">
+    <div class="tarjetas">
+            <div class="tarjeta tarjeta-azul">
+                <div class="icono icono-azul">📋</div>
+                <div>
+                    <p>Actividades Totales</p>
+                    <span class="numero azul"><?= $totalActividades ?></span>
+                </div>
+            </div>
+            <div class="tarjeta tarjeta-verde">
+                <div class="icono icono-verde">✔</div>
+                <div>
+                    <p>Actividades Completas</p>
+                    <span class="numero verde"><?= $totalCompletas ?></span>
+                </div>
+            </div>
+            <div class="tarjeta tarjeta-naranja">
+                <div class="icono icono-naranja">⏱</div>
+                <div>
+                    <p>En Progreso</p>
+                    <span class="numero naranja"><?= $totalEnProgreso ?></span>
+                </div>
+            </div>
+            <div class="tarjeta tarjeta-rojo">
+                <div class="icono icono-rojo">✖</div>
+                <div>
+                    <p>Retrasadas</p>
+                    <span class="numero rojo"><?= $totalRetrasadas ?></span>
+                </div>
+            </div>
+    </div>
+
+
     <h3>Detalles de Actividades</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Actividad</th>
-                <th>Zoocriadero</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Fin</th>
-                <th>Responsable</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($seguimientos as $s): ?>
-                <?php
-                    // Color del badge según el estado
-                    if ($s['estado'] == $finalizado) {
-                        $claseBadge = 'badge-verde';
-                    } elseif ($s['estado'] == $enProceso) {
-                        $claseBadge = 'badge-naranja';
-                    } else {
-                        $claseBadge = 'badge-rojo';
-                    }
+            
+        <div class="tabla-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Actividad</th>
+                        <th>Zoocriadero</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Responsable</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($seguimientos as $s): ?>
+                        <?php
+                            $retrasada = ($s['estado']== $pendiente || $s['estado'] ==$enProceso)
+                            && $s['fecha_registro']< $hoy;
 
-                    $fecha       = date('d/m/Y', strtotime($s['fecha_registro']));
-                    $fechaInicio = $fecha . ($s['hora_inicio'] ? ' ' . substr($s['hora_inicio'], 0, 5) : '');
-                    $fechaFin    = $s['hora_fin'] ? $fecha . ' ' . substr($s['hora_fin'], 0, 5) : '-';
-                ?>
-                <tr>
-                    <td><?= $s['actividad'] ?? '' ?></td>
-                    <td><?= $s['zoocriadero'] ?? ''?></td>
-                    <td><?= $fechaInicio ?></td>
-                    <td><?= $fechaFin ?></td>
-                    <td><?= $s['responsable'] ?? ''?></td>
-                    <td><span class="badge <?= $claseBadge ?>"><?= $s['estado'] ?? '' ?></span></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+                            if($retrasada) {
+                                $claseBadge = 'badge-rojo';
+                                $textoEstado = 'Retrasada';
+
+                            }elseif ($s['estado']== $finalizado) {
+                                 $claseBadge = 'badge-verde';
+                                $textoEstado = $s['estado']; 
+                            }elseif($s['estado']== $pendiente){
+                                 $claseBadge = 'badge-azul';
+                                $textoEstado = $s['estado']; 
+                            }else{
+                                 $claseBadge = 'badge-naranja';
+                                $textoEstado = $s['estado']; 
+                            }
+
+
+
+
+
+
+                            $fecha       = date('d/m/Y', strtotime($s['fecha_registro']));
+                            $fechaInicio = $fecha . ($s['hora_inicio'] ? ' ' . substr($s['hora_inicio'], 0, 5) : '');
+                            $fechaFin    = $s['hora_fin'] ? $fecha . ' ' . substr($s['hora_fin'], 0, 5) : '-';
+                        ?>
+                        <tr>
+                            <td><?= $s['actividad'] ?? '' ?></td>
+                            <td><?= $s['zoocriadero'] ?? ''?></td>
+                            <td><?= $fechaInicio ?></td>
+                            <td><?= $fechaFin ?></td>
+                            <td><?= $s['responsable'] ?? ''?></td>
+                            <td><span class="badge <?= $claseBadge ?>"><?= $textoEstado ?? '' ?></span></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>    
 </div>
 
 <style>
@@ -154,6 +181,19 @@ $urlLimpiar = $urlReporte . (strpos($urlReporte, '?') === false ? '?' : '&') . '
         padding: 24px;
         margin-bottom: 20px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.34);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .badge-retrasada { background-color: #b71c1c; }
+
+    .badge-azul { background-color: #219aca; }
+
+    .caja2 {
+        background-color: #f8fafc;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: none;
+    border: 2px solid #e2e8f0;
         font-family: Arial, Helvetica, sans-serif;
     }
 
@@ -206,6 +246,13 @@ $urlLimpiar = $urlReporte . (strpos($urlReporte, '?') === false ? '?' : '&') . '
         font-weight: bold;
     }
 
+                 .botones-filtros{
+         display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    }
+
+
     .btn-reportes {
         background-color: #ffffff;
         color: #2f7dfa;
@@ -229,46 +276,50 @@ $urlLimpiar = $urlReporte . (strpos($urlReporte, '?') === false ? '?' : '&') . '
     }
 
     .tarjetas {
-        display: flex;
-        gap: 20px;
+      display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 20px;
     }
 
     .tarjeta {
-        flex: 1;
+        flex: 1 1 150px;
         display: flex;
-        align-items: center;
-        gap: 14px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 14px 14px;
+        border-radius: 10px;
     }
 
     .icono {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+       
         font-size: 20px;
         flex-shrink: 0;
     }
 
-    .icono-azul    { background-color: #e5f0ff; color: #2f7dfa; }
-    .icono-verde   { background-color: #e3f9ec; color: #21a666; }
-    .icono-naranja { background-color: #fff3df; color: #e0952d; }
-    .icono-rojo    { background-color: #fde6e6; color: #e64545; }
+   .tarjeta-azul    { background: linear-gradient(135deg, #2b5a8c, #4a86bd); }  /* Sitios Totales */
+.tarjeta-verde   { background: linear-gradient(135deg, #2f7dfa, #5b9bff); }  /* Sin Larvas */
+.tarjeta-naranja { background: linear-gradient(135deg, #5a7fa8, #86a5c7); }  /* Sin Registros */
+.tarjeta-rojo    { background: linear-gradient(135deg, #1b3b5f, #2f6690); }  /* Con Larvas */
 
-    .tarjeta p {
-        margin: 0 0 4px 0;
-        color: #666;
-        font-size: 14px;
-    }
-
-    .numero { font-size: 26px; font-weight: bold; }
-    .azul    { color: #2f7dfa; }
-    .verde   { color: #21a666; }
-    .naranja { color: #e0952d; }
-    .rojo    { color: #e64545; }
+.tarjeta p,
+.tarjeta .numero,
+.tarjeta .icono {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
 
     table { width: 100%; border-collapse: collapse; }
+
+    .tabla-scroll{
+        overflow-x: auto;
+    }
+
+    .tabla-scroll table{
+        min-width: 720px;
+    }
 
     th {
         text-align: left;

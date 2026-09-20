@@ -46,17 +46,12 @@ body{
     font-size: 30px;
     margin-bottom: 20px;
 }
-.container-form span{
-    font-size: 12px;
-    margin-bottom: 15px;
-}
 .container-input{
     width: 300px;
     height: 40px;
     margin-bottom: 10px;
     display: flex;
     justify-content: center; 
-    margin-bottom: center;
     gap: 8px;
     padding: 0 15px;
     background-color: #EEEEEE;
@@ -108,12 +103,11 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
-    
     padding: 0 50px;
     color: white;
 }
 .container-welcome h1{
-    font-family: 40px; 
+    font-size: 40px; 
 }
 .container-welcome p{
     font-size: 14px;

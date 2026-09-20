@@ -1,6 +1,8 @@
 <?php
 
-class RolesModel extends MasterModel{
+    include_once '../model/MasterModel.php';
 
-}
+    class RolesModel extends MasterModel{
+        
+    }
 ?>

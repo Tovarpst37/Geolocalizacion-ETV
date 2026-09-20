@@ -89,7 +89,7 @@ $opcionesHallazgo = [
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div>
+                    <div class="botones-filtros">
                         <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
                         <button type="button" class="btn-limpiar"
                                 onclick="location.href='<?= $urlLimpiar ?>'">Limpiar Filtros</button>
@@ -106,76 +106,83 @@ $opcionesHallazgo = [
     <div class="caja mensaje-error"><?= $h($mensajeError) ?></div>
 <?php endif; ?>
 
-<div class="caja tarjetas">
-    <div class="tarjeta">
-        <div class="icono icono-azul">📍</div>
-        <div>
-            <p>Sitios Totales</p>
-            <span class="numero azul"><?= (int) $totalSitios ?></span>
-        </div>
-    </div>
-    <div class="tarjeta">
-        <div class="icono icono-verde">✔</div>
-        <div>
-            <p>Sin Larvas</p>
-            <span class="numero verde"><?= (int) $totalSinLarvas ?></span>
-        </div>
-    </div>
-    <div class="tarjeta">
-        <div class="icono icono-naranja">⏱</div>
-        <div>
-            <p>Sin Registros</p>
-            <span class="numero naranja"><?= (int) $totalSinRegistros ?></span>
-        </div>
-    </div>
-    <div class="tarjeta">
-        <div class="icono icono-rojo">✖</div>
-        <div>
-            <p>Con Larvas</p>
-            <span class="numero rojo"><?= (int) $totalConLarvas ?></span>
-        </div>
-    </div>
-</div>
+<div class="caja ">
 
-<div class="caja">
+
+        <div class="tarjetas">
+            <div class="tarjeta tarjeta-azul">
+                <div class="icono icono-azul">📍</div>
+                <div>
+                    <p>Sitios Totales</p>
+                    <span class="numero azul"><?= (int) $totalSitios ?></span>
+                </div>
+            </div>
+            <div class="tarjeta tarjeta-verde">
+                <div class="icono icono-verde">✔</div>
+                <div>
+                    <p>Sin Larvas</p>
+                    <span class="numero verde"><?= (int) $totalSinLarvas ?></span>
+                </div>
+            </div>
+            <div class="tarjeta tarjeta-naranja">
+                <div class="icono icono-naranja">✖️</div>
+                <div>
+                    <p>Sin Registros</p>
+                    <span class="numero naranja"><?= (int) $totalSinRegistros ?></span>
+                </div>
+            </div>
+            <div class="tarjeta tarjeta-rojo">
+                <div class="icono icono-rojo">🦟</div>
+                <div>
+                    <p>Con Larvas</p>
+                    <span class="numero rojo"><?= (int) $totalConLarvas ?></span>
+                </div>
+            </div>
+        </div>    
+
+
     <h3>Detalles de Sitios</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Sitio</th>
-                <th>Dirección</th>
-                <th>Barrio</th>
-                <th>Comuna</th>
-                <th>Tipo de Depósito</th>
-                <th>Hallazgo de Larvas</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($sitios as $f): ?>
-                <?php
-                    // Color del badge según el hallazgo
-                    if ((int) $f['num_registros'] === 0) {
-                        $claseBadge = 'badge-gris';
-                        $textoBadge = 'Sin registros';
-                    } elseif ((int) $f['con_larvas'] === 1) {
-                        $claseBadge = 'badge-rojo';
-                        $textoBadge = 'Con larvas';
-                    } else {
-                        $claseBadge = 'badge-verde';
-                        $textoBadge = 'Sin larvas';
-                    }
-                ?>
-                <tr>
-                    <td><?= $h($f['nombre_sitio'] ?? '') ?></td>
-                    <td><?= $h($f['direccion'] ?? '') ?></td>
-                    <td><?= $h($f['nombre_barrio'] ?? '') ?></td>
-                    <td><?= $h($f['nombre_comuna'] ?? '') ?></td>
-                    <td><?= $h($f['tipo_deposito'] ?? 'Sin depósito') ?></td>
-                    <td><span class="badge <?= $claseBadge ?>"><?= $textoBadge ?></span></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+
+        <div class="tabla-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sitio</th>
+                        <th>Dirección</th>
+                        <th>Barrio</th>
+                        <th>Comuna</th>
+                        <th>Tipo de Depósito</th>
+                        <th>Hallazgo de Larvas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($sitios as $f): ?>
+                        <?php
+                            // Color del badge según el hallazgo
+                            if ((int) $f['num_registros'] === 0) {
+                                $claseBadge = 'badge-gris';
+                                $textoBadge = 'Sin registros';
+                            } elseif ((int) $f['con_larvas'] === 1) {
+                                $claseBadge = 'badge-rojo';
+                                $textoBadge = 'Con larvas';
+                            } else {
+                                $claseBadge = 'badge-verde';
+                                $textoBadge = 'Sin larvas';
+                            }
+                        ?>
+                        <tr>
+                            <td><?= $h($f['nombre_sitio'] ?? '') ?></td>
+                            <td><?= $h($f['direccion'] ?? '') ?></td>
+                            <td><?= $h($f['nombre_barrio'] ?? '') ?></td>
+                            <td><?= $h($f['nombre_comuna'] ?? '') ?></td>
+                            <td><?= $h($f['tipo_deposito'] ?? 'Sin depósito') ?></td>
+                            <td><span class="badge <?= $claseBadge ?>"><?= $textoBadge ?></span></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+        </div>    
 </div>
 
 <script>
@@ -197,6 +204,11 @@ filtrarBarrios();
 </script>
 
 <style>
+
+
+
+
+
     .caja {
         background-color: #ffffff;
         border-radius: 14px;
@@ -207,12 +219,12 @@ filtrarBarrios();
     }
 
     .caja2 {
-        background-color: #f4f8ff;
+        background-color: #f8fafc;
         border-radius: 14px;
         padding: 24px;
         margin-bottom: 20px;
         box-shadow: none;
-    border: 2px solid #a9c8fd;
+    border: 2px solid #e2e8f0;
         font-family: Arial, Helvetica, sans-serif;
     }
 
@@ -265,6 +277,12 @@ filtrarBarrios();
         font-weight: bold;
     }
 
+    .botones-filtros{
+         display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    }
+
     .btn-reportes {
         background-color: #ffffff;
         color: #2f7dfa;
@@ -273,7 +291,7 @@ filtrarBarrios();
         border-radius: 8px;
         cursor: pointer;
         font-weight: bold;
-        margin-left: 8px;
+       
     }
 
     .btn-limpiar {
@@ -284,56 +302,61 @@ filtrarBarrios();
         border-radius: 8px;
         cursor: pointer;
         font-weight: bold;
-        margin-left: 8px;
+        
     }
 
     .tarjetas {
         display: flex;
-        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 20px;
     }
 
     .tarjeta {
-        flex: 1;
+        flex: 1 1 150px;
         display: flex;
-        align-items: center;
-        gap: 14px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 14px 14px;
+        border-radius: 10px;
+    
     }
 
     .icono {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+       
         font-size: 20px;
         flex-shrink: 0;
     }
+.tarjeta-azul    { background: linear-gradient(135deg, #2b5a8c, #4a86bd); }  /* Sitios Totales */
+.tarjeta-verde   { background: linear-gradient(135deg, #2f7dfa, #5b9bff); }  /* Sin Larvas */
+.tarjeta-naranja { background: linear-gradient(135deg, #5a7fa8, #86a5c7); }  /* Sin Registros */
+.tarjeta-rojo    { background: linear-gradient(135deg, #1b3b5f, #2f6690); }  /* Con Larvas */
 
-    .icono-azul    { background-color: #e5f0ff; color: #2f7dfa; }
-    .icono-verde   { background-color: #e3f9ec; color: #21a666; }
-    .icono-naranja { background-color: #fff3df; color: #e0952d; }
-    .icono-rojo    { background-color: #fde6e6; color: #e64545; }
-
-    .tarjeta p {
-        margin: 0 0 4px 0;
-        color: #666;
-        font-size: 14px;
-    }
-
-    .numero { font-size: 26px; font-weight: bold; }
-    .azul    { color: #2f7dfa; }
-    .verde   { color: #21a666; }
-    .naranja { color: #e0952d; }
-    .rojo    { color: #e64545; }
+.tarjeta p,
+.tarjeta .numero,
+.tarjeta .icono {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
 
     table { width: 100%; border-collapse: collapse; }
+
+    .tabla-scroll{
+        overflow-x: auto;
+    }
+
+    .tabla-scroll table{
+        min-width: 720px;
+    }
 
     th {
         text-align: left;
         padding: 12px;
         color: #555;
         border-bottom: 2px solid #eef1f8;
+        white-space: nowrap;
     }
 
     td {

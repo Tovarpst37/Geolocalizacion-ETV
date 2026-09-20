@@ -37,7 +37,7 @@
           </div>
 
           <div class="mb-4">
-            <label for="id_estado" class="form-label">Terreno*</label>
+            <label for="id_estado" class="form-label">Deposito*</label>
             <select class="form-select" id="selectTerreno" name="selectTerreno" required disabled>
               <option value="" selected disabled>Primero selecciona un Sitio</option>
               
@@ -112,7 +112,7 @@ document.querySelector('#select_ter').addEventListener('change', function(e){
             } else {
                 let opcionesTerreno = '';
                 data.terreno.forEach(terreno => {
-                    opcionesTerreno += `<option value="${terreno.id_sitio_deposito}">${terreno.codigo_sitio_deposito}</option>`;
+                    opcionesTerreno += `<option value="${terreno.id_sitio_deposito}">${terreno.nombre}</option>`;
                 });
                 selectTerreno.innerHTML = opcionesTerreno;
                 selectTerreno.disabled = false;

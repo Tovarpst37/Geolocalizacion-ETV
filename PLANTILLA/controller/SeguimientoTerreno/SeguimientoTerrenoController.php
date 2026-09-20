@@ -21,7 +21,7 @@
                 s.hora_fin,
                 s.id_estado,
                 si.nombre_sitio,
-                sd.codigo_sitio_deposito AS cod_terreno,
+                td.nombre AS cod_terreno,
                 u.primer_nombre,
                 u.primer_apellido,
                 STRING_AGG(at.nombre_actividad, ', ') AS actividades
@@ -29,10 +29,10 @@
             INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
             INNER JOIN rol r ON u.id_rol = r.id_rol
             LEFT JOIN sitio si ON s.id_sitio = si.id_sitio
-            LEFT JOIN sitio_deposito sd ON s.id_sitio = sd.id_sitio
+            LEFT JOIN tipo_de_deposito td ON si.id_tipo_deposito = td.id_tipo_deposito
             LEFT JOIN actividad_seg_terreno ast ON s.id_seguimiento_terreno = ast.id_seguimiento_terreno
             LEFT JOIN actividad_terreno at ON ast.id_actividad_terreno = at.id_actividad_terreno 
-                                        AND at.id_estado = 1          
+                                            AND at.id_estado = 1          
             WHERE r.nombre_rol IN ('Auxiliar', 'Coordinador')
             GROUP BY 
                 s.id_seguimiento_terreno, 
@@ -42,7 +42,7 @@
                 s.hora_fin, 
                 s.id_estado, 
                 si.nombre_sitio,
-                sd.codigo_sitio_deposito,
+                td.nombre,
                 u.primer_nombre, 
                 u.primer_apellido
             ORDER BY s.id_seguimiento_terreno";
@@ -422,7 +422,11 @@ public function getSitios(){
     
     $obj = new SeguimientoTerrenoModel();
     
-    $sql = "SELECT id_sitio_deposito, codigo_sitio_deposito from sitio_deposito WHERE id_sitio = $1";
+    $sql = "SELECT td.id_tipo_deposito, td.nombre 
+            FROM tipo_de_deposito td
+            INNER JOIN sitio s ON s.id_tipo_deposito = td.id_tipo_deposito
+            WHERE s.id_sitio = $1;";
+            
     $terreno = $obj->select($sql,[$id_sitio]);
     
     $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";

@@ -68,6 +68,11 @@ class FormularioZController
                 if (!$this->seguimientoTieneAlimentacion($obj, $id_seguimiento_zoo)) {
                     $errores[] = "Este seguimiento no tiene asignada la actividad de Alimentación, por lo que no se puede registrar el formulario.";
                 }
+
+                // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                if ($this->yaRegistroAlimentacion($obj, $id_seguimiento_zoo, $codigose)) {
+                    $errores[] = "Ya existe un registro de alimentación guardado para este código de seguimiento.";
+                }
             }
         }
 
@@ -166,6 +171,20 @@ class FormularioZController
         return !empty($res);
     }
 
+    // NUEVO: verifica si ya existe un registro previo de Alimentación en sub_actividades para este seguimiento
+    private function yaRegistroAlimentacion($obj, $id_seguimiento_zoo, $codigose)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades 
+                WHERE (id_seguimiento_zoo = $1 OR cod_seguimiento = $2)
+                  AND (obser_alimentacion IS NOT NULL OR fecha_alimentacion IS NOT NULL OR tipo_alimento IS NOT NULL)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_zoo, $codigose]);
+
+        return !empty($res);
+    }
+
     public function postInsert($id_seguimiento_zoo = null)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -202,6 +221,16 @@ class FormularioZController
                 include_once '../model/Errores/ErrorModal.php';
                 ErrorModal::verError(
                     ["Este seguimiento no tiene asignada la actividad de Alimentación, por lo que no se puede registrar el formulario."],
+                    getUrl('FormularioZ', 'FormularioZ', 'getRegistrar')
+                );
+                return;
+            }
+
+            // NUEVO: verifica si ya fue registrado previamente antes de insertar en BD
+            if ($this->yaRegistroAlimentacion($obj, $id_seguimiento_zoo, $codigose)) {
+                include_once '../model/Errores/ErrorModal.php';
+                ErrorModal::verError(
+                    ["Ya existe un registro de alimentación guardado para este código de seguimiento."],
                     getUrl('FormularioZ', 'FormularioZ', 'getRegistrar')
                 );
                 return;
