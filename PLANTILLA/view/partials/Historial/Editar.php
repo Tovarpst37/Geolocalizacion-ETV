@@ -1,3 +1,99 @@
+<?php
+// Escapa valores para usarlos dentro de atributos HTML
+$h = function ($v) {
+    return htmlspecialchars((string) ($v ?? ''), ENT_QUOTES, 'UTF-8');
+};
+
+// La columna "fecha" puede venir como timestamp; el input type="date" necesita Y-m-d
+$fechaGeneral = (!empty($seguimiento['fecha'])) ? date('Y-m-d', strtotime($seguimiento['fecha'])) : '';
+
+// Etiqueta, tipo de input y ancho de columna de cada campo de sub_actividades
+$ui = [
+    'genero' => ['Tipo de pez', 'select_pez', 'col-md-6'],
+    'tipo_alimento' => ['Tipo de alimentación', 'select_alimen', 'col-md-6'],
+    'fecha_alimentacion' => ['Fecha y hora de alimentación', 'datetime', 'col-md-6'],
+    'obser_alimentacion' => ['Observaciones', 'text', 'col-md-6'],
+
+    'can_peces_nacido' => ['Peces nacidos', 'int', 'col-md-4'],
+    'can_peces_mertos_macho' => ['Machos muertos', 'int', 'col-md-4'],
+    'can_peces_mertos_hembra' => ['Hembras muertas', 'int', 'col-md-4'],
+    'obser_canpeces' => ['Observaciones', 'text', 'col-md-12'],
+
+    'estregar_paredes' => ['Estregar paredes', 'check', 'col-md-4'],
+    'aspirar' => ['Aspirar', 'check', 'col-md-4'],
+    'succionador' => ['Succionador', 'check', 'col-md-4'],
+    'fecha_limpieza' => ['Fecha y hora de limpieza', 'datetime', 'col-md-6'],
+    'obser_limpieza' => ['Observaciones', 'text', 'col-md-6'],
+
+    'adicion_nivel_agua' => ['Nivel de agua adicionado', 'decimal', 'col-md-4'],
+    'medicion_ph' => ['PH medido', 'decimal', 'col-md-4'],
+    'medicion_temperatura' => ['Temperatura', 'decimal', 'col-md-4'],
+    'fecha_ajuste' => ['Fecha y hora de ajuste', 'datetime', 'col-md-6'],
+    'obser_ajuste' => ['Observaciones', 'text', 'col-md-6'],
+
+    'estado_tanque' => ['Estado del tanque', 'text', 'col-md-6'],
+    'agua_cambiada' => ['Porcentaje de agua cambiada', 'decimal', 'col-md-6'],
+    'fecha_lavado' => ['Fecha y hora de lavado', 'datetime', 'col-md-6'],
+    'obser_lavado' => ['Observaciones', 'text', 'col-md-6'],
+];
+
+// Dibuja un campo. $disabled se activa cuando la actividad NO está asignada al seguimiento.
+$renderCampo = function ($col, $registro, $name, $disabled = false) use ($ui, $h) {
+    $label = $ui[$col][0];
+    $kind = $ui[$col][1];
+    $ancho = $ui[$col][2];
+    $valor = $registro[$col] ?? '';
+    $idInput = 'f_' . preg_replace('/[^A-Za-z0-9_]/', '_', $name);
+    $disAttr = $disabled ? ' disabled' : '';
+
+    if ($kind === 'check') {
+        echo '<div class="' . $ancho . ' mb-2"><div class="form-check">';
+        echo '<input class="form-check-input" type="checkbox" value="1" id="' . $idInput . '" name="' . $h($name) . '"' . (!empty($valor) ? ' checked' : '') . $disAttr . '>';
+        echo '<label class="form-check-label" for="' . $idInput . '">' . $label . '</label>';
+        echo '</div></div>';
+        return;
+    }
+
+    echo '<div class="' . $ancho . ' mb-3">';
+    echo '<label class="form-label" for="' . $idInput . '">' . $label . '</label>';
+
+    switch ($kind) {
+        case 'select_pez':
+            echo '<select class="form-select" id="' . $idInput . '" name="' . $h($name) . '"' . $disAttr . '><option value="">-- No aplica --</option>';
+            foreach (tipoPez as $tp) {
+                echo '<option value="' . $h($tp) . '"' . ($valor == $tp ? ' selected' : '') . '>' . $h($tp) . '</option>';
+            }
+            echo '</select>';
+            break;
+
+        case 'select_alimen':
+            echo '<select class="form-select" id="' . $idInput . '" name="' . $h($name) . '"' . $disAttr . '><option value="">-- No aplica --</option>';
+            foreach (tipoAlimen as $tA) {
+                echo '<option value="' . $h($tA) . '"' . ($valor == $tA ? ' selected' : '') . '>' . $h($tA) . '</option>';
+            }
+            echo '</select>';
+            break;
+
+        case 'datetime':
+            $v = $registro[$col . '_input'] ?? '';
+            echo '<input type="datetime-local" class="form-control" id="' . $idInput . '" name="' . $h($name) . '" value="' . $h($v) . '"' . $disAttr . '>';
+            break;
+
+        case 'int':
+            echo '<input type="number" min="0" class="form-control" id="' . $idInput . '" name="' . $h($name) . '" value="' . $h($valor) . '"' . $disAttr . '>';
+            break;
+
+        case 'decimal':
+            echo '<input type="number" step="any" class="form-control" id="' . $idInput . '" name="' . $h($name) . '" value="' . $h($valor) . '"' . $disAttr . '>';
+            break;
+
+        default:
+            echo '<input type="text" class="form-control" id="' . $idInput . '" name="' . $h($name) . '" value="' . $h($valor) . '"' . $disAttr . '>';
+    }
+
+    echo '</div>';
+};
+?>
 <div class="modal show" tabindex="-1" style="display:block; background: rgba(0,0,0,0.5);">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
@@ -6,211 +102,129 @@
                     <div class="alert alert-danger">No se encontró el seguimiento solicitado.</div>
                 </div>
             <?php else: ?>
-            <form action="<?php echo getUrl('Historial', 'Historial', 'postUpdate'); ?>" method="POST">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Historial - Código: <?php echo $seguimiento['cod_seguimiento']; ?></h5>
-                    <a href="<?php echo getUrl('Historial', 'Historial', 'getConsultar') ?>" class="btn-close"></a>
-                </div>
-
-                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-
-                    <input type="hidden" name="id_seguimiento_zoo" value="<?php echo $seguimiento['id_seguimiento_zoo']; ?>">
-
-                    <!-- Datos generales -->
-                    <h6 class="text-primary">Datos generales</h6>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Código del Seguimiento</label>
-                            <input type="text" class="form-control" name="cod_seguimiento"
-                                   value="<?php echo $seguimiento['cod_seguimiento']; ?>" disabled>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Fecha</label>
-                            <input type="date" class="form-control" name="fecha"
-                                   value="<?php echo $seguimiento['fecha']; ?>" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Estado</label>
-                            <select class="form-select" name="id_estado" required>
-                                <?php foreach ($estados as $est) {
-                                    $selected = ($seguimiento['id_estado'] == $est['id_estado']) ? "selected" : "";
-                                    echo "<option value='" . $est['id_estado'] . "' $selected>" . $est['nombre_estado'] . "</option>";
-                                } ?>
-                            </select>
-                        </div>
+                <form action="<?php echo getUrl('Historial', 'Historial', 'postUpdate'); ?>" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Historial - Código:
+                            <?php echo $h($seguimiento['cod_seguimiento']); ?></h5>
+                        <a href="<?php echo getUrl('Historial', 'Historial', 'getConsultar') ?>" class="btn-close"></a>
                     </div>
 
-                    <hr>
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
 
-                    <!-- Alimentación -->
-                    <h6 class="text-primary">Alimentación</h6>
-                    <input type="hidden" name="id_sub_alimentacion" value="<?php echo $alimentacion['id_sub_actividad'] ?? ''; ?>">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Tipo de Pez</label>
-                            <select name="tipo_pez" class="form-select">
-                                <option value="">-- No aplica --</option>
-                                <?php foreach (tipoPez as $tp): ?>
-                                    <option value="<?php echo $tp; ?>" <?php echo (($alimentacion['genero'] ?? '') == $tp) ? 'selected' : ''; ?>>
-                                        <?php echo $tp; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Tipo de Alimentación</label>
-                            <select name="tipo_alimen" class="form-select">
-                                <option value="">-- No aplica --</option>
-                                <?php foreach (tipoAlimen as $tA): ?>
-                                    <option value="<?php echo $tA; ?>" <?php echo (($alimentacion['tipo_alimento'] ?? '') == $tA) ? 'selected' : ''; ?>>
-                                        <?php echo $tA; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Fecha de alimentación</label>
-                            <input type="date" class="form-control" name="fecha_alimentacion"
-                                   value="<?php echo $alimentacion['fecha_alimentacion'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Observaciones</label>
-                            <input type="text" class="form-control" name="obser_alimentacion"
-                                   value="<?php echo $alimentacion['obser_alimentacion'] ?? ''; ?>">
-                        </div>
-                    </div>
+                        <input type="hidden" name="id_seguimiento_zoo"
+                            value="<?php echo $h($seguimiento['id_seguimiento_zoo']); ?>">
 
-                    <hr>
-
-                    <!-- Peces muertos / nacidos -->
-                    <h6 class="text-primary">Peces muertos y nacidos</h6>
-                    <input type="hidden" name="id_sub_canpeces" value="<?php echo $canpeces['id_sub_actividad'] ?? ''; ?>">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Peces nacidos</label>
-                            <input type="number" class="form-control" name="canpez"
-                                   value="<?php echo $canpeces['can_peces_nacido'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Machos muertos</label>
-                            <input type="number" class="form-control" name="muerto_Macho"
-                                   value="<?php echo $canpeces['can_peces_mertos_macho'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Hembras muertas</label>
-                            <input type="number" class="form-control" name="muerto_Hembra"
-                                   value="<?php echo $canpeces['can_peces_mertos_hembra'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label">Observaciones</label>
-                            <input type="text" class="form-control" name="obser_canpeces"
-                                   value="<?php echo $canpeces['obser_canpeces'] ?? ''; ?>">
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <!-- Limpieza -->
-                    <h6 class="text-primary">Limpieza</h6>
-                    <input type="hidden" name="id_sub_limpieza" value="<?php echo $limpieza['id_sub_actividad'] ?? ''; ?>">
-                    <div class="row">
-                        <div class="col-12 mb-2">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="estregarParedes" id="estregarParedes"
-                                    <?php echo (!empty($limpieza['estregar_paredes']) && $limpieza['estregar_paredes'] !== 'f') ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="estregarParedes">Estregar paredes</label>
+                        <!-- Datos generales -->
+                        <h6 class="text-primary">Datos generales</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Código del Seguimiento</label>
+                                <input type="text" class="form-control" name="cod_seguimiento"
+                                    value="<?php echo $h($seguimiento['cod_seguimiento']); ?>" readonly>
                             </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="aspirar" id="aspirar"
-                                    <?php echo (!empty($limpieza['aspirar']) && $limpieza['aspirar'] !== 'f') ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="aspirar">Aspirar</label>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Fecha</label>
+                                <input type="date" class="form-control" name="fecha"
+                                    value="<?php echo $h($fechaGeneral); ?>" required>
                             </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="succionador" id="succionador"
-                                    <?php echo (!empty($limpieza['succionador']) && $limpieza['succionador'] !== 'f') ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="succionador">Succionador</label>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Estado</label>
+                                <select class="form-select" name="id_estado" required>
+                                    <?php
+                                    $estadoActualValido = false;
+                                    foreach ($estados as $est) {
+                                        if (($est['tipo_estado'] ?? '') === 'seguimiento' && $seguimiento['id_estado'] == $est['id_estado']) {
+                                            $estadoActualValido = true;
+                                        }
+                                    }
+                                    if (!$estadoActualValido) {
+                                        echo '<option value="" selected disabled>-- Seleccione el estado --</option>';
+                                    }
+                                    foreach ($estados as $est) {
+                                        if (($est['tipo_estado'] ?? '') !== 'seguimiento') {
+                                            continue;
+                                        }
+                                        $selected = ($seguimiento['id_estado'] == $est['id_estado']) ? "selected" : "";
+                                        echo "<option value='" . $h($est['id_estado']) . "' $selected>" . $h($est['nombre_estado']) . "</option>";
+                                    } ?>
+                                </select>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Fecha de limpieza</label>
-                            <input type="datetime-local" class="form-control" name="fecha_limpieza"
-                                   value="<?php echo $limpieza['fecha_limpieza'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Observaciones</label>
-                            <input type="text" class="form-control" name="obser_limpieza"
-                                   value="<?php echo $limpieza['obser_limpieza'] ?? ''; ?>">
-                        </div>
+
+                        <hr>
+
+                        <?php foreach ($config as $slug => $cfgAct):
+                            $registros = $grupos[$slug] ?? [];
+                            // Comprobar si la actividad está asignada a este seguimiento
+                            $estaAsignada = !empty($actividadesAsignadas[$slug]);
+                            ?>
+                            <h6 class="text-primary d-flex align-items-center justify-content-between">
+                                <span>
+                                    <?php echo $h($cfgAct['titulo']); ?>
+                                    <span class="badge bg-secondary"><?php echo count($registros); ?></span>
+                                </span>
+                                <?php if (!$estaAsignada): ?>
+                                    <span class="badge bg-danger">Actividad No Asignada</span>
+                                <?php endif; ?>
+                            </h6>
+
+                            <?php foreach ($registros as $i => $r):
+                                $idSub = $r['id_sub_actividad'];
+                                ?>
+                                <div class="border rounded p-3 mb-3 <?php echo !$estaAsignada ? 'bg-light' : ''; ?>">
+                                    <div class="small text-muted mb-2">Registro <?php echo $i + 1; ?> (ID <?php echo $h($idSub); ?>)
+                                        <?php if (!$estaAsignada): ?>
+                                            <strong class="text-danger">(No editable)</strong>
+                                        <?php endif; ?>
+                                    </div>
+                                    <input type="hidden" name="registros[<?php echo $h($idSub); ?>][__tipo]"
+                                        value="<?php echo $h($slug); ?>">
+                                    <div class="row">
+                                        <?php foreach ($cfgAct['campos'] as $col => $tipoDato) {
+                                            // Se deshabilita la edición si la actividad NO está asignada al seguimiento
+                                            $renderCampo($col, $r, "registros[$idSub][$col]", !$estaAsignada);
+                                        } ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
+                            <?php if (empty($registros)): ?>
+                                <p class="text-muted small">Este seguimiento aún no tiene registros de
+                                    <?php echo $h($cfgAct['titulo']); ?>.</p>
+                            <?php endif; ?>
+
+                            <!-- Solo permite agregar nuevos registros si la actividad pertenece al seguimiento -->
+                            <?php if ($estaAsignada): ?>
+                                <details class="mb-3" <?php echo empty($registros) ? 'open' : ''; ?>>
+                                    <summary class="text-primary" style="cursor:pointer;">+ Agregar registro de
+                                        <?php echo $h($cfgAct['titulo']); ?></summary>
+                                    <div class="border rounded p-3 mt-2">
+                                        <div class="row">
+                                            <?php foreach ($cfgAct['campos'] as $col => $tipoDato) {
+                                                $renderCampo($col, null, "nuevos[$slug][$col]", false);
+                                            } ?>
+                                        </div>
+                                        <div class="small text-muted">Si lo dejas vacío no se guarda nada.</div>
+                                    </div>
+                                </details>
+                            <?php else: ?>
+                                <div class="alert alert-warning small py-1 px-2 mb-3">
+                                    <i class="fa-solid fa-lock"></i> No puedes agregar registros a esta sección porque la actividad
+                                    no está asignada a este seguimiento.
+                                </div>
+                            <?php endif; ?>
+
+                            <hr>
+                        <?php endforeach; ?>
+
                     </div>
 
-                    <hr>
-
-                    <!-- Ajuste de nivel -->
-                    <h6 class="text-primary">Ajuste de nivel</h6>
-                    <input type="hidden" name="id_sub_ajuste" value="<?php echo $ajuste['id_sub_actividad'] ?? ''; ?>">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Nivel de agua adicionado</label>
-                            <input type="number" class="form-control" name="nivelAgua"
-                                   value="<?php echo $ajuste['adicion_nivel_agua'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">PH medido</label>
-                            <input type="number" step="0.01" class="form-control" name="ph"
-                                   value="<?php echo $ajuste['medicion_ph'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Temperatura</label>
-                            <input type="number" step="0.01" class="form-control" name="temp"
-                                   value="<?php echo $ajuste['medicion_temperatura'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Fecha de ajuste</label>
-                            <input type="datetime-local" class="form-control" name="fecha_ajuste"
-                                   value="<?php echo $ajuste['fecha_ajuste'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Observaciones</label>
-                            <input type="text" class="form-control" name="obser_ajuste"
-                                   value="<?php echo $ajuste['obser_ajuste'] ?? ''; ?>">
-                        </div>
+                    <div class="modal-footer">
+                        <a href="<?php echo getUrl('Historial', 'Historial', 'getConsultar') ?>"
+                            class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
                     </div>
-
-                    <hr>
-
-                    <!-- Lavado -->
-                    <h6 class="text-primary">Lavado</h6>
-                    <input type="hidden" name="id_sub_lavado" value="<?php echo $lavado['id_sub_actividad'] ?? ''; ?>">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Estado del tanque</label>
-                            <input type="text" class="form-control" name="estadoTanque"
-                                   value="<?php echo $lavado['estado_tanque'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Porcentaje de agua cambiada</label>
-                            <input type="number" class="form-control" name="porcAgua"
-                                   value="<?php echo $lavado['agua_cambiada'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Fecha de lavado</label>
-                            <input type="datetime-local" class="form-control" name="fecha_lavado"
-                                   value="<?php echo $lavado['fecha_lavado'] ?? ''; ?>">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Observaciones</label>
-                            <input type="text" class="form-control" name="obser_lavado"
-                                   value="<?php echo $lavado['obser_lavado'] ?? ''; ?>">
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-                    <a href="<?php echo getUrl('Historial', 'Historial', 'getConsultar') ?>" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                </div>
-            </form>
+                </form>
             <?php endif; ?>
         </div>
     </div>

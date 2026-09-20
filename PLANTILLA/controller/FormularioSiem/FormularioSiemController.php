@@ -23,12 +23,58 @@ class FormularioSiemController
         include_once '../view/partials/FormularioSiem/registrar.php';
     }
 
+    // Quita espacios invisibles (copiar/pegar) y espacios al inicio y al final
+    private function limpiarCodigo($codigo)
+    {
+        $codigo = preg_replace('/[\x{00A0}\x{2007}\x{202F}]/u', ' ', (string) $codigo);
+        $codigo = preg_replace('/[\x{200B}\x{200C}\x{200D}\x{FEFF}]/u', '', $codigo);
+        return trim($codigo);
+    }
+
+    // Devuelve la lista de caracteres no permitidos en el código
+    private function caracteresInvalidos($codigo)
+    {
+        preg_match_all('/[^\p{L}\p{N}\-_ .\/#]/u', $codigo, $m);
+        return array_values(array_unique($m[0]));
+    }
+
+    // NUEVO: verifica que el seguimiento de terreno tenga asignada la actividad "Siembra"
+    // (existe una fila en actividad_seg_terreno que lo relaciona con esa actividad)
+    private function seguimientoTieneSiembra($obj, $id_seguimiento_terreno)
+    {
+        $sql = "SELECT 1
+                FROM actividad_seg_terreno ast
+                INNER JOIN actividad_terreno a
+                    ON a.id_actividad_terreno = ast.id_actividad_terreno
+                WHERE ast.id_seguimiento_terreno = $1
+                  AND a.nombre_actividad ILIKE 'Siembra'
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_terreno]);
+
+        return !empty($res);
+    }
+
+    // NUEVO: verifica si ya existe un registro previo de Siembra en sub_actividades_ter para este seguimiento
+    private function yaRegistroSiembra($obj, $id_seguimiento_terreno, $codSeg)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades_ter 
+                WHERE (id_seguimiento_terreno = $1 OR cod_seguimiento = $2)
+                  AND (obser_siembra IS NOT NULL OR fecha_siembra IS NOT NULL OR can_peces_empacados IS NOT NULL OR can_hembras_sembradas IS NOT NULL OR can_machos_sembrados IS NOT NULL)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_terreno, $codSeg]);
+
+        return !empty($res);
+    }
+
     public function postInsert()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $obj = new FormulariosModel();
 
-            $codSeg = trim($_POST['codSeg'] ?? '');
+            $codSeg = $this->limpiarCodigo($_POST['codSeg'] ?? '');
             $documen = trim($_SESSION['documento'] ?? '');
             $fechaHora = $_POST['fecha_horaSiem'] ?? '';
             $pecesEmpacados = $_POST['pecesEmpacados'] ?? '';
@@ -48,14 +94,16 @@ class FormularioSiemController
                 $errores[] = "El código de seguimiento es obligatorio.";
             }
 
-            $codigo_validar = '/^[a-zA-Z0-9\-\_ ]+$/';
-            if (!empty($codSeg) && !preg_match($codigo_validar, $codSeg)) {
-                $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
+            $invalidos = !empty($codSeg) ? $this->caracteresInvalidos($codSeg) : [];
+            if (!empty($invalidos)) {
+                $errores[] = "El código contiene caracteres no permitidos: "
+                    . htmlspecialchars(implode(' ', $invalidos))
+                    . ". Solo se permiten letras, números, guiones, puntos, barras y espacios.";
             }
 
-            // 2. Validar existencia y estado del seguimiento en BD
+            // 2. Validar existencia, estado y actividad de Siembra del seguimiento
             $id_seguimiento_terreno = null;
-            if (!empty($codSeg) && preg_match($codigo_validar, $codSeg)) {
+            if (!empty($codSeg) && empty($invalidos)) {
                 $sql_validar_seg = "SELECT id_seguimiento_terreno, id_estado FROM seguimiento_terreno WHERE cod_seguimiento = $1";
                 $existeSeg = $obj->select($sql_validar_seg, [$codSeg]);
 
@@ -65,6 +113,16 @@ class FormularioSiemController
                     $errores[] = "Lo siento, el seguimiento no está activo.";
                 } else {
                     $id_seguimiento_terreno = $existeSeg[0]['id_seguimiento_terreno'];
+
+                    // NUEVO: el seguimiento debe tener asignada la actividad de Siembra
+                    if (!$this->seguimientoTieneSiembra($obj, $id_seguimiento_terreno)) {
+                        $errores[] = "Este seguimiento no tiene asignada la actividad de Siembra, por lo que no se puede registrar el formulario.";
+                    }
+
+                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    if ($this->yaRegistroSiembra($obj, $id_seguimiento_terreno, $codSeg)) {
+                        $errores[] = "Ya existe un registro de siembra guardado para este código de seguimiento.";
+                    }
                 }
             }
 

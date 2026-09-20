@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-center">
     <div class="card shadow" style="width: 100%; max-width: 700px;">
       <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Registrar Actividades de Zoocriadero  </h4>
+        <h4 class="mb-0">Registrar Actividades de Zoocriadero primer commit de prueba </h4>
       </div>
 
       <div class="card-body p-4">
@@ -10,7 +10,9 @@
 
           <div class="mb-3">
             <label for="Codigo Actividad" class="form-label">Codigo de la actividad<span class="text-danger fs-4"> *</span></label>
-            <input type="text" class="form-control" id="Codigo Actividad" name="cod_actividad" placeholder="Ej: AZ-001" required>
+            
+            <input type="text" class="form-control" id="codigo_Actividad" name="codigo_Actividad" value = "AZ- <?php echo $id_seg[0]['max'] + 1;  ?>" disabled>
+            <input type="hidden" name="codigo" value = "AZ-<?php echo $id_seg[0]['max'] + 1;  ?>">
           </div>
 
           

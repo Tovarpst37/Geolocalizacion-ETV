@@ -24,9 +24,11 @@
                     <div class="mb-3">
                         <label for="fecha_horaSiem" class="form-label">Fecha y hora de siembra</label>
                         <span class="icono">
-                            <i class="fa-solid fa-calendar"></i>
+                            <i class="fa-solid fa-calendar-days"></i>
                         </span>
                         <input type="datetime-local" class="form-control" id="fecha_horaSiem" name="fecha_horaSiem"
+                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
+                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;"
                             required>
                     </div>
 

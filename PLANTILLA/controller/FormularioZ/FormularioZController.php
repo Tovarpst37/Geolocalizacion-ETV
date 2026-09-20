@@ -50,7 +50,7 @@ class FormularioZController
             $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
         }
 
-        // 2. Validar existencia y estado del seguimiento en BD
+        // 2. Validar existencia, estado y actividad de Alimentación del seguimiento
         $id_seguimiento_zoo = null;
         if (!empty($codigose) && preg_match($codigo_validar, $codigose)) {
             $sql_validar_seg = "SELECT id_seguimiento_zoo, id_estado FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1";
@@ -58,11 +58,21 @@ class FormularioZController
 
             if (empty($existeSeg)) {
                 $errores[] = "No existe ningún seguimiento registrado con ese código.";
-            } elseif ($existeSeg[0]['id_estado'] != 1) {
+            } elseif ($existeSeg[0]['id_estado'] != 4) {
                 // Mensaje exacto cuando no está activo:
                 $errores[] = "Lo siento, el seguimiento no está activo.";
             } else {
                 $id_seguimiento_zoo = $existeSeg[0]['id_seguimiento_zoo'];
+
+                // NUEVO: el seguimiento debe tener asignada la actividad de Alimentación
+                if (!$this->seguimientoTieneAlimentacion($obj, $id_seguimiento_zoo)) {
+                    $errores[] = "Este seguimiento no tiene asignada la actividad de Alimentación, por lo que no se puede registrar el formulario.";
+                }
+
+                // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                if ($this->yaRegistroAlimentacion($obj, $id_seguimiento_zoo, $codigose)) {
+                    $errores[] = "Ya existe un registro de alimentación guardado para este código de seguimiento.";
+                }
             }
         }
 
@@ -143,6 +153,38 @@ class FormularioZController
         return !empty($creado) ? $creado[0]['id_actividad_zoo'] : null;
     }
 
+    // NUEVO: verifica que el seguimiento tenga asignada la actividad "Alimentación"
+    // (existe una fila en actividad_seg_zoo que lo relaciona con esa actividad)
+    private function seguimientoTieneAlimentacion($obj, $id_seguimiento_zoo)
+    {
+        // ILIKE 'Alimentaci_n' coincide con "Alimentacion" y "Alimentación"
+        $sql = "SELECT 1
+                FROM actividad_seg_zoo asz
+                INNER JOIN actividad_zoocriadero a
+                    ON a.id_actividad_zoo = asz.id_actividad_zoo
+                WHERE asz.id_seguimiento_zoo = $1
+                  AND a.nombre_actividad ILIKE 'Alimentaci_n'
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_zoo]);
+
+        return !empty($res);
+    }
+
+    // NUEVO: verifica si ya existe un registro previo de Alimentación en sub_actividades para este seguimiento
+    private function yaRegistroAlimentacion($obj, $id_seguimiento_zoo, $codigose)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades 
+                WHERE (id_seguimiento_zoo = $1 OR cod_seguimiento = $2)
+                  AND (obser_alimentacion IS NOT NULL OR fecha_alimentacion IS NOT NULL OR tipo_alimento IS NOT NULL)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_zoo, $codigose]);
+
+        return !empty($res);
+    }
+
     public function postInsert($id_seguimiento_zoo = null)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -159,7 +201,7 @@ class FormularioZController
             $fecha = !empty($fecha_array[0]) ? $fecha_array[0] : date('Y-m-d');
 
             if (empty($id_seguimiento_zoo)) {
-                $sqlExiste = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1 AND id_estado = 1";
+                $sqlExiste = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1 AND id_estado = 4";
                 $existe = $obj->select($sqlExiste, [$codigose]);
 
                 if (empty($existe)) {
@@ -172,6 +214,26 @@ class FormularioZController
                 }
 
                 $id_seguimiento_zoo = $existe[0]['id_seguimiento_zoo'];
+            }
+
+            // NUEVO: si el seguimiento no tiene la actividad de Alimentación, no deja hacer el post
+            if (!$this->seguimientoTieneAlimentacion($obj, $id_seguimiento_zoo)) {
+                include_once '../model/Errores/ErrorModal.php';
+                ErrorModal::verError(
+                    ["Este seguimiento no tiene asignada la actividad de Alimentación, por lo que no se puede registrar el formulario."],
+                    getUrl('FormularioZ', 'FormularioZ', 'getRegistrar')
+                );
+                return;
+            }
+
+            // NUEVO: verifica si ya fue registrado previamente antes de insertar en BD
+            if ($this->yaRegistroAlimentacion($obj, $id_seguimiento_zoo, $codigose)) {
+                include_once '../model/Errores/ErrorModal.php';
+                ErrorModal::verError(
+                    ["Ya existe un registro de alimentación guardado para este código de seguimiento."],
+                    getUrl('FormularioZ', 'FormularioZ', 'getRegistrar')
+                );
+                return;
             }
 
             $sqlSub = "INSERT INTO sub_actividades 

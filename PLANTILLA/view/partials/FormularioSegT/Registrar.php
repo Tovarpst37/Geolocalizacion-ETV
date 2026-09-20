@@ -23,9 +23,11 @@
                     <div class="mb-3">
                         <label for="fecha_horaSeg" class="form-label">Fecha y hora de seguimiento</label>
                         <span class="icono">
-                            <i class="fa-solid fa-calendar"></i>
+                            <i class="fa-solid fa-calendar-days"></i>
                         </span>
                         <input type="datetime-local" class="form-control" id="fecha_horaSeg" name="fecha_horaSeg"
+                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
+                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;"
                             required>
                     </div>
 

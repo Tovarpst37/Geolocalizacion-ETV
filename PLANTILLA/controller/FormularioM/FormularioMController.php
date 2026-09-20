@@ -48,7 +48,7 @@ class FormularioMController
             $errores[] = "El código solo puede contener letras, números, guiones y espacios.";
         }
 
-        // 2. Validar que el seguimiento exista y esté ACTIVO (id_estado = 1)
+        // 2. Validar que el seguimiento exista, esté ACTIVO y tenga la actividad asignada
         $id_seguimiento_zoo = null;
         if (!empty($codM) && preg_match($codigo_validar, $codM)) {
             $sql_validar_seg = "SELECT id_seguimiento_zoo, id_estado FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1";
@@ -56,10 +56,20 @@ class FormularioMController
 
             if (empty($existeSeg)) {
                 $errores[] = "No existe ningún seguimiento registrado con ese código.";
-            } elseif ($existeSeg[0]['id_estado'] != 1) {
+            } elseif ($existeSeg[0]['id_estado'] != 4) {
                 $errores[] = "Lo siento, el seguimiento no está activo.";
             } else {
                 $id_seguimiento_zoo = $existeSeg[0]['id_seguimiento_zoo'];
+
+                // NUEVO: el seguimiento debe tener asignada la actividad de Peces muertos y nacidos
+                if (!$this->seguimientoTienePecesMuertosNacidos($obj, $id_seguimiento_zoo)) {
+                    $errores[] = "Este seguimiento no tiene asignada la actividad de Peces muertos y nacidos, por lo que no se puede registrar el formulario.";
+                }
+
+                // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                if ($this->yaRegistroPecesMuertosNacidos($obj, $id_seguimiento_zoo, $codM)) {
+                    $errores[] = "Ya existe un registro de peces muertos y nacidos guardado para este código de seguimiento.";
+                }
             }
         }
 
@@ -121,9 +131,11 @@ class FormularioMController
         $this->postInsert($id_seguimiento_zoo);
     }
 
+    // CORREGIDO: ahora usa ILIKE para encontrar "Peces Muertos y Nacidos" sin importar mayúsculas
+    // y así no crear una actividad duplicada
     private function getOrCreateActividadZoo($obj, $nombre, $codigoDefault)
     {
-        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad = $1";
+        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad ILIKE $1";
         $res = $obj->select($sqlBuscar, [$nombre]);
 
         if (!empty($res)) {
@@ -136,6 +148,38 @@ class FormularioMController
         $creado = $obj->select($sqlCrear, [$codigoDefault, $nombre]);
 
         return !empty($creado) ? $creado[0]['id_actividad_zoo'] : null;
+    }
+
+    // NUEVO: verifica que el seguimiento tenga asignada la actividad "Peces muertos y nacidos"
+    // (existe una fila en actividad_seg_zoo que lo relaciona con esa actividad)
+    private function seguimientoTienePecesMuertosNacidos($obj, $id_seguimiento_zoo)
+    {
+        // ILIKE 'Peces muertos y nacid%' coincide sin importar mayúsculas
+        $sql = "SELECT 1
+                FROM actividad_seg_zoo asz
+                INNER JOIN actividad_zoocriadero a
+                    ON a.id_actividad_zoo = asz.id_actividad_zoo
+                WHERE asz.id_seguimiento_zoo = $1
+                  AND a.nombre_actividad ILIKE 'Peces muertos y nacid%'
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_zoo]);
+
+        return !empty($res);
+    }
+
+    // NUEVO: verifica si ya existe un registro previo de Peces muertos y nacidos en sub_actividades para este seguimiento
+    private function yaRegistroPecesMuertosNacidos($obj, $id_seguimiento_zoo, $codM)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades 
+                WHERE (id_seguimiento_zoo = $1 OR cod_seguimiento = $2)
+                  AND (obser_canpeces IS NOT NULL OR can_peces_nacido IS NOT NULL OR can_peces_mertos_macho IS NOT NULL OR can_peces_mertos_hembra IS NOT NULL)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_zoo, $codM]);
+
+        return !empty($res);
     }
 
     public function postInsert($id_seguimiento_zoo = null)
@@ -151,7 +195,7 @@ class FormularioMController
             $ob = strip_tags($ob);
 
             if (empty($id_seguimiento_zoo)) {
-                $sqlExiste = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1 AND id_estado = 1";
+                $sqlExiste = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1 AND id_estado = 4";
                 $existe = $obj->select($sqlExiste, [$codM]);
 
                 if (empty($existe)) {
@@ -164,6 +208,26 @@ class FormularioMController
                 }
 
                 $id_seguimiento_zoo = $existe[0]['id_seguimiento_zoo'];
+            }
+
+            // NUEVO: si el seguimiento no tiene la actividad de Peces muertos y nacidos, no deja hacer el post
+            if (!$this->seguimientoTienePecesMuertosNacidos($obj, $id_seguimiento_zoo)) {
+                include_once '../model/Errores/ErrorModal.php';
+                ErrorModal::verError(
+                    ["Este seguimiento no tiene asignada la actividad de Peces muertos y nacidos, por lo que no se puede registrar el formulario."],
+                    getUrl('FormularioM', 'FormularioM', 'getRegistrar')
+                );
+                return;
+            }
+
+            // NUEVO: verifica si ya fue registrado previamente antes de insertar en BD
+            if ($this->yaRegistroPecesMuertosNacidos($obj, $id_seguimiento_zoo, $codM)) {
+                include_once '../model/Errores/ErrorModal.php';
+                ErrorModal::verError(
+                    ["Ya existe un registro de peces muertos y nacidos guardado para este código de seguimiento."],
+                    getUrl('FormularioM', 'FormularioM', 'getRegistrar')
+                );
+                return;
             }
 
             $sqlSub = "INSERT INTO sub_actividades 
@@ -194,7 +258,7 @@ class FormularioMController
             if (!empty($resSub)) {
                 $id_sub_actividad = $resSub[0]['id_sub_actividad'];
 
-                $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Peces muertos y nacidos', 'MUE001');
+                $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Peces muertos y nacidos', 'AZ-2');
                 if ($id_actividad_zoo) {
                     $obj->insert(
                         "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",

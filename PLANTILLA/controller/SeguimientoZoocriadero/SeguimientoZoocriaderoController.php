@@ -30,7 +30,7 @@
             INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
             LEFT JOIN actividad_seg_zoo asz ON s.id_seguimiento_zoo = asz.id_seguimiento_zoo
             LEFT JOIN actividad_zoocriadero az ON asz.id_actividad_zoo = az.id_actividad_zoo 
-                                            AND az.id_estado = 1          -- Solo actividades activas
+                                            AND az.id_estado = 1   
             GROUP BY s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.hora_inicio, s.hora_fin, s.id_estado, 
                     z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
             ORDER BY s.id_seguimiento_zoo";
@@ -39,10 +39,10 @@
 
     
         $sql2 = "UPDATE seguimiento_zoocriadero 
-                SET id_estado = 2 
+                SET id_estado = 3 
                 WHERE fecha = CURRENT_DATE 
                 AND hora_fin < LOCALTIME 
-                AND id_estado = 1";
+                AND id_estado = 4";
 
         $ejecutar = $obj->update($sql2);
         
@@ -67,7 +67,7 @@
         $sql3 = "SELECT MAX(id_seguimiento_zoo) FROM seguimiento_zoocriadero";
         $id_seg = $obj->select($sql3);
         
-        $sql2 = "SELECT * from estado";
+        $sql2 = "SELECT * from estado WHERE tipo_estado = 'seguimiento'";
         $estados = $obj->select($sql2);
 
         $sql3 = "SELECT * from actividad_zoocriadero WHERE id_estado = 1";
@@ -156,10 +156,10 @@
 
                 $_SESSION['mensaje_exito'] = "El Seguimiento de Zoocriadero se registro correctamente.";
                 $sql2 = "UPDATE seguimiento_zoocriadero 
-                        SET id_estado = 2 
+                        SET id_estado = 3 
                         WHERE fecha = CURRENT_DATE 
                         AND hora_fin < LOCALTIME 
-                        AND id_estado = 1";
+                        AND id_estado = 4";
 
                 $ejecutar2 = $obj->update($sql2);
                 redirect(getUrl("SeguimientoZoocriadero","SeguimientoZoocriadero","getConsultar"));
@@ -181,7 +181,7 @@ public function getEditar()
                 WHERE id_seguimiento_zoo = '$id'";
         $datos = $obj->select($sql);
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado WHERE tipo_estado = 'seguimiento'";
             $estados = $obj->select($sql3);
 
             $sql4 = "SELECT * from actividad_zoocriadero WHERE id_estado = 1";
@@ -245,20 +245,20 @@ public function getEditar()
         $ejecutar = $obj->update($sql); 
 
         $sql2 = "UPDATE seguimiento_zoocriadero 
-                SET id_estado = 2 
+                SET id_estado = 3 
                 WHERE fecha = CURRENT_DATE 
                 AND hora_fin < LOCALTIME 
-                AND id_estado = 1";
+                AND id_estado = 4";
 
         $ejecutar2 = $obj->update($sql2);
 
         if ($ejecutar) {
             $_SESSION['mensaje_exito'] = "El Seguimiento de zoocriadero se actualizó correctamente.";
             $sql2 = "UPDATE seguimiento_zoocriadero 
-                SET id_estado = 2 
+                SET id_estado = 3
                 WHERE fecha = CURRENT_DATE 
                 AND hora_fin < LOCALTIME 
-                AND id_estado = 1";
+                AND id_estado = 4";
 
         $ejecutar = $obj->update($sql2);
 
@@ -287,7 +287,7 @@ public function getEditar()
                 echo '<script>alert("¡Este Seguimiento ya esta inhabilitado!");</script>';
                 redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
             } else if ($s['id_estado'] == 1) {
-                $sql = "UPDATE seguimiento_zoocriadero SET id_estado = 2 WHERE id_seguimiento_zoo = $id";
+                $sql = "UPDATE seguimiento_zoocriadero SET id_estado = 4 WHERE id_seguimiento_zoo = $id";
 
                 $ejecutar = $obj->delete($sql);
                 if ($ejecutar) {
