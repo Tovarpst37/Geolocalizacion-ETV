@@ -1,19 +1,21 @@
 <?php
 
-    include_once '../model/SeguimientoTerreno/SeguimientoTerrenoModel.php';
+include_once '../model/SeguimientoTerreno/SeguimientoTerrenoModel.php';
 
 
 
-    class SeguimientoTerrenoController{
+class SeguimientoTerrenoController
+{
 
 
 
 
-    public function getConsultar(){
+    public function getConsultar()
+    {
 
-     $obj = new SeguimientoTerrenoModel();
-    
-     $sql = "SELECT 
+        $obj = new SeguimientoTerrenoModel();
+
+        $sql = "SELECT 
                 s.id_seguimiento_terreno,
                 s.cod_seguimiento,
                 s.fecha,
@@ -47,12 +49,12 @@
                 u.primer_apellido
             ORDER BY s.id_seguimiento_terreno";
 
-    
 
-                $seguimientosnew = $obj->select($sql);
 
-                foreach($seguimientosnew as $se){
-                $sql15 = "SELECT 
+        $seguimientosnew = $obj->select($sql);
+
+        foreach ($seguimientosnew as $se) {
+            $sql15 = "SELECT 
                                 atr.id_actividad_terreno,
                                 atr.nombre_actividad,
                                 EXISTS (
@@ -68,38 +70,39 @@
                                 ON ast.id_actividad_terreno = atr.id_actividad_terreno
                             WHERE ast.id_seguimiento_terreno = $1
                             ORDER BY atr.id_actividad_terreno";
-                $act = $obj->select($sql15, [$se['id_seguimiento_terreno']]);
+            $act = $obj->select($sql15, [$se['id_seguimiento_terreno']]);
 
-                
-                if (count($act) == 0) continue;
 
-                $verify = true;
+            if (count($act) == 0)
+                continue;
 
-                foreach($act as $a){
-                    if ($a['ya_registrada'] !== true && $a['ya_registrada'] !== 't') {
-                        $verify = false;
-                        break;
-                    }
-                }
+            $verify = true;
 
-                if($verify){
-                    
-                    $sql22 = "UPDATE seguimiento_terreno 
-                            SET id_estado = 5 
-                            WHERE id_seguimiento_terreno = $1 AND id_estado = 4";
-                    $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_terreno']]);
-                }else{
-                
-                    $sql22 = "UPDATE seguimiento_terreno 
-                            SET id_estado = 4 
-                            WHERE id_seguimiento_terreno = $1 AND id_estado = 5";
-                    $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_terreno']]);
+            foreach ($act as $a) {
+                if ($a['ya_registrada'] !== true && $a['ya_registrada'] !== 't') {
+                    $verify = false;
+                    break;
                 }
             }
 
-       
+            if ($verify) {
 
-    
+                $sql22 = "UPDATE seguimiento_terreno 
+                            SET id_estado = 5 
+                            WHERE id_seguimiento_terreno = $1 AND id_estado = 4";
+                $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_terreno']]);
+            } else {
+
+                $sql22 = "UPDATE seguimiento_terreno 
+                            SET id_estado = 4 
+                            WHERE id_seguimiento_terreno = $1 AND id_estado = 5";
+                $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_terreno']]);
+            }
+        }
+
+
+
+
         $sql2 = "UPDATE seguimiento_terreno
                 SET id_estado = 3 
                 WHERE fecha = CURRENT_DATE 
@@ -107,20 +110,21 @@
                 AND id_estado =  4";
 
         $ejecutar = $obj->update($sql2);
-         $seguimientos = $obj->select($sql);
-    
-    if(count($seguimientos) <= 0){
-        include_once '../view/partials/SeguimientoTerreno/notExist.php';
-    }else{
-        include_once '../view/partials/SeguimientoTerreno/Consultar.php';
+        $seguimientos = $obj->select($sql);
+
+        if (count($seguimientos) <= 0) {
+            include_once '../view/partials/SeguimientoTerreno/notExist.php';
+        } else {
+            include_once '../view/partials/SeguimientoTerreno/Consultar.php';
+        }
+
+
+
     }
-    
 
 
-    }
-
-
-    public function getRegistrar(){
+    public function getRegistrar()
+    {
 
         $obj = new SeguimientoTerrenoModel();
         $sql = "SELECT * from sitio";
@@ -134,40 +138,41 @@
 
         $sql3 = "SELECT * from actividad_terreno WHERE id_estado = 1";
         $actividades = $obj->select($sql3);
-        
+
         include_once '../view/partials/SeguimientoTerreno/Registrar.php';
 
     }
 
 
-    public function postRegistrar(){
+    public function postRegistrar()
+    {
 
-    $obj = new SeguimientoTerrenoModel();
+        $obj = new SeguimientoTerrenoModel();
 
-    $codigo = mb_strtoupper($_POST['codigo']) ?? '';
-    $sitio = $_POST['select_ter'] ?? '';
-    $estado = $_POST['id_estado'];
-    $usuario = $_POST['selectUsuarios'] ?? '';
-    $terreno = $_POST['selectTerreno'] ?? '';
-    $horario = $_POST['horario'] ?? '';
-    $actividades = $_POST['actividades'] ?? [];
-    $actividades = array_map('intval', $actividades);
-    
-
-    $sql_validar = "SELECT id_seguimiento_terreno FROM seguimiento_terreno WHERE cod_seguimiento = $1 ";
-    $existe = $obj->select($sql_validar,[$codigo]);
+        $codigo = mb_strtoupper($_POST['codigo']) ?? '';
+        $sitio = $_POST['select_ter'] ?? '';
+        $estado = $_POST['id_estado'];
+        $usuario = $_POST['selectUsuarios'] ?? '';
+        $terreno = $_POST['selectTerreno'] ?? '';
+        $horario = $_POST['horario'] ?? '';
+        $actividades = $_POST['actividades'] ?? [];
+        $actividades = array_map('intval', $actividades);
 
 
-     $errores = [];
-    list($hora_inicio, $hora_fin) = explode('-', $horario);
+        $sql_validar = "SELECT id_seguimiento_terreno FROM seguimiento_terreno WHERE cod_seguimiento = $1 ";
+        $existe = $obj->select($sql_validar, [$codigo]);
 
 
-    
+        $errores = [];
+        list($hora_inicio, $hora_fin) = explode('-', $horario);
 
-        if(!empty($existe)){
+
+
+
+        if (!empty($existe)) {
             $errores[] = "Ya existe un seguimiento con ese código";
-            
-        } 
+
+        }
         if (empty($codigo)) {
             $errores[] = "Debe ingresar el codigo del seguimiento";
         }
@@ -186,37 +191,37 @@
         if (empty($horario)) {
             $errores[] = "Debe seleccionar el horario.";
         }
-        
-        
+
+
 
 
 
         if (!empty($errores)) {
-           
+
 
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError($errores, getUrl('SeguimientoTerreno', 'SeguimientoTerreno', 'getRegistrar'));
 
             return;
-        }else{ 
+        } else {
 
-   
+
             $sql = "INSERT INTO seguimiento_terreno  (fecha, id_usuario, id_sitio,  id_estado, hora_inicio, hora_fin,cod_seguimiento)
                     VALUES ( CURRENT_DATE, $1,$2,$3,$4,$5,$6)
                     RETURNING id_seguimiento_terreno";
 
-            $resultado = $obj->select($sql,[$usuario, $sitio,  $estado, $hora_inicio, $hora_fin,$codigo]); 
+            $resultado = $obj->select($sql, [$usuario, $sitio, $estado, $hora_inicio, $hora_fin, $codigo]);
 
-             
-            
-            if($resultado){
+
+
+            if ($resultado) {
                 $id_seguimiento = $resultado[0]['id_seguimiento_terreno'];
 
 
-                foreach($actividades as $id_actividad){
+                foreach ($actividades as $id_actividad) {
                     $sql2 = "INSERT INTO actividad_seg_terreno (id_actividad_terreno, id_seguimiento_terreno) 
                             VALUES ($1, $2)";
-                     $obj->insert($sql2, [$id_actividad, $id_seguimiento]);
+                    $obj->insert($sql2, [$id_actividad, $id_seguimiento]);
                 }
 
                 $_SESSION['mensaje_exito'] = "El Seguimiento de Terreno se registro correctamente.";
@@ -227,16 +232,16 @@
                 AND id_estado =  4";
 
                 $ejecutar2 = $obj->update($sql2);
-                redirect(getUrl("SeguimientoTerreno","SeguimientoTerreno","getConsultar"));
+                redirect(getUrl("SeguimientoTerreno", "SeguimientoTerreno", "getConsultar"));
             } else {
                 echo "No se pudo registrar el seguimiento";
-    }
+            }
         }
 
-}
+    }
 
 
-public function getEditar()
+    public function getEditar()
     {
         $id = $_GET['id'];
         $obj = new SeguimientoTerrenoModel();
@@ -247,29 +252,30 @@ public function getEditar()
         $datos = $obj->select($sql);
 
         $sql3 = "SELECT * from estado WHERE tipo_estado = 'seguimiento'";
-            $estados = $obj->select($sql3);
+        $estados = $obj->select($sql3);
 
-            $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1";
+        $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1";
         $actividades = $obj->select($sql4);
 
-        
+
 
         $sql4 = "SELECT id_actividad_terreno from actividad_seg_terreno WHERE id_seguimiento_terreno = $1";
-        $actividadesSelect = $obj->select($sql4,[$id]);
+        $actividadesSelect = $obj->select($sql4, [$id]);
 
 
         include_once '../view/partials/SeguimientoTerreno/Editar.php';
 
     }
 
-    public function postUpdate(){
+    public function postUpdate()
+    {
 
         $obj = new SeguimientoTerrenoModel();
         $id = $_POST['id'];
         $fecha = $_POST['fecha'];
         $horario = $_POST['horario'];
-         $estado = $_POST['id_estado'];
-        
+        $estado = $_POST['id_estado'];
+
         list($hora_inicio, $hora_fin) = explode('-', $horario);
 
 
@@ -286,14 +292,14 @@ public function getEditar()
         $idsEliminar = array_diff($idsActuales, $actividadesNuevas);
         $idsInsertar = array_diff($actividadesNuevas, $idsActuales);
 
-        
+
         foreach ($idsEliminar as $idActividad) {
             $sqlDelete = "DELETE FROM actividad_seg_terreno 
                         WHERE id_seguimiento_terreno = $1 AND id_actividad_terreno = $2";
             $obj->delete($sqlDelete, [$id, $idActividad]);
         }
 
-        
+
         foreach ($idsInsertar as $idActividad) {
             $sqlInsert = "INSERT INTO actividad_seg_terreno (id_seguimiento_terreno, id_actividad_terreno) 
                         VALUES ($1, $2)";
@@ -307,7 +313,7 @@ public function getEditar()
             id_estado = '$estado'
         WHERE id_seguimiento_terreno = '$id'";
 
-        $ejecutar = $obj->update($sql); 
+        $ejecutar = $obj->update($sql);
 
         $sql2 = "UPDATE seguimiento_terreno
                 SET id_estado = 3 
@@ -325,13 +331,14 @@ public function getEditar()
                 AND hora_fin < LOCALTIME 
                 AND id_estado = 1";
 
-        $ejecutar = $obj->update($sql2);
+            $ejecutar = $obj->update($sql2);
 
-            
+
             redirect(getUrl("SeguimientoTerreno", "SeguimientoTerreno", "getConsultar"));
         } else {
             echo "No se pudo actualizar el seguimiento";
-        };
+        }
+        ;
 
     }
 
@@ -365,16 +372,17 @@ public function getEditar()
         }
     }
 
-public function getBuscar(){
+    public function getBuscar()
+    {
 
 
-    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
-    if(!empty($busqueda)){
-    $obj = new SeguimientoTerrenoModel();
-    
-    $palabra = $_GET['busqueda'];
+        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        if (!empty($busqueda)) {
+            $obj = new SeguimientoTerrenoModel();
 
-        $sql = "SELECT 
+            $palabra = $_GET['busqueda'];
+
+            $sql = "SELECT 
                 s.id_seguimiento_terreno,
                 s.cod_seguimiento,
                 s.fecha,
@@ -407,15 +415,15 @@ public function getBuscar(){
                 u.primer_apellido
             ORDER BY s.id_seguimiento_terreno";
 
-            
 
-    $seguimientos = $obj->select($sql, ['%' . $busqueda . '%']);
 
-    include_once '../view/partials/SeguimientoTerreno/Buscar.php';
-}else{
-    $obj = new SeguimientoTerrenoModel();
-    
-     $sql = "SELECT 
+            $seguimientos = $obj->select($sql, ['%' . $busqueda . '%']);
+
+            include_once '../view/partials/SeguimientoTerreno/Buscar.php';
+        } else {
+            $obj = new SeguimientoTerrenoModel();
+
+            $sql = "SELECT 
                 s.id_seguimiento_terreno,
                 s.cod_seguimiento,
                 s.fecha,
@@ -448,54 +456,55 @@ public function getBuscar(){
                 u.primer_apellido
             ORDER BY s.id_seguimiento_terreno";
 
-    $seguimientos = $obj->select($sql);
+            $seguimientos = $obj->select($sql);
 
-    
-        $sql2 = "UPDATE seguimiento_terreno
+
+            $sql2 = "UPDATE seguimiento_terreno
                 SET id_estado = 3 
                 WHERE fecha = CURRENT_DATE 
                 AND hora_fin < LOCALTIME 
                 AND id_estado =  4";
 
-        $ejecutar = $obj->update($sql2);
-        
-
-        include_once '../view/partials/SeguimientoTerreno/consultar.php';
-}
-
-}
+            $ejecutar = $obj->update($sql2);
 
 
+            include_once '../view/partials/SeguimientoTerreno/consultar.php';
+        }
+
+    }
 
 
-public function getSitios(){
-    $id_sitio = $_GET['id_sitio'];
-    
-    $obj = new SeguimientoTerrenoModel();
-    
-    $sql = "SELECT td.id_tipo_deposito, td.nombre 
+
+
+    public function getSitios()
+    {
+        $id_sitio = $_GET['id_sitio'];
+
+        $obj = new SeguimientoTerrenoModel();
+
+        $sql = "SELECT td.id_tipo_deposito, td.nombre 
             FROM tipo_de_deposito td
             INNER JOIN sitio s ON s.id_tipo_deposito = td.id_tipo_deposito
             WHERE s.id_sitio = $1;";
-            
-    $terreno = $obj->select($sql,[$id_sitio]);
-    
-    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
-    $usuarios = $obj->select($sql2,[$id_sitio]);
-    
-    $resultado = [
-        'terreno' => $terreno,
-        'usuarios' => $usuarios
-    ];
-    
-    header('Content-Type: application/json');
-    echo json_encode($resultado);
-}
 
-    
+        $terreno = $obj->select($sql, [$id_sitio]);
 
+        $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
+        $usuarios = $obj->select($sql2, [$id_sitio]);
 
-    
+        $resultado = [
+            'terreno' => $terreno,
+            'usuarios' => $usuarios
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
     }
+
+
+
+
+
+}
 
 ?>
