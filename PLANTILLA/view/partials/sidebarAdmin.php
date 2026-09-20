@@ -204,14 +204,16 @@
                         <li><a href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span class="sub-item">Actividades por auxiliar</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="#"><span class="sub-item">Tipo de depósitos</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="#"><i class="bx bxs-file-export"></i><span class="sub-item">Exportar a Excel</span></a></li>
+                        <li><a href="<?php echo getUrl('Auditoria', 'Auditoria', 'getConsultar'); ?>"><i class="bx bxs-file-export"></i><span class="sub-item">Auditoria</span></a></li>
                     </ul>
-                </li>
+            </ul>
+            </li>
             </ul>
         </nav>
 
         <div class="sideBottomCard text">
             <p>CERRAR SESION</p>
-            <span><?php echo $_SESSION['primer_nombre'];?></span>
+            <span><?php echo $_SESSION['primer_nombre']; ?></span>
             <div class="arrow">
                 <a href="<?php echo getUrl("Acceso", "Acceso", "logout"); ?>"><i class="bx bx-right-arrow-alt cerrarsesion" role="button" tabindex="0"></i></a>
             </div>
