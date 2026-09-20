@@ -65,6 +65,11 @@ class FormularioMController
                 if (!$this->seguimientoTienePecesMuertosNacidos($obj, $id_seguimiento_zoo)) {
                     $errores[] = "Este seguimiento no tiene asignada la actividad de Peces muertos y nacidos, por lo que no se puede registrar el formulario.";
                 }
+
+                // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                if ($this->yaRegistroPecesMuertosNacidos($obj, $id_seguimiento_zoo, $codM)) {
+                    $errores[] = "Ya existe un registro de peces muertos y nacidos guardado para este código de seguimiento.";
+                }
             }
         }
 
@@ -163,6 +168,20 @@ class FormularioMController
         return !empty($res);
     }
 
+    // NUEVO: verifica si ya existe un registro previo de Peces muertos y nacidos en sub_actividades para este seguimiento
+    private function yaRegistroPecesMuertosNacidos($obj, $id_seguimiento_zoo, $codM)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades 
+                WHERE (id_seguimiento_zoo = $1 OR cod_seguimiento = $2)
+                  AND (obser_canpeces IS NOT NULL OR can_peces_nacido IS NOT NULL OR can_peces_mertos_macho IS NOT NULL OR can_peces_mertos_hembra IS NOT NULL)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_zoo, $codM]);
+
+        return !empty($res);
+    }
+
     public function postInsert($id_seguimiento_zoo = null)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -196,6 +215,16 @@ class FormularioMController
                 include_once '../model/Errores/ErrorModal.php';
                 ErrorModal::verError(
                     ["Este seguimiento no tiene asignada la actividad de Peces muertos y nacidos, por lo que no se puede registrar el formulario."],
+                    getUrl('FormularioM', 'FormularioM', 'getRegistrar')
+                );
+                return;
+            }
+
+            // NUEVO: verifica si ya fue registrado previamente antes de insertar en BD
+            if ($this->yaRegistroPecesMuertosNacidos($obj, $id_seguimiento_zoo, $codM)) {
+                include_once '../model/Errores/ErrorModal.php';
+                ErrorModal::verError(
+                    ["Ya existe un registro de peces muertos y nacidos guardado para este código de seguimiento."],
                     getUrl('FormularioM', 'FormularioM', 'getRegistrar')
                 );
                 return;

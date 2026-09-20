@@ -40,7 +40,6 @@ class FormularioSiemController
 
     // NUEVO: verifica que el seguimiento de terreno tenga asignada la actividad "Siembra"
     // (existe una fila en actividad_seg_terreno que lo relaciona con esa actividad)
-    // AJUSTA: nombres de tablas y columnas si en tu BD son distintos
     private function seguimientoTieneSiembra($obj, $id_seguimiento_terreno)
     {
         $sql = "SELECT 1
@@ -52,6 +51,20 @@ class FormularioSiemController
                 LIMIT 1";
 
         $res = $obj->select($sql, [$id_seguimiento_terreno]);
+
+        return !empty($res);
+    }
+
+    // NUEVO: verifica si ya existe un registro previo de Siembra en sub_actividades_ter para este seguimiento
+    private function yaRegistroSiembra($obj, $id_seguimiento_terreno, $codSeg)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades_ter 
+                WHERE (id_seguimiento_terreno = $1 OR cod_seguimiento = $2)
+                  AND (obser_siembra IS NOT NULL OR fecha_siembra IS NOT NULL OR can_peces_empacados IS NOT NULL OR can_hembras_sembradas IS NOT NULL OR can_machos_sembrados IS NOT NULL)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_terreno, $codSeg]);
 
         return !empty($res);
     }
@@ -104,6 +117,11 @@ class FormularioSiemController
                     // NUEVO: el seguimiento debe tener asignada la actividad de Siembra
                     if (!$this->seguimientoTieneSiembra($obj, $id_seguimiento_terreno)) {
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Siembra, por lo que no se puede registrar el formulario.";
+                    }
+
+                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    if ($this->yaRegistroSiembra($obj, $id_seguimiento_terreno, $codSeg)) {
+                        $errores[] = "Ya existe un registro de siembra guardado para este código de seguimiento.";
                     }
                 }
             }

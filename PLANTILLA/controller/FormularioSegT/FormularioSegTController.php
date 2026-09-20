@@ -59,7 +59,6 @@ class FormularioSegTController
 
     // NUEVO: verifica que el seguimiento de terreno tenga asignada la actividad "Seguimiento"
     // (existe una fila en actividad_seg_terreno que lo relaciona con esa actividad)
-    // AJUSTA: nombre de la tabla de relación y sus columnas si en tu BD son distintos
     private function seguimientoTieneSeguimiento($obj, $id_seguimiento_terreno)
     {
         $sql = "SELECT 1
@@ -71,6 +70,20 @@ class FormularioSegTController
                 LIMIT 1";
 
         $res = $obj->select($sql, [$id_seguimiento_terreno]);
+
+        return !empty($res);
+    }
+
+    // NUEVO: verifica si ya existe un registro previo de Seguimiento en sub_actividades_ter para este código
+    private function yaRegistroSeguimiento($obj, $id_seguimiento_terreno, $codSeg)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades_ter 
+                WHERE (id_seguimiento_terreno = $1 OR cod_seguimiento = $2)
+                  AND (obser_seguimiento IS NOT NULL OR fecha_seguimiento IS NOT NULL OR numero_visita IS NOT NULL)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_terreno, $codSeg]);
 
         return !empty($res);
     }
@@ -120,6 +133,11 @@ class FormularioSegTController
                     // NUEVO: el seguimiento debe tener asignada la actividad de Seguimiento
                     if (!$this->seguimientoTieneSeguimiento($obj, $id_seguimiento_terreno)) {
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Seguimiento, por lo que no se puede registrar el formulario.";
+                    }
+
+                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    if ($this->yaRegistroSeguimiento($obj, $id_seguimiento_terreno, $codSeg)) {
+                        $errores[] = "Ya existe un registro de seguimiento guardado para este código de seguimiento.";
                     }
                 }
             }

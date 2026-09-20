@@ -40,7 +40,6 @@ class FormularioInspController
 
     // NUEVO: verifica que el seguimiento de terreno tenga asignada la actividad "Inspección"
     // (existe una fila en actividad_seg_terreno que lo relaciona con esa actividad)
-    // AJUSTA: nombres de tablas y columnas si en tu BD son distintos
     private function seguimientoTieneInspeccion($obj, $id_seguimiento_terreno)
     {
         // ILIKE 'Inspecci_n' coincide con "Inspección" y "Inspeccion"
@@ -53,6 +52,20 @@ class FormularioInspController
                 LIMIT 1";
 
         $res = $obj->select($sql, [$id_seguimiento_terreno]);
+
+        return !empty($res);
+    }
+
+    // NUEVO: verifica si ya existe un registro previo de Inspección en sub_actividades_ter para este seguimiento
+    private function yaRegistroInspeccion($obj, $id_seguimiento_terreno, $codSeg)
+    {
+        $sql = "SELECT 1 
+                FROM sub_actividades_ter 
+                WHERE (id_seguimiento_terreno = $1 OR cod_seguimiento = $2)
+                  AND (obser_inspeccion IS NOT NULL OR fecha_inspeccion IS NOT NULL OR ph_medido IS NOT NULL OR temperatura IS NOT NULL)
+                LIMIT 1";
+
+        $res = $obj->select($sql, [$id_seguimiento_terreno, $codSeg]);
 
         return !empty($res);
     }
@@ -102,6 +115,11 @@ class FormularioInspController
                     // NUEVO: el seguimiento debe tener asignada la actividad de Inspección
                     if (!$this->seguimientoTieneInspeccion($obj, $id_seguimiento_terreno)) {
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Inspección, por lo que no se puede registrar el formulario.";
+                    }
+
+                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    if ($this->yaRegistroInspeccion($obj, $id_seguimiento_terreno, $codSeg)) {
+                        $errores[] = "Ya existe un registro de inspección guardado para este código de seguimiento.";
                     }
                 }
             }
