@@ -45,9 +45,59 @@
                 td.nombre,
                 u.primer_nombre, 
                 u.primer_apellido
-            ORDER BY s.id_seguimiento_terreno";
+            ORDER BY s.id_seguimiento_terreno DESC";
 
-    $seguimientos = $obj->select($sql);
+    
+
+                $seguimientosnew = $obj->select($sql);
+
+                foreach($seguimientosnew as $se){
+                $sql15 = "SELECT 
+                                atr.id_actividad_terreno,
+                                atr.nombre_actividad,
+                                EXISTS (
+                                    SELECT 1
+                                    FROM actividad_ter_subactividades ats
+                                    INNER JOIN sub_actividades_ter sa 
+                                        ON sa.id_sub_actividad = ats.id_sub_actividades
+                                    WHERE ats.id_actividad_terreno = atr.id_actividad_terreno
+                                    AND sa.id_seguimiento_terreno = ast.id_seguimiento_terreno
+                                ) AS ya_registrada
+                            FROM actividad_seg_terreno ast
+                            INNER JOIN actividad_terreno atr 
+                                ON ast.id_actividad_terreno = atr.id_actividad_terreno
+                            WHERE ast.id_seguimiento_terreno = $1
+                            ORDER BY atr.id_actividad_terreno";
+                $act = $obj->select($sql15, [$se['id_seguimiento_terreno']]);
+
+                
+                if (count($act) == 0) continue;
+
+                $verify = true;
+
+                foreach($act as $a){
+                    if ($a['ya_registrada'] !== true && $a['ya_registrada'] !== 't') {
+                        $verify = false;
+                        break;
+                    }
+                }
+
+                if($verify){
+                    
+                    $sql22 = "UPDATE seguimiento_terreno 
+                            SET id_estado = 5 
+                            WHERE id_seguimiento_terreno = $1 AND id_estado = 4";
+                    $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_terreno']]);
+                }else{
+                
+                    $sql22 = "UPDATE seguimiento_terreno 
+                            SET id_estado = 4 
+                            WHERE id_seguimiento_terreno = $1 AND id_estado = 5";
+                    $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_terreno']]);
+                }
+            }
+
+       
 
     
         $sql2 = "UPDATE seguimiento_terreno
@@ -57,7 +107,7 @@
                 AND id_estado =  4";
 
         $ejecutar = $obj->update($sql2);
-        
+         $seguimientos = $obj->select($sql);
     
     if(count($seguimientos) <= 0){
         include_once '../view/partials/SeguimientoTerreno/notExist.php';
@@ -101,6 +151,7 @@
     $terreno = $_POST['selectTerreno'] ?? '';
     $horario = $_POST['horario'] ?? '';
     $actividades = $_POST['actividades'] ?? [];
+    $actividades = array_map('intval', $actividades);
     
 
     $sql_validar = "SELECT id_seguimiento_terreno FROM seguimiento_terreno WHERE cod_seguimiento = $1 ";
@@ -164,8 +215,8 @@
 
                 foreach($actividades as $id_actividad){
                     $sql2 = "INSERT INTO actividad_seg_terreno (id_actividad_terreno, id_seguimiento_terreno) 
-                            VALUES ('$id_seguimiento', '$id_actividad')";
-                    $obj->insert($sql2);
+                            VALUES ($1, $2)";
+                     $obj->insert($sql2, [$id_actividad, $id_seguimiento]);
                 }
 
                 $_SESSION['mensaje_exito'] = "El Seguimiento de Terreno se registro correctamente.";
@@ -198,7 +249,7 @@ public function getEditar()
         $sql3 = "SELECT * from estado WHERE tipo_estado = 'seguimiento'";
             $estados = $obj->select($sql3);
 
-            $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1";
+            $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1 ORDER BY id_actividad_terreno";
         $actividades = $obj->select($sql4);
 
         

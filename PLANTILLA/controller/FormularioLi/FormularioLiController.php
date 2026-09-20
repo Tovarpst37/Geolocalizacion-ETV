@@ -4,6 +4,9 @@ include_once '../model/FormularioLi/FormulariosModel.php';
 
 class FormularioLiController
 {
+    // id_actividad_zoo de "Limpieza" en actividad_zoocriadero (AZ-3)
+    private const ID_ACTIVIDAD_LIMPIEZA = 3;
+
     public function getRegistrar()
     {
         $obj = new FormulariosModel();
@@ -38,41 +41,22 @@ class FormularioLiController
         return array_values(array_unique($m[0]));
     }
 
-    // Busca la actividad sin importar mayúsculas para no crear duplicados
-    private function getOrCreateActividadZoo($obj, $nombre, $codigoDefault)
-    {
-        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad ILIKE $1";
-        $res = $obj->select($sqlBuscar, [$nombre]);
-
-        if (!empty($res)) {
-            return $res[0]['id_actividad_zoo'];
-        }
-
-        $sqlCrear = "INSERT INTO actividad_zoocriadero (cod_actividad, nombre_actividad, id_estado) 
-                     VALUES ($1, $2, 1) 
-                     RETURNING id_actividad_zoo";
-        $creado = $obj->select($sqlCrear, [$codigoDefault, $nombre]);
-
-        return !empty($creado) ? $creado[0]['id_actividad_zoo'] : null;
-    }
-
-    // Verifica que el seguimiento tenga asignada la actividad "Limpieza"
+    // Verifica que el seguimiento tenga asignada la actividad "Limpieza" (id fijo = 3),
+    // sin importar cómo esté escrito el nombre en la tabla.
     private function seguimientoTieneLimpieza($obj, $id_seguimiento_zoo)
     {
         $sql = "SELECT 1
-                FROM actividad_seg_zoo asz
-                INNER JOIN actividad_zoocriadero a
-                    ON a.id_actividad_zoo = asz.id_actividad_zoo
-                WHERE asz.id_seguimiento_zoo = $1
-                  AND a.nombre_actividad ILIKE 'Limpieza'
+                FROM actividad_seg_zoo
+                WHERE id_seguimiento_zoo = $1
+                  AND id_actividad_zoo = $2
                 LIMIT 1";
 
-        $res = $obj->select($sql, [$id_seguimiento_zoo]);
+        $res = $obj->select($sql, [$id_seguimiento_zoo, self::ID_ACTIVIDAD_LIMPIEZA]);
 
         return !empty($res);
     }
 
-    // NUEVO: verifica si ya existe un registro previo de Limpieza en sub_actividades para este seguimiento
+    // Verifica si ya existe un registro previo de Limpieza en sub_actividades para este seguimiento
     private function yaRegistroLimpieza($obj, $id_seguimiento_zoo, $codM)
     {
         $sql = "SELECT 1 
@@ -132,7 +116,7 @@ class FormularioLiController
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Limpieza, por lo que no se puede registrar el formulario.";
                     }
 
-                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    // Validar que NO se haya registrado previamente este formulario para este código
                     if ($this->yaRegistroLimpieza($obj, $id_seguimiento_zoo, $codM)) {
                         $errores[] = "Ya existe un registro de limpieza guardado para este código de seguimiento.";
                     }
@@ -200,13 +184,11 @@ class FormularioLiController
             if (!empty($resSub)) {
                 $id_sub_actividad = $resSub[0]['id_sub_actividad'];
 
-                $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Limpieza', 'AZ-3');
-                if ($id_actividad_zoo) {
-                    $obj->insert(
-                        "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
-                        [$id_actividad_zoo, $id_sub_actividad]
-                    );
-                }
+                // La actividad siempre es Limpieza (id fijo = 3)
+                $obj->insert(
+                    "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
+                    [self::ID_ACTIVIDAD_LIMPIEZA, $id_sub_actividad]
+                );
 
                 redirect(getUrl("FormularioLi", "FormularioLi", "getRegistrar"));
             } else {

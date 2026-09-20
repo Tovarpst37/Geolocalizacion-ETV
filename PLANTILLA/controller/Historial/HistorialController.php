@@ -547,5 +547,7 @@ class HistorialController
             redirect(getUrl("Historial", "Historial", "getConsultar"));
         }
     }
+
+    
 }
 ?>
