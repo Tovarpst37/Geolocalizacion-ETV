@@ -351,7 +351,7 @@
               <li class="sub-item-pending"><a href="<?php echo getUrl("Reportes", "Reportes", "report"); ?>"><span
                     class="sub-item">Seguimiento de actividades</span><span class="badge-pending">Próximo</span></a>
               </li>
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Peces nacidos/muertos por
+              <li class="sub-item-pending"><a href="<?php echo getUrl("ReportePecesNacidosMuertos", "ReportePecesNacidosMuertos", "getReportePecesNacidosMuertos"); ?>"><span class="sub-item">Peces nacidos/muertos por
                     tanque</span><span class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a
                   href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques"); ?>"><span
