@@ -1,18 +1,20 @@
 <?php
 
-    include_once '../model/SeguimientoZoocriadero/SeguimientoZoocriaderoModel';
+include_once '../model/SeguimientoZoocriadero/SeguimientoZoocriaderoModel';
 
 
-    class SeguimientoZoocriaderoController{
+class SeguimientoZoocriaderoController
+{
 
 
 
 
-    public function getConsultar(){
+    public function getConsultar()
+    {
 
-     $obj = new SeguimientoZoocriaderoModel();
-    
-     $sql = "SELECT 
+        $obj = new SeguimientoZoocriaderoModel();
+
+        $sql = "SELECT 
                 s.id_seguimiento_zoo,
                 s.cod_seguimiento,
                 s.fecha,
@@ -35,9 +37,9 @@
                     z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
             ORDER BY s.id_seguimiento_zoo";
 
-    $seguimientos = $obj->select($sql);
+        $seguimientos = $obj->select($sql);
 
-    
+
         $sql2 = "UPDATE seguimiento_zoocriadero 
                 SET id_estado = 3 
                 WHERE fecha = CURRENT_DATE 
@@ -45,20 +47,21 @@
                 AND id_estado = 4";
 
         $ejecutar = $obj->update($sql2);
-        
-    
-    if(count($seguimientos) <= 0){
-        include_once '../view/partials/SeguimientoZoocriadero/notExist.php';
-    }else{
-        include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
+
+
+        if (count($seguimientos) <= 0) {
+            include_once '../view/partials/SeguimientoZoocriadero/notExist.php';
+        } else {
+            include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
+        }
+
+
+
     }
-    
 
 
-    }
-
-
-    public function getRegistrar(){
+    public function getRegistrar()
+    {
 
         $obj = new SeguimientoZoocriaderoModel();
         $sql = "SELECT * from zoocriadero";
@@ -66,43 +69,44 @@
 
         $sql3 = "SELECT MAX(id_seguimiento_zoo) FROM seguimiento_zoocriadero";
         $id_seg = $obj->select($sql3);
-        
+
         $sql2 = "SELECT * from estado WHERE tipo_estado = 'seguimiento'";
         $estados = $obj->select($sql2);
 
-        $sql3 = "SELECT * from actividad_zoocriadero WHERE id_estado = 1";
+        $sql3 = "SELECT * from actividad_zoocriadero WHERE id_estado = 1 ORDER BY id_actividad_zoo";
         $actividades = $obj->select($sql3);
-        
+
         include_once '../view/partials/SeguimientoZoocriadero/Registrar.php';
 
     }
 
 
-    public function postRegistrar(){
+    public function postRegistrar()
+    {
 
-    $obj = new SeguimientoZoocriaderoModel();
+        $obj = new SeguimientoZoocriaderoModel();
 
-    $codigo = mb_strtoupper($_POST['codigo']) ?? '';
-    $zoo = $_POST['select_zoo'] ?? '';
-    $estado = $_POST['id_estado'];
-    $usuario = $_POST['selectUsuarios'] ?? '';
-    $tanque = $_POST['selectTanques'] ?? '';
-    $horario = $_POST['horario'] ?? '';
-    $actividades = $_POST['actividades'] ?? [];
-    $sql_validar = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1 ";
-    $existe = $obj->select($sql_validar,[$codigo]);
-
-
-     $errores = [];
-    list($hora_inicio, $hora_fin) = explode('-', $horario);
+        $codigo = mb_strtoupper($_POST['codigo']) ?? '';
+        $zoo = $_POST['select_zoo'] ?? '';
+        $estado = $_POST['id_estado'];
+        $usuario = $_POST['selectUsuarios'] ?? '';
+        $tanque = $_POST['selectTanques'] ?? '';
+        $horario = $_POST['horario'] ?? '';
+        $actividades = $_POST['actividades'] ?? [];
+        $sql_validar = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1 ";
+        $existe = $obj->select($sql_validar, [$codigo]);
 
 
-    
+        $errores = [];
+        list($hora_inicio, $hora_fin) = explode('-', $horario);
 
-        if(!empty($existe)){
+
+
+
+        if (!empty($existe)) {
             $errores[] = "Ya existe un seguimiento con ese código";
-            
-        } 
+
+        }
         if (empty($codigo)) {
             $errores[] = "Debe ingresar el codigo del seguimiento";
         }
@@ -121,34 +125,34 @@
         if (empty($horario)) {
             $errores[] = "Debe seleccionar el horario.";
         }
-        
-        
+
+
 
 
 
         if (!empty($errores)) {
-           
+
 
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError($errores, getUrl('SeguimientoZoocriadero', 'SeguimientoZoocriadero', 'getRegistrar'));
 
             return;
-        }else{ 
+        } else {
 
-   
+
             $sql = "INSERT INTO seguimiento_zoocriadero (cod_seguimiento, fecha, id_tanque, id_usuario, id_estado, hora_inicio, hora_fin)
                     VALUES ('$codigo', CURRENT_DATE, '$tanque', '$usuario', '$estado', '$hora_inicio', '$hora_fin')
                     RETURNING id_seguimiento_zoo";
 
-            $resultado = $obj->select($sql); 
+            $resultado = $obj->select($sql);
 
-             
-            
-            if($resultado){
+
+
+            if ($resultado) {
                 $id_seguimiento = $resultado[0]['id_seguimiento_zoo'];
 
 
-                foreach($actividades as $id_actividad){
+                foreach ($actividades as $id_actividad) {
                     $sql2 = "INSERT INTO actividad_seg_zoo (id_seguimiento_zoo, id_actividad_zoo) 
                             VALUES ('$id_seguimiento', '$id_actividad')";
                     $obj->insert($sql2);
@@ -162,16 +166,16 @@
                         AND id_estado = 4";
 
                 $ejecutar2 = $obj->update($sql2);
-                redirect(getUrl("SeguimientoZoocriadero","SeguimientoZoocriadero","getConsultar"));
+                redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
             } else {
                 echo "No se pudo registrar el seguimiento";
-    }
+            }
         }
 
-}
+    }
 
 
-public function getEditar()
+    public function getEditar()
     {
         $id = $_GET['id'];
         $obj = new SeguimientoZoocriaderoModel();
@@ -182,29 +186,30 @@ public function getEditar()
         $datos = $obj->select($sql);
 
         $sql3 = "SELECT * from estado WHERE tipo_estado = 'seguimiento'";
-            $estados = $obj->select($sql3);
+        $estados = $obj->select($sql3);
 
-            $sql4 = "SELECT * from actividad_zoocriadero WHERE id_estado = 1";
+        $sql4 = "SELECT * from actividad_zoocriadero WHERE id_estado = 1";
         $actividades = $obj->select($sql4);
 
-        
+
 
         $sql4 = "SELECT id_actividad_zoo from actividad_seg_zoo WHERE id_seguimiento_zoo = $1";
-        $actividadesSelect = $obj->select($sql4,[$id]);
+        $actividadesSelect = $obj->select($sql4, [$id]);
 
 
         include_once '../view/partials/SeguimientoZoocriadero/Editar.php';
 
     }
 
-    public function postUpdate(){
+    public function postUpdate()
+    {
 
         $obj = new SeguimientoZoocriaderoModel();
         $id = $_POST['id'];
         $fecha = $_POST['fecha'];
         $horario = $_POST['horario'];
-         $estado = $_POST['id_estado'];
-        
+        $estado = $_POST['id_estado'];
+
         list($hora_inicio, $hora_fin) = explode('-', $horario);
 
 
@@ -221,14 +226,14 @@ public function getEditar()
         $idsEliminar = array_diff($idsActuales, $actividadesNuevas);
         $idsInsertar = array_diff($actividadesNuevas, $idsActuales);
 
-        
+
         foreach ($idsEliminar as $idActividad) {
             $sqlDelete = "DELETE FROM actividad_seg_zoo 
                         WHERE id_seguimiento_zoo = $1 AND id_actividad_zoo = $2";
             $obj->delete($sqlDelete, [$id, $idActividad]);
         }
 
-        
+
         foreach ($idsInsertar as $idActividad) {
             $sqlInsert = "INSERT INTO actividad_seg_zoo (id_seguimiento_zoo, id_actividad_zoo) 
                         VALUES ($1, $2)";
@@ -242,7 +247,7 @@ public function getEditar()
             id_estado = '$estado'
         WHERE id_seguimiento_zoo = '$id'";
 
-        $ejecutar = $obj->update($sql); 
+        $ejecutar = $obj->update($sql);
 
         $sql2 = "UPDATE seguimiento_zoocriadero 
                 SET id_estado = 3 
@@ -260,13 +265,14 @@ public function getEditar()
                 AND hora_fin < LOCALTIME 
                 AND id_estado = 4";
 
-        $ejecutar = $obj->update($sql2);
+            $ejecutar = $obj->update($sql2);
 
-            
+
             redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
         } else {
             echo "No se pudo actualizar el seguimiento";
-        };
+        }
+        ;
 
     }
 
@@ -300,15 +306,16 @@ public function getEditar()
         }
     }
 
-public function getBuscar(){
+    public function getBuscar()
+    {
 
 
-    $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
-    if(!empty($busqueda)){
-    $obj = new SeguimientoZoocriaderoModel();
-    
-    $palabra = $_GET['busqueda'];
-     $sql = "SELECT 
+        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
+        if (!empty($busqueda)) {
+            $obj = new SeguimientoZoocriaderoModel();
+
+            $palabra = $_GET['busqueda'];
+            $sql = "SELECT 
             s.id_seguimiento_zoo,
             s.cod_seguimiento,
             s.fecha,
@@ -331,15 +338,15 @@ public function getBuscar(){
                 z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
         ORDER BY s.id_seguimiento_zoo";
 
-            
 
-    $seguimientos = $obj->select($sql, ['%' . $busqueda . '%']);
 
-    include_once '../view/partials/SeguimientoZoocriadero/Buscar.php';
-}else{
-    $obj = new SeguimientoZoocriaderoModel();
-    
-     $sql = "SELECT 
+            $seguimientos = $obj->select($sql, ['%' . $busqueda . '%']);
+
+            include_once '../view/partials/SeguimientoZoocriadero/Buscar.php';
+        } else {
+            $obj = new SeguimientoZoocriaderoModel();
+
+            $sql = "SELECT 
             s.id_seguimiento_zoo,
             s.cod_seguimiento,
             s.fecha,
@@ -361,50 +368,51 @@ public function getBuscar(){
                 z.cod_zoocriadero, t.codigo_tanque, u.primer_nombre, u.primer_apellido
         ORDER BY s.id_seguimiento_zoo";
 
-    $seguimientos = $obj->select($sql);
+            $seguimientos = $obj->select($sql);
 
-    
-        $sql2 = "UPDATE seguimiento_zoocriadero 
+
+            $sql2 = "UPDATE seguimiento_zoocriadero 
                 SET id_estado = 2 
                 WHERE fecha = CURRENT_DATE 
                 AND hora_fin < LOCALTIME 
                 AND id_estado = 1";
 
-        $ejecutar = $obj->update($sql2);
-        
-
-        include_once '../view/partials/SeguimientoZoocriadero/notExist.php';
-}
-
-}
+            $ejecutar = $obj->update($sql2);
 
 
+            include_once '../view/partials/SeguimientoZoocriadero/notExist.php';
+        }
 
-
-public function getTanquesPorZoo(){
-    $id_zoocriadero = $_GET['id_zoocriadero'];
-    
-    $obj = new SeguimientoZoocriaderoModel();
-    
-    $sql = "SELECT id_tanque, codigo_tanque FROM tanque WHERE id_zoocriadero = '$id_zoocriadero'";
-    $tanques = $obj->select($sql);
-    
-    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_zoocriadero = '$id_zoocriadero'";
-    $usuarios = $obj->select($sql2);
-    
-    $resultado = [
-        'tanques' => $tanques,
-        'usuarios' => $usuarios
-    ];
-    
-    header('Content-Type: application/json');
-    echo json_encode($resultado);
-}
-
-    
-
-
-    
     }
+
+
+
+
+    public function getTanquesPorZoo()
+    {
+        $id_zoocriadero = $_GET['id_zoocriadero'];
+
+        $obj = new SeguimientoZoocriaderoModel();
+
+        $sql = "SELECT id_tanque, codigo_tanque FROM tanque WHERE id_zoocriadero = '$id_zoocriadero'";
+        $tanques = $obj->select($sql);
+
+        $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_zoocriadero = '$id_zoocriadero'";
+        $usuarios = $obj->select($sql2);
+
+        $resultado = [
+            'tanques' => $tanques,
+            'usuarios' => $usuarios
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
+    }
+
+
+
+
+
+}
 
 ?>

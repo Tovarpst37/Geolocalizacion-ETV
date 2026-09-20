@@ -4,6 +4,9 @@ include_once '../model/FormularioLa/FormulariosModel.php';
 
 class FormularioLaController
 {
+    // id_actividad_zoo de "Lavado" en actividad_zoocriadero (AZ-5)
+    private const ID_ACTIVIDAD_LAVADO = 5;
+
     public function getRegistrar()
     {
         $obj = new FormulariosModel();
@@ -38,43 +41,22 @@ class FormularioLaController
         return array_values(array_unique($m[0]));
     }
 
-    // CORREGIDO: usa ILIKE para encontrar "Lavado" sin importar mayúsculas
-    // y así no crear una actividad duplicada
-    private function getOrCreateActividadZoo($obj, $nombre, $codigoDefault)
-    {
-        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad ILIKE $1";
-        $res = $obj->select($sqlBuscar, [$nombre]);
-
-        if (!empty($res)) {
-            return $res[0]['id_actividad_zoo'];
-        }
-
-        $sqlCrear = "INSERT INTO actividad_zoocriadero (cod_actividad, nombre_actividad, id_estado) 
-                     VALUES ($1, $2, 1) 
-                     RETURNING id_actividad_zoo";
-        $creado = $obj->select($sqlCrear, [$codigoDefault, $nombre]);
-
-        return !empty($creado) ? $creado[0]['id_actividad_zoo'] : null;
-    }
-
-    // NUEVO: verifica que el seguimiento tenga asignada la actividad "Lavado"
-    // (existe una fila en actividad_seg_zoo que lo relaciona con esa actividad)
+    // Verifica que el seguimiento tenga asignada la actividad "Lavado" (id fijo = 5),
+    // sin importar cómo esté escrito el nombre en la tabla.
     private function seguimientoTieneLavado($obj, $id_seguimiento_zoo)
     {
         $sql = "SELECT 1
-                FROM actividad_seg_zoo asz
-                INNER JOIN actividad_zoocriadero a
-                    ON a.id_actividad_zoo = asz.id_actividad_zoo
-                WHERE asz.id_seguimiento_zoo = $1
-                  AND a.nombre_actividad ILIKE 'Lavado'
+                FROM actividad_seg_zoo
+                WHERE id_seguimiento_zoo = $1
+                  AND id_actividad_zoo = $2
                 LIMIT 1";
 
-        $res = $obj->select($sql, [$id_seguimiento_zoo]);
+        $res = $obj->select($sql, [$id_seguimiento_zoo, self::ID_ACTIVIDAD_LAVADO]);
 
         return !empty($res);
     }
 
-    // NUEVO: verifica si ya existe un registro previo de Lavado en sub_actividades para este seguimiento
+    // Verifica si ya existe un registro previo de Lavado en sub_actividades para este seguimiento
     private function yaRegistroLavado($obj, $id_seguimiento_zoo, $codM)
     {
         $sql = "SELECT 1 
@@ -128,12 +110,12 @@ class FormularioLaController
                 } else {
                     $id_seguimiento_zoo = $existeSeg[0]['id_seguimiento_zoo'];
 
-                    // NUEVO: el seguimiento debe tener asignada la actividad de Lavado
+                    // El seguimiento debe tener asignada la actividad de Lavado (por id)
                     if (!$this->seguimientoTieneLavado($obj, $id_seguimiento_zoo)) {
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Lavado, por lo que no se puede registrar el formulario.";
                     }
 
-                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    // Validar que NO se haya registrado previamente este formulario para este código
                     if ($this->yaRegistroLavado($obj, $id_seguimiento_zoo, $codM)) {
                         $errores[] = "Ya existe un registro de lavado guardado para este código de seguimiento.";
                     }
@@ -203,13 +185,11 @@ class FormularioLaController
             if (!empty($resSub)) {
                 $id_sub_actividad = $resSub[0]['id_sub_actividad'];
 
-                $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Lavado', 'AZ-5');
-                if ($id_actividad_zoo) {
-                    $obj->insert(
-                        "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
-                        [$id_actividad_zoo, $id_sub_actividad]
-                    );
-                }
+                // La actividad siempre es Lavado (id fijo = 5)
+                $obj->insert(
+                    "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
+                    [self::ID_ACTIVIDAD_LAVADO, $id_sub_actividad]
+                );
 
                 redirect(getUrl("FormularioLa", "FormularioLa", "getRegistrar"));
             } else {
