@@ -1,5 +1,5 @@
 <?php
-// Ruta de esta misma pantalla. Se separa en "action" + campos ocultos para que
+
 // al enviar el formulario por GET no se pierdan los parametros que usa index.php
 $urlReporte = getUrl('Reportes', 'Reportes', 'report');
 $partesUrl  = parse_url($urlReporte);

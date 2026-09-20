@@ -352,7 +352,7 @@
                     tanque</span><span class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques");  ?>"><span class="sub-item">Tanques por zoocriadero</span><span
                     class="badge-pending">Próximo</span></a></li>
-              <li class="sub-item-pending"><a href="#"><span class="sub-item">Sitios registrados</span><span
+              <li class="sub-item-pending"><a href="<?php echo getUrl("ReporteSitios", "ReporteSitios", "getReporteSitios");  ?>"><span class="sub-item">Sitios registrados</span><span
                     class="badge-pending">Próximo</span></a></li>
               <li class="sub-item-pending"><a href="#"><span class="sub-item">Actividades de terreno por
                     tipo</span><span class="badge-pending">Próximo</span></a></li>

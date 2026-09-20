@@ -9,9 +9,11 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 
-class ReportesController{
+class ReportesController
+{
 
-    public function report(){
+    public function report()
+    {
 
         $obj = new ReporteSeguimientoModel();
 
@@ -34,28 +36,29 @@ class ReportesController{
         $errores = $this->validarFiltros($filtroFechaInicio, $filtroFechaFin);
 
 
-        if($limpiar){
+        if ($limpiar) {
 
-        $seguimientos=[];
-       
-
-        }elseif(!empty($errores)){
+            $seguimientos = [];
+        } elseif (!empty($errores)) {
 
             // si hay errores no se consulta
             $seguimientos = [];
-
-        }else{
+        } else {
 
             $seguimientos = $this->consultarSeguimiento(
-                $obj, $filtroZoocriadero, $filtroActividad, $filtroFechaInicio, $filtroFechaFin
+                $obj,
+                $filtroZoocriadero,
+                $filtroActividad,
+                $filtroFechaInicio,
+                $filtroFechaFin
             );
 
-            if(empty($seguimientos)){
+            if (empty($seguimientos)) {
                 $errores[] = "No se encontraron registros con los filtros de busqueda seleccionados.";
             }
         }
 
-        
+
 
         $mensajeError = !empty($errores) ? implode(' ', $errores) : null;
 
@@ -68,27 +71,28 @@ class ReportesController{
         $conteoEstado = [];
 
         $totalRetrasadas = 0;
-        $hoy =date("Y-m-d");
+        $hoy = date("Y-m-d");
 
-        foreach($seguimientos as $s){
-    $estado = $s['estado'];
+        foreach ($seguimientos as $s) {
+            $estado = $s['estado'];
+            
 
-     if(!isset($conteoEstado[$estado])){
-        $conteoEstado[$estado] = 0;
-    }
-    $conteoEstado[$estado]++;
+            if (!isset($conteoEstado[$estado])) {
+                $conteoEstado[$estado] = 0;
+            }
+            $conteoEstado[$estado]++;
 
-    // Retrasada: no está finalizada y su fecha ya pasó
-    if($estado != $finalizado && $s['fecha_registro'] < $hoy){
-        $totalRetrasadas++;
-    }
-}
+            // Retrasada: no está finalizada y su fecha ya pasó
+            if ($estado != $finalizado && $s['fecha_registro'] < $hoy) {
+                $totalRetrasadas++;
+            }
+        }
 
 
-        foreach($seguimientos as $s){
+        foreach ($seguimientos as $s) {
             $estado = $s['estado'];
 
-            if(!isset($conteoEstado[$estado])){
+            if (!isset($conteoEstado[$estado])) {
                 $conteoEstado[$estado] = 0;
             }
             $conteoEstado[$estado]++;
@@ -100,13 +104,14 @@ class ReportesController{
         $totalPendientes = $conteoEstado[$pendiente] ?? 0;
 
         // Pendiente por definir: todavia no hay logica para calcular las retrasadas
-        
+
 
         include_once '../view/reportes/reportes.php';
     }
 
 
-    public function validarFiltros($fechaIni, $fechaFin){
+    public function validarFiltros($fechaIni, $fechaFin)
+    {
 
         $errores = [];
 
@@ -118,9 +123,10 @@ class ReportesController{
     }
 
 
-    public function consultarSeguimiento($obj, $zoocriadero, $actividad, $fechaIni, $fechaFin){
+    public function consultarSeguimiento($obj, $zoocriadero, $actividad, $fechaIni, $fechaFin)
+    {
 
-    
+
         $sql = "SELECT
             az.nombre_actividad AS actividad,
             z.cod_zoocriadero   AS zoocriadero,
@@ -155,7 +161,8 @@ class ReportesController{
 
 
     // Descarga el reporte en Excel con los mismos filtros de la pantalla
-    public function exportarSeguimientosExcel(){
+    public function exportarSeguimientosExcel()
+    {
 
         // Se carga aqui para que la pantalla no dependa de Composer
         require_once __DIR__ . '/../../../vendor/autoload.php';
@@ -169,7 +176,7 @@ class ReportesController{
 
         $errores = $this->validarFiltros($filtroFechaInicio, $filtroFechaFin);
 
-        if(!empty($errores)){
+        if (!empty($errores)) {
 
             // Se vuelve a la pantalla del reporte, que muestra el mensaje de error
             $url = getUrl('Reportes', 'Reportes', 'report');
@@ -182,14 +189,17 @@ class ReportesController{
                 'fecha_fin'    => $filtroFechaFin,
             ]));
             exit;
-
         }
 
-            $seguimientos = $this->consultarSeguimiento(
-            $obj, $filtroZoocriadero, $filtroActividad, $filtroFechaInicio, $filtroFechaFin
-          );
+        $seguimientos = $this->consultarSeguimiento(
+            $obj,
+            $filtroZoocriadero,
+            $filtroActividad,
+            $filtroFechaInicio,
+            $filtroFechaFin
+        );
 
-          if(empty($seguimientos)){
+        if (empty($seguimientos)) {
 
             // Se vuelve a la pantalla del reporte, que muestra el mensaje de error
             $url = getUrl('Reportes', 'Reportes', 'report');
@@ -202,11 +212,9 @@ class ReportesController{
                 'fecha_fin'    => $filtroFechaFin,
             ]));
             exit;
-
-
         }
 
-        
+
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -241,7 +249,7 @@ class ReportesController{
 
         // Filas de datos
         $fila = 6;
-        foreach($seguimientos as $s){
+        foreach ($seguimientos as $s) {
             $sheet->setCellValue("A$fila", $s['zoocriadero']);
             $sheet->setCellValue("B$fila", $s['actividad']);
             $sheet->setCellValue("C$fila", $s['tanque']);
@@ -253,20 +261,20 @@ class ReportesController{
             $fila++;
         }
 
-        if(empty($seguimientos)){
+        if (empty($seguimientos)) {
             $sheet->mergeCells("A$fila:G$fila");
             $sheet->setCellValue("A$fila", 'No se encontraron registros con los filtros seleccionados.');
         }
 
         // Ancho automatico de columnas
-        foreach(['A', 'B', 'C', 'D', 'E', 'F', 'G'] as $columna){
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G'] as $columna) {
             $sheet->getColumnDimension($columna)->setAutoSize(true);
         }
 
         // Descarga
         $nombreArchivo = 'reporte_seguimiento_' . date('Y-m-d') . '.xlsx';
 
-        while(ob_get_level() > 0){
+        while (ob_get_level() > 0) {
             ob_end_clean();
         }
 
@@ -278,5 +286,4 @@ class ReportesController{
         $writer->save('php://output');
         exit;
     }
-
 }
