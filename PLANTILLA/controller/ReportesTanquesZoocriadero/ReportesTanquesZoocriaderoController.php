@@ -122,7 +122,7 @@ class ReportesTanquesZoocriaderoController
         $sheet->getStyle('A2:D2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB($azulMedio);
         $sheet->getRowDimension(2)->setRowHeight(18);
 
-        // ---- Logos (flotan encima de la banda, no ocupan celdas) ----
+
         $rutaImg = __DIR__ . '/../../web/assets/img/';
 
         $logoProyecto = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
