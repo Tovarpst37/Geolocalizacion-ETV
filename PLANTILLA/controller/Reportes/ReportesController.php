@@ -16,9 +16,4 @@ class ReportesController{
     }
 }
 
-
-
-
-
-
 ?>

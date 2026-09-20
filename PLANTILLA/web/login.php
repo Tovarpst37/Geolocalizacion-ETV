@@ -15,8 +15,8 @@ include_once '../view/partials/head.php';
                                 type="text"
                                 onpaste="return false;"
                                 inputmode="numeric"
-                                id="documento"
                                 name="documento"
+                                id = "documento"
                                 placeholder="Numero de identificacion"
                                 required
                             >
@@ -41,9 +41,9 @@ include_once '../view/partials/head.php';
                             unset($_SESSION['error']);
                         }
                     ?>
-
+                    <!--mostarr error de contrasena-->
                     <small id="passwordError" class="text-danger d-none mb-3 d-block"></small>
-
+                    <!--revisar contrasena en tiempo real-->
                     <?php include_once '../view/partials/contentPassword.php';?>
 
                     <div class="justify-content-between">
@@ -51,10 +51,11 @@ include_once '../view/partials/head.php';
                             <input type="checkbox" class="form-check-input" id="cb1" >
                             <label class="form-check-label" for="cb1">Ver contrasena</label>
                         </div>
-                        <a href="recuperarcontrasena.php" class="forget-link text-decoration-none small">
+                        <a href="recuperarcontrasena.php" class="forget-link text-decoration-none small" data-bs-toggle="modal" data-bs-target="#exampleModal">
                             ¿Olvidaste tu contrasena?
                         </a>
                     </div>
+                    
                     <div>
                         <button type="submit" class="button">
                             INICIAR SESION
@@ -73,6 +74,8 @@ include_once '../view/partials/head.php';
             </div>
         </div>
     </div>
+    <!--Modal-->
+    <?php include_once '../web/recover.php';?>
     <?php
     include_once '../view/partials/footer.php';
     ?>
