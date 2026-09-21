@@ -31,7 +31,7 @@ class TanqueController
         $sql2 = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql2);
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado where tipo_estado = 'general'";
         $estados = $obj->select($sql3);
 
         $old = $_SESSION['old_input'] ?? [];
@@ -179,7 +179,7 @@ class TanqueController
         $sql2 = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql2);
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado where tipo_estado = 'general'";
         $estados = $obj->select($sql3);
 
         include_once '../view/partials/Tanque/Editar.php';
@@ -329,7 +329,7 @@ class TanqueController
                 FROM tanque t
                 INNER JOIN tipo_tanque ti ON t.id_tipo_tanque = ti.id_tipo_tanque
                 INNER JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
-                INNER JOIN estado est ON t.id_estado = est.id_estado";
+                INNER JOIN estado est ON t.id_estado = est.id_estado ORDER BY id_tanque DESC";
         $tanque = $obj->select($sql);
 
         return $tanque;
