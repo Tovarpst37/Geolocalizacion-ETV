@@ -1,6 +1,6 @@
 <?php
 
-    include_once '../lib/conf/connection.php';
+    include_once __DIR__ . '/../lib/conf/connection.php';
 
     class MasterModel extends Connection{
         public function insert($sql,$params = []){

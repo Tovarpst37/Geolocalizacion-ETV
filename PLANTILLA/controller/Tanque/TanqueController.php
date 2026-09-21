@@ -142,7 +142,7 @@ class TanqueController
         $id = $_GET['id'];
 
         $sql2 = "SELECT id_estado from tanque WHERE id_tanque = $1";
-        $ejecutar2 = $obj->select($sql2,$id);
+        $ejecutar2 = $obj->select($sql2,[$id]);
         foreach ($ejecutar2 as $s) {
 
 

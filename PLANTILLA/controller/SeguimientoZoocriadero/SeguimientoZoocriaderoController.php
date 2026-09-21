@@ -523,7 +523,7 @@ class SeguimientoZoocriaderoController
 
         $obj = new SeguimientoZoocriaderoModel();
 
-        $sql = "SELECT id_tanque, codigo_tanque FROM tanque WHERE id_zoocriadero = '$id_zoocriadero'";
+        $sql = "SELECT id_tanque, codigo_tanque FROM tanque WHERE id_zoocriadero = '$id_zoocriadero' AND id_estado = 1";
         $tanques = $obj->select($sql);
 
         $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_zoocriadero = '$id_zoocriadero'";
