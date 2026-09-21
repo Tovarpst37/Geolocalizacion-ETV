@@ -58,4 +58,4 @@
     </form>
 </div>
 
-<script src="/assets/js/roles-form.js"></script>
+<script src="../web/assets/js/roles-form.js"></script>
