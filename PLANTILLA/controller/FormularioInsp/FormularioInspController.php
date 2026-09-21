@@ -4,6 +4,9 @@ include_once '../model/FormularioInsp/FormulariosModel.php';
 
 class FormularioInspController
 {
+    // id_actividad_terreno de "Inspección" en actividad_terreno (AT-1)
+    private const ID_ACTIVIDAD_INSPECCION = 1;
+
     public function getRegistrar()
     {
         $obj = new FormulariosModel();
@@ -38,25 +41,22 @@ class FormularioInspController
         return array_values(array_unique($m[0]));
     }
 
-    // NUEVO: verifica que el seguimiento de terreno tenga asignada la actividad "Inspección"
-    // (existe una fila en actividad_seg_terreno que lo relaciona con esa actividad)
+    // Verifica que el seguimiento de terreno tenga asignada la actividad "Inspección" (id fijo = 1),
+    // sin importar cómo esté escrito el nombre en la tabla.
     private function seguimientoTieneInspeccion($obj, $id_seguimiento_terreno)
     {
-        // ILIKE 'Inspecci_n' coincide con "Inspección" y "Inspeccion"
         $sql = "SELECT 1
-                FROM actividad_seg_terreno ast
-                INNER JOIN actividad_terreno a
-                    ON a.id_actividad_terreno = ast.id_actividad_terreno
-                WHERE ast.id_seguimiento_terreno = $1
-                  AND a.nombre_actividad ILIKE 'Inspecci_n'
+                FROM actividad_seg_terreno
+                WHERE id_seguimiento_terreno = $1
+                  AND id_actividad_terreno = $2
                 LIMIT 1";
 
-        $res = $obj->select($sql, [$id_seguimiento_terreno]);
+        $res = $obj->select($sql, [$id_seguimiento_terreno, self::ID_ACTIVIDAD_INSPECCION]);
 
         return !empty($res);
     }
 
-    // NUEVO: verifica si ya existe un registro previo de Inspección en sub_actividades_ter para este seguimiento
+    // Verifica si ya existe un registro previo de Inspección en sub_actividades_ter para este seguimiento
     private function yaRegistroInspeccion($obj, $id_seguimiento_terreno, $codSeg)
     {
         $sql = "SELECT 1 
@@ -107,17 +107,17 @@ class FormularioInspController
 
                 if (empty($existeSeg)) {
                     $errores[] = "No existe ningún seguimiento registrado con ese código.";
-                } elseif ($existeSeg[0]['id_estado'] != 1) {
+                } elseif ($existeSeg[0]['id_estado'] != 4) {
                     $errores[] = "Lo siento, el seguimiento no está activo.";
                 } else {
                     $id_seguimiento_terreno = $existeSeg[0]['id_seguimiento_terreno'];
 
-                    // NUEVO: el seguimiento debe tener asignada la actividad de Inspección
+                    // El seguimiento debe tener asignada la actividad de Inspección (por id)
                     if (!$this->seguimientoTieneInspeccion($obj, $id_seguimiento_terreno)) {
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Inspección, por lo que no se puede registrar el formulario.";
                     }
 
-                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    // Validar que NO se haya registrado previamente este formulario para este código
                     if ($this->yaRegistroInspeccion($obj, $id_seguimiento_terreno, $codSeg)) {
                         $errores[] = "Ya existe un registro de inspección guardado para este código de seguimiento.";
                     }
@@ -199,6 +199,14 @@ class FormularioInspController
             ]);
 
             if (!empty($resSub)) {
+                $id_sub_actividad = $resSub[0]['id_sub_actividad'];
+
+                // La actividad siempre es Ajustes de Nivel (id fijo = 4)
+                $obj->insert(
+                    "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
+                    [self::ID_ACTIVIDAD_INSPECCION, $id_sub_actividad]
+                );
+                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
                 redirect(getUrl("FormularioInsp", "FormularioInsp", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades_terreno.";

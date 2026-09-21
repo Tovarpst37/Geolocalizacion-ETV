@@ -4,6 +4,9 @@ include_once '../model/FormularioAj/FormulariosModel.php';
 
 class FormularioAjController
 {
+    // id_actividad_zoo de "Ajustes de Nivel" en actividad_zoocriadero (AZ-4)
+    private const ID_ACTIVIDAD_AJUSTES_NIVEL = 4;
+
     public function getRegistrar()
     {
         $obj = new FormulariosModel();
@@ -38,44 +41,22 @@ class FormularioAjController
         return array_values(array_unique($m[0]));
     }
 
-    // CORREGIDO: usa ILIKE para encontrar "Ajustes de Nivel" sin importar mayúsculas
-    // y así no crear una actividad duplicada
-    private function getOrCreateActividadZoo($obj, $nombre, $codigoDefault)
-    {
-        $sqlBuscar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE nombre_actividad ILIKE $1";
-        $res = $obj->select($sqlBuscar, [$nombre]);
-
-        if (!empty($res)) {
-            return $res[0]['id_actividad_zoo'];
-        }
-
-        $sqlCrear = "INSERT INTO actividad_zoocriadero (cod_actividad, nombre_actividad, id_estado) 
-                     VALUES ($1, $2, 1) 
-                     RETURNING id_actividad_zoo";
-        $creado = $obj->select($sqlCrear, [$codigoDefault, $nombre]);
-
-        return !empty($creado) ? $creado[0]['id_actividad_zoo'] : null;
-    }
-
-    // NUEVO: verifica que el seguimiento tenga asignada la actividad "Ajustes de Nivel"
-    // (existe una fila en actividad_seg_zoo que lo relaciona con esa actividad)
+    // Verifica que el seguimiento tenga asignada la actividad "Ajustes de Nivel" (id fijo = 4),
+    // sin importar cómo esté escrito el nombre en la tabla.
     private function seguimientoTieneAjuste($obj, $id_seguimiento_zoo)
     {
-        // 'Ajuste%de nivel' coincide con "Ajustes de Nivel" y "Ajuste de nivel"
         $sql = "SELECT 1
-                FROM actividad_seg_zoo asz
-                INNER JOIN actividad_zoocriadero a
-                    ON a.id_actividad_zoo = asz.id_actividad_zoo
-                WHERE asz.id_seguimiento_zoo = $1
-                  AND a.nombre_actividad ILIKE 'Ajuste%de nivel'
+                FROM actividad_seg_zoo
+                WHERE id_seguimiento_zoo = $1
+                  AND id_actividad_zoo = $2
                 LIMIT 1";
 
-        $res = $obj->select($sql, [$id_seguimiento_zoo]);
+        $res = $obj->select($sql, [$id_seguimiento_zoo, self::ID_ACTIVIDAD_AJUSTES_NIVEL]);
 
         return !empty($res);
     }
 
-    // NUEVO: verifica si ya existe un registro previo de Ajustes de Nivel en sub_actividades para este seguimiento
+    // Verifica si ya existe un registro previo de Ajustes de Nivel en sub_actividades para este seguimiento
     private function yaRegistroAjuste($obj, $id_seguimiento_zoo, $codAj)
     {
         $sql = "SELECT 1 
@@ -129,12 +110,12 @@ class FormularioAjController
             } else {
                 $id_seguimiento_zoo = $existeSeg[0]['id_seguimiento_zoo'];
 
-                // NUEVO: el seguimiento debe tener asignada la actividad de Ajustes de Nivel
+                // El seguimiento debe tener asignada la actividad de Ajustes de Nivel (por id)
                 if (!$this->seguimientoTieneAjuste($obj, $id_seguimiento_zoo)) {
                     $errores[] = "Este seguimiento no tiene asignada la actividad de Ajustes de Nivel, por lo que no se puede registrar el formulario.";
                 }
 
-                // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                // Validar que NO se haya registrado previamente este formulario para este código
                 if ($this->yaRegistroAjuste($obj, $id_seguimiento_zoo, $codAj)) {
                     $errores[] = "Ya existe un registro de ajustes de nivel guardado para este código de seguimiento.";
                 }
@@ -229,7 +210,7 @@ class FormularioAjController
                 $id_seguimiento_zoo = $existe[0]['id_seguimiento_zoo'];
             }
 
-            // NUEVO: si el seguimiento no tiene la actividad de Ajustes de Nivel, no deja hacer el post
+            // Si el seguimiento no tiene la actividad de Ajustes de Nivel, no deja hacer el post
             if (!$this->seguimientoTieneAjuste($obj, $id_seguimiento_zoo)) {
                 include_once '../model/Errores/ErrorModal.php';
                 ErrorModal::verError(
@@ -239,7 +220,7 @@ class FormularioAjController
                 return;
             }
 
-            // NUEVO: verifica si ya fue registrado previamente antes de insertar en BD
+            // Verifica si ya fue registrado previamente antes de insertar en BD
             if ($this->yaRegistroAjuste($obj, $id_seguimiento_zoo, $codAj)) {
                 include_once '../model/Errores/ErrorModal.php';
                 ErrorModal::verError(
@@ -278,14 +259,12 @@ class FormularioAjController
             if (!empty($resSub)) {
                 $id_sub_actividad = $resSub[0]['id_sub_actividad'];
 
-                $id_actividad_zoo = $this->getOrCreateActividadZoo($obj, 'Ajustes de Nivel', 'AZ-4');
-                if ($id_actividad_zoo) {
-                    $obj->insert(
-                        "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
-                        [$id_actividad_zoo, $id_sub_actividad]
-                    );
-                }
-
+                // La actividad siempre es Ajustes de Nivel (id fijo = 4)
+                $obj->insert(
+                    "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
+                    [self::ID_ACTIVIDAD_AJUSTES_NIVEL, $id_sub_actividad]
+                );
+                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
                 redirect(getUrl("FormularioAj", "FormularioAj", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades.";

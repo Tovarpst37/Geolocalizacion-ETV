@@ -4,6 +4,9 @@ include_once '../model/FormularioSiem/FormulariosModel.php';
 
 class FormularioSiemController
 {
+    // id_actividad_terreno de "Siembra" en actividad_terreno (AT-2)
+    private const ID_ACTIVIDAD_SIEMBRA = 2;
+
     public function getRegistrar()
     {
         $obj = new FormulariosModel();
@@ -38,24 +41,22 @@ class FormularioSiemController
         return array_values(array_unique($m[0]));
     }
 
-    // NUEVO: verifica que el seguimiento de terreno tenga asignada la actividad "Siembra"
-    // (existe una fila en actividad_seg_terreno que lo relaciona con esa actividad)
+    // Verifica que el seguimiento de terreno tenga asignada la actividad "Siembra" (id fijo = 2),
+    // sin importar cómo esté escrito el nombre en la tabla.
     private function seguimientoTieneSiembra($obj, $id_seguimiento_terreno)
     {
         $sql = "SELECT 1
-                FROM actividad_seg_terreno ast
-                INNER JOIN actividad_terreno a
-                    ON a.id_actividad_terreno = ast.id_actividad_terreno
-                WHERE ast.id_seguimiento_terreno = $1
-                  AND a.nombre_actividad ILIKE 'Siembra'
+                FROM actividad_seg_terreno
+                WHERE id_seguimiento_terreno = $1
+                  AND id_actividad_terreno = $2
                 LIMIT 1";
 
-        $res = $obj->select($sql, [$id_seguimiento_terreno]);
+        $res = $obj->select($sql, [$id_seguimiento_terreno, self::ID_ACTIVIDAD_SIEMBRA]);
 
         return !empty($res);
     }
 
-    // NUEVO: verifica si ya existe un registro previo de Siembra en sub_actividades_ter para este seguimiento
+    // Verifica si ya existe un registro previo de Siembra en sub_actividades_ter para este seguimiento
     private function yaRegistroSiembra($obj, $id_seguimiento_terreno, $codSeg)
     {
         $sql = "SELECT 1 
@@ -109,17 +110,17 @@ class FormularioSiemController
 
                 if (empty($existeSeg)) {
                     $errores[] = "No existe ningún seguimiento registrado con ese código.";
-                } elseif ($existeSeg[0]['id_estado'] != 1) {
+                } elseif ($existeSeg[0]['id_estado'] != 4) {
                     $errores[] = "Lo siento, el seguimiento no está activo.";
                 } else {
                     $id_seguimiento_terreno = $existeSeg[0]['id_seguimiento_terreno'];
 
-                    // NUEVO: el seguimiento debe tener asignada la actividad de Siembra
+                    // El seguimiento debe tener asignada la actividad de Siembra (por id)
                     if (!$this->seguimientoTieneSiembra($obj, $id_seguimiento_terreno)) {
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Siembra, por lo que no se puede registrar el formulario.";
                     }
 
-                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    // Validar que NO se haya registrado previamente este formulario para este código
                     if ($this->yaRegistroSiembra($obj, $id_seguimiento_terreno, $codSeg)) {
                         $errores[] = "Ya existe un registro de siembra guardado para este código de seguimiento.";
                     }
@@ -216,6 +217,14 @@ class FormularioSiemController
             ]);
 
             if (!empty($resSub)) {
+                $id_sub_actividad = $resSub[0]['id_sub_actividad'];
+
+               
+                $obj->insert(
+                    "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
+                    [self::ID_ACTIVIDAD_SIEMBRA, $id_sub_actividad]
+                );
+                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
                 redirect(getUrl("FormularioSiem", "FormularioSiem", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades_terreno.";

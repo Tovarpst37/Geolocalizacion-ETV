@@ -102,17 +102,22 @@ $renderCampo = function ($col, $registro, $name, $disabled = false) use ($ui, $h
                     <div class="alert alert-danger">No se encontró el seguimiento solicitado.</div>
                 </div>
             <?php else: ?>
+                <?php
+                // Solo los estados de tipo "seguimiento"
+                $estadosSeg = array_filter($estados, function ($est) {
+                    return ($est['tipo_estado'] ?? '') === 'seguimiento';
+                });
+                $estadoActualValido = in_array($seguimiento['id_estado'], array_column($estadosSeg, 'id_estado'));
+                ?>
                 <form action="<?php echo getUrl('Historial', 'Historial', 'postUpdate'); ?>" method="POST">
                     <div class="modal-header">
-                        <h5 class="modal-title">Editar Historial - Código:
-                            <?php echo $h($seguimiento['cod_seguimiento']); ?></h5>
+                        <h5 class="modal-title">Editar Historial - Código: <?php echo $h($seguimiento['cod_seguimiento']); ?></h5>
                         <a href="<?php echo getUrl('Historial', 'Historial', 'getConsultar') ?>" class="btn-close"></a>
                     </div>
 
                     <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
 
-                        <input type="hidden" name="id_seguimiento_zoo"
-                            value="<?php echo $h($seguimiento['id_seguimiento_zoo']); ?>">
+                        <input type="hidden" name="id_seguimiento_zoo" value="<?php echo $h($seguimiento['id_seguimiento_zoo']); ?>">
 
                         <!-- Datos generales -->
                         <h6 class="text-primary">Datos generales</h6>
@@ -130,23 +135,15 @@ $renderCampo = function ($col, $registro, $name, $disabled = false) use ($ui, $h
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">Estado</label>
                                 <select class="form-select" name="id_estado" required>
-                                    <?php
-                                    $estadoActualValido = false;
-                                    foreach ($estados as $est) {
-                                        if (($est['tipo_estado'] ?? '') === 'seguimiento' && $seguimiento['id_estado'] == $est['id_estado']) {
-                                            $estadoActualValido = true;
-                                        }
-                                    }
-                                    if (!$estadoActualValido) {
-                                        echo '<option value="" selected disabled>-- Seleccione el estado --</option>';
-                                    }
-                                    foreach ($estados as $est) {
-                                        if (($est['tipo_estado'] ?? '') !== 'seguimiento') {
-                                            continue;
-                                        }
-                                        $selected = ($seguimiento['id_estado'] == $est['id_estado']) ? "selected" : "";
-                                        echo "<option value='" . $h($est['id_estado']) . "' $selected>" . $h($est['nombre_estado']) . "</option>";
-                                    } ?>
+                                    <?php if (!$estadoActualValido): ?>
+                                        <option value="" selected disabled>-- Seleccione el estado --</option>
+                                    <?php endif; ?>
+                                    <?php foreach ($estadosSeg as $est): ?>
+                                        <option value="<?php echo $h($est['id_estado']); ?>"
+                                            <?php echo ($seguimiento['id_estado'] == $est['id_estado']) ? 'selected' : ''; ?>>
+                                            <?php echo $h($est['nombre_estado']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
@@ -155,63 +152,42 @@ $renderCampo = function ($col, $registro, $name, $disabled = false) use ($ui, $h
 
                         <?php foreach ($config as $slug => $cfgAct):
                             $registros = $grupos[$slug] ?? [];
-                            // Comprobar si la actividad está asignada a este seguimiento
                             $estaAsignada = !empty($actividadesAsignadas[$slug]);
+
+                            // Solo se muestra lo relevante: actividades asignadas o que ya tengan registros
+                            if (!$estaAsignada && empty($registros)) {
+                                continue;
+                            }
                             ?>
-                            <h6 class="text-primary d-flex align-items-center justify-content-between">
-                                <span>
-                                    <?php echo $h($cfgAct['titulo']); ?>
-                                    <span class="badge bg-secondary"><?php echo count($registros); ?></span>
-                                </span>
+                            <h6 class="text-primary">
+                                <?php echo $h($cfgAct['titulo']); ?>
                                 <?php if (!$estaAsignada): ?>
-                                    <span class="badge bg-danger">Actividad No Asignada</span>
+                                    <span class="badge bg-secondary">No editable</span>
                                 <?php endif; ?>
                             </h6>
 
-                            <?php foreach ($registros as $i => $r):
-                                $idSub = $r['id_sub_actividad'];
-                                ?>
-                                <div class="border rounded p-3 mb-3 <?php echo !$estaAsignada ? 'bg-light' : ''; ?>">
-                                    <div class="small text-muted mb-2">Registro <?php echo $i + 1; ?> (ID <?php echo $h($idSub); ?>)
-                                        <?php if (!$estaAsignada): ?>
-                                            <strong class="text-danger">(No editable)</strong>
-                                        <?php endif; ?>
-                                    </div>
+                            <?php if (empty($registros)): ?>
+                                <!-- Sin registros: campos en blanco para crear el primero (vacío = no se guarda) -->
+                                <div class="row">
+                                    <?php foreach ($cfgAct['campos'] as $col => $tipoDato) {
+                                        $renderCampo($col, null, "nuevos[$slug][$col]", false);
+                                    } ?>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($registros as $i => $r):
+                                    $idSub = $r['id_sub_actividad'];
+                                    ?>
                                     <input type="hidden" name="registros[<?php echo $h($idSub); ?>][__tipo]"
                                         value="<?php echo $h($slug); ?>">
+                                    <?php if (count($registros) > 1): ?>
+                                        <div class="small text-muted mb-2">Registro <?php echo $i + 1; ?></div>
+                                    <?php endif; ?>
                                     <div class="row">
                                         <?php foreach ($cfgAct['campos'] as $col => $tipoDato) {
-                                            // Se deshabilita la edición si la actividad NO está asignada al seguimiento
                                             $renderCampo($col, $r, "registros[$idSub][$col]", !$estaAsignada);
                                         } ?>
                                     </div>
-                                </div>
-                            <?php endforeach; ?>
-
-                            <?php if (empty($registros)): ?>
-                                <p class="text-muted small">Este seguimiento aún no tiene registros de
-                                    <?php echo $h($cfgAct['titulo']); ?>.</p>
-                            <?php endif; ?>
-
-                            <!-- Solo permite agregar nuevos registros si la actividad pertenece al seguimiento -->
-                            <?php if ($estaAsignada): ?>
-                                <details class="mb-3" <?php echo empty($registros) ? 'open' : ''; ?>>
-                                    <summary class="text-primary" style="cursor:pointer;">+ Agregar registro de
-                                        <?php echo $h($cfgAct['titulo']); ?></summary>
-                                    <div class="border rounded p-3 mt-2">
-                                        <div class="row">
-                                            <?php foreach ($cfgAct['campos'] as $col => $tipoDato) {
-                                                $renderCampo($col, null, "nuevos[$slug][$col]", false);
-                                            } ?>
-                                        </div>
-                                        <div class="small text-muted">Si lo dejas vacío no se guarda nada.</div>
-                                    </div>
-                                </details>
-                            <?php else: ?>
-                                <div class="alert alert-warning small py-1 px-2 mb-3">
-                                    <i class="fa-solid fa-lock"></i> No puedes agregar registros a esta sección porque la actividad
-                                    no está asignada a este seguimiento.
-                                </div>
+                                <?php endforeach; ?>
                             <?php endif; ?>
 
                             <hr>

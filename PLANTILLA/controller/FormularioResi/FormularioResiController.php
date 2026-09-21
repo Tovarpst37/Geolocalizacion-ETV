@@ -4,6 +4,9 @@ include_once '../model/FormularioResi/FormulariosModel.php';
 
 class FormularioResiController
 {
+    // id_actividad_terreno de "Resiembra" en actividad_terreno (AT-4)
+    private const ID_ACTIVIDAD_RESIEMBRA = 4;
+
     public function getRegistrar()
     {
         $obj = new FormulariosModel();
@@ -38,43 +41,22 @@ class FormularioResiController
         return array_values(array_unique($m[0]));
     }
 
-    // CORREGIDO: usa ILIKE para encontrar "Resiembra" sin importar mayúsculas
-    // y así no crear una actividad duplicada
-    private function getOrCreateActividadTerreno($obj, $nombre, $codigoDefault)
-    {
-        $sqlBuscar = "SELECT id_actividad_terreno FROM actividad_terreno WHERE nombre_actividad ILIKE $1";
-        $res = $obj->select($sqlBuscar, [$nombre]);
-
-        if (!empty($res)) {
-            return $res[0]['id_actividad_terreno'];
-        }
-
-        $sqlCrear = "INSERT INTO actividad_terreno (nombre_actividad, id_estado, cod_actividad_terreno) 
-                     VALUES ($1, 1, $2) 
-                     RETURNING id_actividad_terreno";
-        $creado = $obj->select($sqlCrear, [$nombre, $codigoDefault]);
-
-        return !empty($creado) ? $creado[0]['id_actividad_terreno'] : null;
-    }
-
-    // NUEVO: verifica que el seguimiento de terreno tenga asignada la actividad "Resiembra"
-    // (existe una fila en actividad_seg_terreno que lo relaciona con esa actividad)
+    // Verifica que el seguimiento de terreno tenga asignada la actividad "Resiembra" (id fijo = 4),
+    // sin importar cómo esté escrito el nombre en la tabla.
     private function seguimientoTieneResiembra($obj, $id_seguimiento_terreno)
     {
         $sql = "SELECT 1
-                FROM actividad_seg_terreno ast
-                INNER JOIN actividad_terreno a
-                    ON a.id_actividad_terreno = ast.id_actividad_terreno
-                WHERE ast.id_seguimiento_terreno = $1
-                  AND a.nombre_actividad ILIKE 'Resiembra'
+                FROM actividad_seg_terreno
+                WHERE id_seguimiento_terreno = $1
+                  AND id_actividad_terreno = $2
                 LIMIT 1";
 
-        $res = $obj->select($sql, [$id_seguimiento_terreno]);
+        $res = $obj->select($sql, [$id_seguimiento_terreno, self::ID_ACTIVIDAD_RESIEMBRA]);
 
         return !empty($res);
     }
 
-    // NUEVO: verifica si ya existe un registro previo de Resiembra en sub_actividades_ter para este código
+    // Verifica si ya existe un registro previo de Resiembra en sub_actividades_ter para este código
     private function yaRegistroResiembra($obj, $id_seguimiento_terreno, $codSeg)
     {
         $sql = "SELECT 1 
@@ -126,17 +108,17 @@ class FormularioResiController
 
                 if (empty($existeSeg)) {
                     $errores[] = "No existe ningún seguimiento registrado con ese código.";
-                } elseif ($existeSeg[0]['id_estado'] != 1) {
+                } elseif ($existeSeg[0]['id_estado'] != 4) {
                     $errores[] = "Lo siento, el seguimiento no está activo.";
                 } else {
                     $id_seguimiento_terreno = $existeSeg[0]['id_seguimiento_terreno'];
 
-                    // NUEVO: el seguimiento debe tener asignada la actividad de Resiembra
+                    // El seguimiento debe tener asignada la actividad de Resiembra (por id)
                     if (!$this->seguimientoTieneResiembra($obj, $id_seguimiento_terreno)) {
                         $errores[] = "Este seguimiento no tiene asignada la actividad de Resiembra, por lo que no se puede registrar el formulario.";
                     }
 
-                    // NUEVO: validar que NO se haya registrado previamente este formulario para este código
+                    // Validar que NO se haya registrado previamente este formulario para este código
                     if ($this->yaRegistroResiembra($obj, $id_seguimiento_terreno, $codSeg)) {
                         $errores[] = "Ya existe un registro de resiembra guardado para este código de seguimiento.";
                     }
@@ -223,15 +205,12 @@ class FormularioResiController
             if (!empty($resSub)) {
                 $id_sub_actividad = $resSub[0]['id_sub_actividad'];
 
-                $id_actividad_terreno = $this->getOrCreateActividadTerreno($obj, 'Resiembra', 'AT-4');
-
-                if ($id_actividad_terreno) {
-                    $sqlBridge = "INSERT INTO actividad_ter_subactividades 
-                                  (id_actividad_terreno, id_sub_actividades) 
-                                  VALUES ($1, $2)";
-                    $obj->select($sqlBridge, [$id_actividad_terreno, $id_sub_actividad]);
-                }
-
+                // La actividad siempre es Resiembra (id fijo = 4)
+                $sqlBridge = "INSERT INTO actividad_ter_subactividades 
+                              (id_actividad_terreno, id_sub_actividades) 
+                              VALUES ($1, $2)";
+                $obj->select($sqlBridge, [self::ID_ACTIVIDAD_RESIEMBRA, $id_sub_actividad]);
+                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
                 redirect(getUrl("FormularioResi", "FormularioResi", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades_ter.";
