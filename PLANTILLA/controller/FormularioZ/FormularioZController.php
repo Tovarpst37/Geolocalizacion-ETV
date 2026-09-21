@@ -23,7 +23,7 @@ class FormularioZController
         $sql4 = "SELECT * FROM sub_actividades";
         $observaciones = $obj->select($sql4);
 
-        // Documento del usuario que inició sesión, para mostrarlo fijo (no editable) en el formulario
+
         $documentoSesion = $_SESSION['documento'] ?? '';
          if (!empty($_SESSION['mensaje_exito'])): ?>
         <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm" role="alert" style="border-left: 5px solid #198754 !important; background-color: #fff;">
