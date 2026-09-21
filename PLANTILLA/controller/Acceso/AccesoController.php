@@ -25,6 +25,11 @@ class AccesoController {
             redirect("login.php");
             return;
         }
+        if ($usuario['id_estado'] != 1) {
+            $_SESSION['error'] = "Usuario Deshabilitado";
+            redirect("login.php");
+            return;
+        }
 
         $_SESSION['auth'] = "ok";
         $_SESSION['id_usuario'] = $usuario['id_usuario'];

@@ -74,8 +74,6 @@ include_once '../view/partials/head.php';
             </div>
         </div>
     </div>
-    <!--Modal-->
-    <?php include_once '../web/recover.php';?>
     <?php
     include_once '../view/partials/footer.php';
     ?>
@@ -89,5 +87,23 @@ include_once '../view/partials/head.php';
     <script src="js/password.js"></script>
     <script src="js/checkbox.js"></script>
     <script src="js/login.js"></script>
+    <!--Modal-->
+    <?php include_once '../web/recover.php';?>
+    <?php include_once '../web/codigoRecover.php';?>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+
+        if(params.get('paso') === 'codigo'){
+            const modalCodigo = document.getElementById('modalCodigo');
+            const modalCodigoInstance = new bootstrap.Modal(modalCodigo);
+            modalCodigoInstance.show();
+
+            modalCodigo.addEventListener('shown.bs.modal', () => {
+                document.getElementById('codigoInput').focus();
+            });
+        }
+    </script>
+    <script src="../web/js/codigoRecover.js"></script>
 </body>
 </html>
