@@ -1,157 +1,628 @@
-<div class="container-fluid text-center px-2">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+<style>
+  /* Contenedor Principal */
+  .consult-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 0.5rem;
+    box-sizing: border-box;
+  }
 
+  /* Encabezado */
+  .header-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
 
+  @media (min-width: 640px) {
+    .header-section {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
 
+  .header-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
 
+  .header-icon {
+    color: #2563eb;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+  }
 
-        <div class="d-flex justify-content-end w-100">
-            <div class="input-group" style="max-width: 350px;">
-                <form class="input-group" action="index.php" method="GET">
-                    <input type="hidden" name="modulo" value="ActividadTerreno">
-                    <input type="hidden" name="controlador" value="ActividadTerreno">
-                    <input type="hidden" name="funcion" value="getBuscar">
+  .header-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+  }
 
-                    <input type="text" name="busqueda" placeholder="Search ..." class="form-control" />
+  /* Buscador tipo cápsula */
+  .search-form {
+    margin: 0;
+    width: 100%;
+  }
 
-                    <button type="submit" class="btn btn-outline-secondary">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </form>
+  @media (min-width: 640px) {
+    .search-form {
+      width: auto;
+    }
+  }
+
+  .search-box-wrapper {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 50px;
+    padding: 0.35rem 0.5rem 0.35rem 1rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+  }
+
+  @media (min-width: 640px) {
+    .search-box-wrapper {
+      width: 320px;
+    }
+  }
+
+  .search-box-wrapper:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .search-box-wrapper i.search-icon {
+    color: #94a3b8;
+    font-size: 1.15rem;
+    margin-right: 0.5rem;
+  }
+
+  .search-input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent;
+    font-size: 0.88rem;
+    color: #1e293b;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .search-btn {
+    background-color: #eff6ff;
+    border: none;
+    color: #2563eb;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .search-btn:hover {
+    background-color: #2563eb;
+    color: #ffffff;
+  }
+
+  /* Grid de Tarjetas */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .cards-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cards-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Tarjetas */
+  .act-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    padding: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .act-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Badges */
+  .badge-status-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.75rem;
+  }
+
+  .badge-active-custom {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .badge-active-custom::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    background-color: #16a34a;
+    border-radius: 50%;
+  }
+
+  .badge-inactive-custom {
+    background-color: #fef2f2;
+    color: #dc2626;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .badge-inactive-custom::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    background-color: #dc2626;
+    border-radius: 50%;
+  }
+
+  .act-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 1.25rem;
+  }
+
+  .act-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    padding: 0.4rem 0;
+  }
+
+  .act-info-label {
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .act-info-label i {
+    color: #2563eb;
+  }
+
+  .act-info-value {
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  .act-divider {
+    border-top: 1px dashed #e2e8f0;
+    margin: 0.5rem 0 1.25rem 0;
+  }
+
+  /* Botones Acción */
+  .act-actions-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  .btn-outline-edit {
+    background-color: #ffffff;
+    border: 1px solid #bfdbfe;
+    color: #2563eb;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-outline-edit:hover {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  .btn-outline-disable {
+    background-color: #ffffff;
+    border: 1px solid #fca5a5;
+    color: #ef4444;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .btn-outline-disable:hover {
+    background-color: #fef2f2;
+    color: #dc2626;
+  }
+
+  .btn-outline-enable {
+    background-color: #ffffff;
+    border: 1px solid #86efac;
+    color: #16a34a;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .btn-outline-enable:hover {
+    background-color: #f0fdf4;
+    color: #15803d;
+  }
+
+  /* ESTILOS DE LA MODAL (EXACTOS A TU IMAGEN) */
+  .exact-ref-modal {
+    border-radius: 28px !important;
+    border: none !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .modal-header-ref {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border: none;
+  }
+
+  .modal-title-ref {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  .btn-close-ref {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .btn-close-ref:hover {
+    color: #0f172a;
+  }
+
+  .modal-icon-ref-red {
+    width: 46px;
+    height: 46px;
+    background-color: #fef2f2;
+    color: #f87171;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-icon-ref-green {
+    width: 46px;
+    height: 46px;
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-question-ref {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-text-ref {
+    color: #6366f1;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 1.75rem;
+  }
+
+  .modal-footer-ref {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+    border: none;
+    padding: 0;
+  }
+
+  .btn-ref-cancel {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    font-weight: 600;
+    padding: 0.55rem 1.35rem;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .btn-ref-cancel:hover {
+    background-color: #f8fafc;
+    color: #1e293b;
+  }
+
+  .btn-ref-confirm-red {
+    background-color: #f87171;
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.55rem 1.35rem;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-ref-confirm-red:hover {
+    background-color: #ef4444;
+    color: #ffffff;
+  }
+
+  .btn-ref-confirm-green {
+    background-color: #16a34a;
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.55rem 1.35rem;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-ref-confirm-green:hover {
+    background-color: #15803d;
+    color: #ffffff;
+  }
+</style>
+
+<div class="consult-container">
+
+  <!-- Encabezado con título y buscador -->
+  <div class="header-section">
+    <div class="header-title-group">
+      <div class="header-icon">
+        <i class="bx bx-checkbox-checked"></i>
+      </div>
+      <h3 class="header-title">Actividades de Zoocriadero</h3>
+    </div>
+
+    <form class="search-form" action="index.php" method="GET">
+      <input type="hidden" name="modulo" value="ActividadTerreno">
+      <input type="hidden" name="controlador" value="ActividadTerreno">
+      <input type="hidden" name="funcion" value="getBuscar">
+
+      <div class="search-box-wrapper">
+        <i class="bx bx-search search-icon"></i>
+        <input type="text" name="busqueda" placeholder="Buscar actividad..." class="search-input" value="<?= htmlspecialchars($_GET['busqueda'] ?? '') ?>" />
+        <button type="submit" class="search-btn" title="Buscar">
+          <i class="bx bx-right-arrow-alt fs-5"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <?php
+  include_once '../controller/ActividadTerreno/ActividadTerrenoController.php';
+  include_once '../model/ActividadTerreno/ActividadTerreno.php';
+
+  if (!empty($actividad2)):
+      $array = [];
+
+      foreach ($actividad2 as $rs) {
+          $obj = new ActividadTerreno($rs['id_actividad_terreno'], $rs['cod_actividad_terreno'], $rs['nombre_actividad'], $rs['nombre_estado']);
+          $array[] = $obj;
+      }
+  ?>
+
+    <!-- Grid de Tarjetas -->
+    <div class="cards-grid">
+      <?php foreach ($array as $o) {
+        $estadoA = strtolower($o->getEstado()) === 'activo';
+        $id = $o->getId();
+      ?>
+        <div class="act-card">
+          <div>
+            <div class="badge-status-container">
+              <?php if ($estadoA): ?>
+                <span class="badge-active-custom">Actividad Activo</span>
+              <?php else: ?>
+                <span class="badge-inactive-custom">Actividad Inactivo</span>
+              <?php endif; ?>
             </div>
+
+            <div class="act-title">
+              <?= htmlspecialchars($o->getNombre()); ?>
+            </div>
+
+            <div class="act-info-row">
+              <span class="act-info-label">
+                <i class="bx bx-hash"></i> Código:
+              </span>
+              <span class="act-info-value"><?= htmlspecialchars($o->getCodigo()); ?></span>
+            </div>
+
+            <div class="act-divider"></div>
+
+            <div class="act-info-row">
+              <span class="act-info-label">
+                <i class="bx bx-id-card"></i> ID Actividad:
+              </span>
+              <span class="act-info-value">#<?= $o->getId(); ?></span>
+            </div>
+          </div>
+
+          <!-- Botones de Acción -->
+          <div class="act-actions-group mt-3">
+            <a href="<?= getUrl('ActividadTerreno', 'ActividadTerreno', 'getEditar', array('id' => $o->getId())); ?>" class="btn-outline-edit">
+              <i class="bx bx-edit-alt"></i> Editar
+            </a>
+
+            <?php if ($estadoA): ?>
+              <button type="button" class="btn-outline-disable" data-bs-toggle="modal" data-bs-target="#exampleModal<?= $o->getId() ?>">
+                <i class="bx bx-block"></i> Inhabilitar
+              </button>
+            <?php else: ?>
+              <button type="button" class="btn-outline-enable" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?= $o->getId() ?>">
+                <i class="bx bx-check-circle"></i> Habilitar
+              </button>
+            <?php endif; ?>
+          </div>
         </div>
-
-
-        <?php
-
-
-
-
-
-        include_once '../controller/ActividadTerreno/ActividadTerrenoController.php';
-        include_once '../model/ActividadTerreno/ActividadTerreno.php';
-        if (!empty($actividad2)) {
-            $array = [];
-
-            foreach ($actividad2 as $rs) {
-
-                $obj = new ActividadTerreno($rs['id_actividad_terreno'], $rs['cod_actividad_terreno'], $rs['nombre_actividad'], $rs['nombre_estado']);
-
-                $array[] = $obj;
-            }
-            foreach ($array as $o) {
-
-                // se guarda falso o verdadero si es igual a activo
-                $estadoA = strtolower($o->getEstado()) === 'activo';
-
-                // se crea otra variable para preguntar el estado cual es?
-                $badgeClass = $estadoA ? 'bg-success' : 'bg-danger';
-
-                $id = $o->getId();
-
-
-
-        ?>
-
-
-                <!-- sesion datos -->
-
-
-
-                <div class="col">
-
-                    <div class="card p-3 h-100 text-center flex-column d-flex align-items-center justify-content-center" style="width: 100% !important; min-width: 0 !important; ">
-
-                        <ul class="list-group list-group-flush fs-3 w-100">
-                            <li class="list-group-item border-0 text-center p-1 d-flex justify-content-center align-items-center">
-                                <span class="badge fs-5 fw-bold <?php echo $badgeClass; ?> rounded-pill"><?php echo $o->getEstado(); ?></span>
-                            </li>
-                            <li class="list-group-item border-0 text-center fw-bolder p-1 d-flex justify-content-center align-items-center "><?php echo $o->getNombre(); ?></li>
-                            <li class="list-group-item fs-5 border-0 text-center p-1  d-flex justify-content-center align-items-center">Codigo: <?php echo $o->getCodigo(); ?></li>
-
-
-                        </ul>
-                        <div class="card-body ">
-                            <a href="<?php echo getUrl('ActividadTerreno', 'ActividadTerreno', 'getEditar', array('id' => $o->getId())); ?>" class="btn btn-primary fs-4">
-                                Editar
-                            </a>
-
-                            <?php if ($estadoA):  ?>
-                                <button type="button" class="btn btn-danger fs-4" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $o->getId() ?>">
-                                    Inhabilitar
-                                </button>
-                            <?php else:  ?>
-                                <button type="button" class="btn btn-success fs-4" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $o->getId() ?>">
-                                    habilitar
-                                </button>
-                            <?php endif  ?>
-
-                        </div>
-
-
-                        <!-- sesion eliminar -->
-
-                        <div class="modal fade" id="exampleModal<?php echo $id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Inhabilitar Actividad</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>¿Estás seguro de inhabilitar?<?php echo $o->getNombre() ?></p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
-                                        <a href="<?php echo getUrl('ActividadTerreno', 'ActividadTerreno', 'postDelete', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- sesion habilitar -->
-
-                        <div class="modal fade" id="exampleModalHabilitar<?php echo $id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">habilitar Actividad</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>¿Estás seguro de habilitar? <?php echo $o->getNombre() ?></p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-clouse" data-bs-dismiss="modal">Cerrar</button>
-                                        <a href="<?php echo getUrl('ActividadTerreno', 'ActividadTerreno', 'postHabilitar', array('id' => $o->getId())); ?>" class="btn btn-danger" type="button">Inhabilitar</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-
-
-                    </div>
-
-                </div>
-            <?php
-            }
-            ?>
-
+      <?php } ?>
     </div>
+
+    <!-- SECCIÓN DE MODALES (SEPARADA DE LAS TARJETAS) -->
+    <?php foreach ($array as $o) {
+      $id = $o->getId();
+    ?>
+      <!-- Modal Inhabilitar -->
+      <div class="modal fade" id="exampleModal<?= $id ?>" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content exact-ref-modal">
+            
+            <div class="modal-header-ref">
+              <h5 class="modal-title-ref">Confirmar Acción</h5>
+              <button type="button" class="btn-close-ref" data-bs-dismiss="modal" aria-label="Close">
+                <i class="bx bx-x fs-3"></i>
+              </button>
+            </div>
+
+            <div class="modal-body p-0">
+              <div class="modal-icon-ref-red">
+                <i class="bx bx-block"></i>
+              </div>
+
+              <div class="modal-question-ref">¿Inhabilitar actividad?</div>
+              <div class="modal-text-ref">
+                Esta acción cambiará el estado de <strong><?= htmlspecialchars($o->getNombre()) ?></strong> a inactivo.
+              </div>
+            </div>
+
+            <div class="modal-footer-ref">
+              <button type="button" class="btn btn-ref-cancel" data-bs-dismiss="modal">Cancelar</button>
+              <a href="<?= getUrl('ActividadTerreno', 'ActividadTerreno', 'postDelete', array('id' => $o->getId())); ?>" class="btn btn-ref-confirm-red">
+                Inhabilitar
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Habilitar -->
+      <div class="modal fade" id="exampleModalHabilitar<?= $id ?>" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content exact-ref-modal">
+            
+            <div class="modal-header-ref">
+              <h5 class="modal-title-ref">Confirmar Acción</h5>
+              <button type="button" class="btn-close-ref" data-bs-dismiss="modal" aria-label="Close">
+                <i class="bx bx-x fs-3"></i>
+              </button>
+            </div>
+
+            <div class="modal-body p-0">
+              <div class="modal-icon-ref-green">
+                <i class="bx bx-check-circle"></i>
+              </div>
+
+              <div class="modal-question-ref">¿Habilitar actividad?</div>
+              <div class="modal-text-ref">
+                Esta acción cambiará el estado de <strong><?= htmlspecialchars($o->getNombre()) ?></strong> a activo.
+              </div>
+            </div>
+
+            <div class="modal-footer-ref">
+              <button type="button" class="btn btn-ref-cancel" data-bs-dismiss="modal">Cancelar</button>
+              <a href="<?= getUrl('ActividadTerreno', 'ActividadTerreno', 'postHabilitar', array('id' => $o->getId())); ?>" class="btn btn-ref-confirm-green">
+                Habilitar
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    <?php } ?>
+
+  <?php else: ?>
+    <!-- Estado sin resultados -->
+    <div class="w-100 d-flex flex-column align-items-center justify-content-center text-muted py-5 mt-3">
+      <i class="bx bx-search-alt-2 fs-1 mb-2 text-secondary"></i>
+      <p class="mb-0 fw-medium">No se encontraron resultados para la búsqueda.</p>
+    </div>
+  <?php endif; ?>
+
 </div>
-
-
-<?php
-
-        } else { ?>
-    <div class="w-100 d-flex flex-column align-items-center justify-content-center text-muted py-5 mt-5">
-        <i class="fa fa-search fa-2x mb-3"></i>
-        <p class="mb-3">No se encontraron resultados</p>
-    </div>
-    </div>
-    </div>
-
-<?php } ?>
