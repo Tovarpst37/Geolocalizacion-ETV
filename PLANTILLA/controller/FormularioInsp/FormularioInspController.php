@@ -23,6 +23,30 @@ class FormularioInspController
         // Documento del usuario que inició sesión, para mostrarlo fijo (no editable) en el formulario
         $documentoSesion = $_SESSION['documento'] ?? '';
 
+                if (!empty($_SESSION['mensaje_exito'])): ?>
+        <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm" role="alert" style="border-left: 5px solid #198754 !important; background-color: #fff;">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" style="color:#198754;">
+            <use xlink:href="#check-circle-fill" />
+            </svg>
+            <div>
+            <?php echo $_SESSION['mensaje_exito']; ?>
+            </div>
+        </div>
+        <?php unset($_SESSION['mensaje_exito']); ?>
+
+        <script>
+            setTimeout(function() {
+            var alerta = document.getElementById('alertaExito');
+            if (alerta) {
+                alerta.style.transition = "opacity 0.5s ease";
+                alerta.style.opacity = "0";
+                setTimeout(function() { alerta.remove(); }, 500);
+            }
+            }, 5000);
+        </script>
+        <?php endif;
+
+
         include_once '../view/partials/FormularioInsp/registrar.php';
     }
 
@@ -206,7 +230,7 @@ class FormularioInspController
                     "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
                     [self::ID_ACTIVIDAD_INSPECCION, $id_sub_actividad]
                 );
-                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
+                 $_SESSION['mensaje_exito'] = "Formulario registrado con éxito.";
                 redirect(getUrl("FormularioInsp", "FormularioInsp", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades_terreno.";

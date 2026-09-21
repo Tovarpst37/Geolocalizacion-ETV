@@ -244,7 +244,7 @@ class FormularioMController
                     "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
                     [self::ID_ACTIVIDAD_PECES_MUERTOS_NACIDOS, $id_sub_actividad]
                 );
-                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
+                 $_SESSION['mensaje_exito'] = "Formulario registrado con éxito.";
                 redirect(getUrl("FormularioM", "FormularioM", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades.";
