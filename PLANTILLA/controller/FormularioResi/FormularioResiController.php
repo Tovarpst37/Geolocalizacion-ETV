@@ -210,7 +210,7 @@ class FormularioResiController
                               (id_actividad_terreno, id_sub_actividades) 
                               VALUES ($1, $2)";
                 $obj->select($sqlBridge, [self::ID_ACTIVIDAD_RESIEMBRA, $id_sub_actividad]);
-
+                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
                 redirect(getUrl("FormularioResi", "FormularioResi", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades_ter.";

@@ -190,7 +190,7 @@ class FormularioLaController
                     "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
                     [self::ID_ACTIVIDAD_LAVADO, $id_sub_actividad]
                 );
-
+                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
                 redirect(getUrl("FormularioLa", "FormularioLa", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades.";
