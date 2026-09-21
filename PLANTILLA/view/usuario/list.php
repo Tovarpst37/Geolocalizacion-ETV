@@ -84,20 +84,16 @@ include_once '../view/usuario/disable.php';
                                 </button>
                             </td>
                             <td>
-                                <?php if ((int)$usu['id_estado'] === 1): ?>
-                                    <button type="button"
-                                        class="btn btn-success"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEstadoH"
+                               <?php if ((int)$usu['id_usuario'] === (int)$_SESSION['id_usuarioU']): ?>
+                                    <i class="bx bxs-x-circle" style="font-size: 32px;"></i>
+                                <?php elseif ((int)$usu['id_estado'] === 1): ?>
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalEstado"
                                         data-id-usuario="<?= htmlspecialchars($usu['id_usuario']) ?>"
                                         data-id-estado-actual="<?= htmlspecialchars($usu['id_estado']) ?>">
                                         Habilitado
                                     </button>
                                 <?php else: ?>
-                                    <button type="button"
-                                        class="btn btn-danger"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEstadoH"
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalEstadoH"
                                         data-id-usuario="<?= htmlspecialchars($usu['id_usuario']) ?>"
                                         data-id-estado-actual="<?= htmlspecialchars($usu['id_estado']) ?>">
                                         Deshabilitado

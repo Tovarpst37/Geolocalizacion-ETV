@@ -9,8 +9,8 @@
       <form action="<?php echo getUrl("Usuario","Usuario","postCambiarEstado")?>" method="POST">
         <div class="modal-body">
           Estas seguro que deseas Habilitar el usuario
-          <input type="hidden" id="estado_id_usuario" name="id_usuario">
-          <input type="hidden" id="estado_id_estado_actual" name="id_estado_actual">
+          <input type="hidden" id="estadoH_id_usuario" name="id_usuario">
+          <input type="hidden" id="estadoH_id_estado_actual" name="id_estado_actual">
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
