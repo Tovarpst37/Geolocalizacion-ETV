@@ -6,8 +6,9 @@ include_once '../view/usuario/disable.php';
 <div class="page-header">
     <div class="mb-3 contenedortext rounded-4">
         <br>
-        <div>
-            <h1 class="fw-bold text-center ">Usuarios</h1>
+        <div class="d-flex align-items-center justify-content-center gap-2">
+            <i class="bx bxs-user-detail" style="font-size: 2.5rem; color: #fff;"></i>
+            <h1 class="fw-bold mb-0">Usuarios</h1>
         </div>
         <br>
     </div>
@@ -18,7 +19,7 @@ include_once '../view/usuario/disable.php';
             <input type="hidden" name="modulo" value="Usuario">
             <input type="hidden" name="controlador" value="Usuario">
             <input type="hidden" name="funcion" value="getBuscar">
-            <input type="text" name="busqueda" placeholder="Search ..." class="form-control" value="<?php echo htmlspecialchars($palabra ?? ''); ?>">
+            <input type="number" name="busqueda" placeholder="Search ..." class="form-control" value="<?php echo htmlspecialchars($palabra ?? ''); ?>">
             <button type="submit" class="btn btn-outline-secondary">
             <i class="fa fa-search"></i>
             </button>
@@ -64,6 +65,7 @@ include_once '../view/usuario/disable.php';
                             <td><?= htmlspecialchars($usu['rol_usuario']) ?></td>
                             <td><?= htmlspecialchars($usu['rh_usuario']) ?></td>
                             <td>
+                                <?php if (in_array('EDITAR', $_SESSION['permisos']['Usuarios'] ?? [])): ?>
                                 <button type="button"
                                     class="btn btn-primary"
                                     data-bs-toggle="modal"
@@ -82,26 +84,25 @@ include_once '../view/usuario/disable.php';
                                     data-id-rh="<?= htmlspecialchars($usu['id_rh']) ?>">
                                     Editar
                                 </button>
+                                <?php endif; ?>
                             </td>
                             <td>
-                                <?php if ((int)$usu['id_estado'] === 1): ?>
-                                    <button type="button"
-                                        class="btn btn-success"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEstadoH"
-                                        data-id-usuario="<?= htmlspecialchars($usu['id_usuario']) ?>"
-                                        data-id-estado-actual="<?= htmlspecialchars($usu['id_estado']) ?>">
-                                        Habilitado
-                                    </button>
-                                <?php else: ?>
-                                    <button type="button"
-                                        class="btn btn-danger"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEstadoH"
-                                        data-id-usuario="<?= htmlspecialchars($usu['id_usuario']) ?>"
-                                        data-id-estado-actual="<?= htmlspecialchars($usu['id_estado']) ?>">
-                                        Deshabilitado
-                                    </button>
+                            <?php if ((int)$usu['id_usuario'] === (int)$_SESSION['id_usuarioU']): ?>
+                                    <i class="bx bxs-x-circle" style="font-size: 32px;"></i>
+                                <?php elseif (in_array('ELIMINAR', $_SESSION['permisos']['Usuarios'] ?? [])): ?>
+                                    <?php if ((int)$usu['id_estado'] === 1): ?>
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalEstado"
+                                            data-id-usuario="<?= htmlspecialchars($usu['id_usuario']) ?>"
+                                            data-id-estado-actual="<?= htmlspecialchars($usu['id_estado']) ?>">
+                                            Habilitado
+                                        </button>
+                                    <?php else: ?>
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalEstadoH"
+                                            data-id-usuario="<?= htmlspecialchars($usu['id_usuario']) ?>"
+                                            data-id-estado-actual="<?= htmlspecialchars($usu['id_estado']) ?>">
+                                            Deshabilitado
+                                        </button>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </td>
                         </tr>

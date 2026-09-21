@@ -11,8 +11,8 @@ class FormularioSegTController
     {
         $obj = new FormulariosModel();
 
-        $sql = "SELECT * FROM seguimiento_terreno";
-        $seguimientos = $obj->select($sql);
+        $sql10 = "SELECT cod_seguimiento FROM seguimiento_terreno WHERE id_estado = 4";
+        $seguimientos = $obj->select($sql10); 
 
         $sql1 = "SELECT * FROM usuarios";
         $numDocumen = $obj->select($sql1);
@@ -206,7 +206,7 @@ class FormularioSegTController
                               (id_actividad_terreno, id_sub_actividades) 
                               VALUES ($1, $2)";
                 $obj->select($sqlBridge, [self::ID_ACTIVIDAD_SEGUIMIENTO, $id_sub_actividad]);
-                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
+                 $_SESSION['mensaje_exito'] = "Formulario registrado con éxito.";
                 redirect(getUrl("FormularioSegT", "FormularioSegT", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades_terreno.";

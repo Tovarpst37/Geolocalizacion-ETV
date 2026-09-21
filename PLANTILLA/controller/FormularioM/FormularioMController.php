@@ -11,8 +11,8 @@ class FormularioMController
     {
         $obj = new FormulariosModel();
 
-        $sql = "SELECT * FROM seguimiento_zoocriadero";
-        $seguimientos = $obj->select($sql);
+       $sql10 = "SELECT cod_seguimiento FROM seguimiento_zoocriadero WHERE id_estado = 4";
+        $seguimientos = $obj->select($sql10); 
 
         $sql1 = "SELECT * FROM usuarios";
         $numDocumen = $obj->select($sql1);
@@ -244,7 +244,7 @@ class FormularioMController
                     "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
                     [self::ID_ACTIVIDAD_PECES_MUERTOS_NACIDOS, $id_sub_actividad]
                 );
-                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
+                 $_SESSION['mensaje_exito'] = "Formulario registrado con éxito.";
                 redirect(getUrl("FormularioM", "FormularioM", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades.";

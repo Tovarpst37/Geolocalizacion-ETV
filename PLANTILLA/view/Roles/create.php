@@ -6,8 +6,9 @@
 <div class="page-header">
     <div class="mb-3 contenedortext rounded-4">
         <br>
-        <div>
-            <h1 class="fw-bold text-center ">CREAR ROL</h1>
+        <div class="d-flex align-items-center justify-content-center gap-2">
+            <i class="bx bxs-user-detail" style="font-size: 2.5rem; color: #fff;"></i>
+            <h1 class="fw-bold mb-0">Crear Rol</h1>
         </div>
         <br>
     </div>
@@ -52,4 +53,4 @@
     </form>
 </div>
 
-<script src="/assets/js/roles-form.js"></script>
+<script src="../web/assets/js/roles-form.js"></script>

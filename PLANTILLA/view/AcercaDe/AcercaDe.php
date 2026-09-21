@@ -5,7 +5,7 @@
         <h1>Acerca de</h1>
         <p class="subtitulo">Sistema Geolocalizacion ETV</p>
       </div>
-      <span class="etiqueta">InformaciOn general</span>
+      <span class="etiqueta">Informacion general</span>
     </div>
 
     <div class="row g-3">

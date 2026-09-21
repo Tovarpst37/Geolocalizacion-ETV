@@ -11,8 +11,7 @@ class FormularioAjController
     {
         $obj = new FormulariosModel();
 
-        $sql = "SELECT * FROM seguimiento_zoocriadero";
-        $seguimientos = $obj->select($sql);
+        
 
         $sql1 = "SELECT * FROM usuarios";
         $numDocumen = $obj->select($sql1);
@@ -20,8 +19,34 @@ class FormularioAjController
         $sql4 = "SELECT * FROM sub_actividades";
         $observaciones = $obj->select($sql4);
 
+        $sql10 = "SELECT cod_seguimiento FROM seguimiento_zoocriadero WHERE id_estado = 4";
+        $seguimientos = $obj->select($sql10); 
+
         // Documento del usuario que inició sesión
         $documentoSesion = $_SESSION['documento'] ?? '';
+
+               if (!empty($_SESSION['mensaje_exito'])): ?>
+        <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm" role="alert" style="border-left: 5px solid #198754 !important; background-color: #fff;">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" style="color:#198754;">
+            <use xlink:href="#check-circle-fill" />
+            </svg>
+            <div>
+            <?php echo $_SESSION['mensaje_exito']; ?>
+            </div>
+        </div>
+        <?php unset($_SESSION['mensaje_exito']); ?>
+
+        <script>
+            setTimeout(function() {
+            var alerta = document.getElementById('alertaExito');
+            if (alerta) {
+                alerta.style.transition = "opacity 0.5s ease";
+                alerta.style.opacity = "0";
+                setTimeout(function() { alerta.remove(); }, 500);
+            }
+            }, 5000);
+        </script>
+        <?php endif;
 
         include_once '../view/partials/FormularioAj/registrar.php';
     }
@@ -264,7 +289,7 @@ class FormularioAjController
                     "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
                     [self::ID_ACTIVIDAD_AJUSTES_NIVEL, $id_sub_actividad]
                 );
-                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
+                  $_SESSION['mensaje_exito'] = "Formulario registrado con éxito.";
                 redirect(getUrl("FormularioAj", "FormularioAj", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades.";
