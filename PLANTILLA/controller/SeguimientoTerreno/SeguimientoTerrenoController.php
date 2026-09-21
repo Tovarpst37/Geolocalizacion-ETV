@@ -127,7 +127,7 @@ class SeguimientoTerrenoController
     {
 
         $obj = new SeguimientoTerrenoModel();
-        $sql = "SELECT * from sitio";
+        $sql = "SELECT * from sitio WHERE id_estado = 1";
         $sitio = $obj->select($sql);
 
         $sql4 = "SELECT MAX(id_seguimiento_terreno) FROM seguimiento_terreno";
@@ -489,7 +489,25 @@ class SeguimientoTerrenoController
         $sql = "SELECT td.id_tipo_deposito, td.nombre 
             FROM tipo_de_deposito td
             INNER JOIN sitio s ON s.id_tipo_deposito = td.id_tipo_deposito
+<<<<<<< HEAD
             WHERE s.id_sitio = $1;";
+=======
+            WHERE s.id_sitio = $1";
+            
+    $terreno = $obj->select($sql,[$id_sitio]);
+    
+    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
+    $usuarios = $obj->select($sql2,[$id_sitio]);
+    
+    $resultado = [
+        'terreno' => $terreno,
+        'usuarios' => $usuarios
+    ];
+    
+    header('Content-Type: application/json');
+    echo json_encode($resultado);
+}
+>>>>>>> fa1c7c57cf9ad48eb99586e3b7566e7737b82c15
 
         $terreno = $obj->select($sql, [$id_sitio]);
 

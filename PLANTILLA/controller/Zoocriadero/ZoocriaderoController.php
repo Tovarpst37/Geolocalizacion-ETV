@@ -1,6 +1,6 @@
 <?php
 
-include_once '../model/Zoocriadero/ZoocriaderoModel.php';
+include_once __DIR__ . '/../../model/Zoocriadero/ZoocriaderoModel.php';
 
 class ZoocriaderoController
 {

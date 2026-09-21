@@ -264,7 +264,7 @@ class FormularioAjController
                     "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
                     [self::ID_ACTIVIDAD_AJUSTES_NIVEL, $id_sub_actividad]
                 );
-
+                 echo '<script>alert("¡Formulario registrado con exito!");</script>';
                 redirect(getUrl("FormularioAj", "FormularioAj", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades.";

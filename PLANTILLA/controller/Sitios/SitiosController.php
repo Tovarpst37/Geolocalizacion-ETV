@@ -49,7 +49,8 @@ class SitiosController
         $sql2 = "SELECT * FROM barrio";
         $barrios = $obj->select($sql2);
 
-        $sql3 = "SELECT * from estado";
+        // Solo Activo e Inactivo
+        $sql3 = "SELECT * FROM estado WHERE id_estado IN (1, 2) ORDER BY id_estado";
         $estados = $obj->select($sql3);
 
         // Coordinador = id_rol 2
@@ -309,9 +310,9 @@ class SitiosController
         $sql2 = "SELECT * FROM barrio";
         $barrios = $obj->select($sql2);
 
-        $sql3 = "SELECT * from estado";
+        // Solo Activo e Inactivo
+        $sql3 = "SELECT * FROM estado WHERE id_estado IN (1, 2) ORDER BY id_estado";
         $estados = $obj->select($sql3);
-
         // Coordinador = id_rol 2
         $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
@@ -445,7 +446,8 @@ class SitiosController
             $sql2 = "SELECT * FROM barrio";
             $barrios = $obj->select($sql2);
 
-            $sql3 = "SELECT * from estado";
+            // Solo Activo e Inactivo
+            $sql3 = "SELECT * FROM estado WHERE id_estado IN (1, 2) ORDER BY id_estado";
             $estados = $obj->select($sql3);
 
             $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 

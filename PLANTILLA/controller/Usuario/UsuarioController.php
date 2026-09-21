@@ -29,7 +29,7 @@
          $existe = $obj->exists($sql, $documento);
 
          if ($existe) {
-            echo "ya existe un usuario con ese numero de documento";
+            echo "<script>alert('ya existe un usuario con ese numero de documento')</script>";
             return;
          }
 
@@ -104,18 +104,18 @@
       public function postEditar(){
          $obj = new UsuarioModel();
 
-         $id_usuario          = $_POST['id_usuario'];
-         $primer_nombre       = $_POST['primer_nombre'];
-         $segundo_nombre      = $_POST['segundo_nombre'] ?? '';
-         $primer_apellido     = $_POST['primer_apellido'];
-         $segundo_apellido    = $_POST['segundo_apellido'] ?? '';
-         $tipo_documento      = $_POST['tipo_documento'];
-         $documento           = $_POST['documento'];
-         $fecha_nacimiento    = $_POST['fecha_nacimiento'];
-         $correo_electronico  = $_POST['correo'];
-         $genero              = $_POST['genero'];
-         $rol                 = $_POST['rol'];
-         $rh                  = $_POST['rh'];
+         $id_usuario          = $_POST['id_usuarioF'];
+         $primer_nombre       = $_POST['primer_nombreF'];
+         $segundo_nombre      = $_POST['segundo_nombreF'] ?? '';
+         $primer_apellido     = $_POST['primer_apellidoF'];
+         $segundo_apellido    = $_POST['segundo_apellidoF'] ?? '';
+         $tipo_documento      = $_POST['tipo_documentoF'];
+         $documento           = $_POST['documentoF'];
+         $fecha_nacimiento    = $_POST['fecha_nacimientoF'];
+         $correo_electronico  = $_POST['correoF'];
+         $genero              = $_POST['generoF'];
+         $rol                 = $_POST['rolF'];
+         $rh                  = $_POST['rhF'];
 
 
          $sql = "SELECT id_zoocriadero, id_sitio FROM usuarios WHERE id_usuario = $1";
@@ -166,17 +166,15 @@
                   id_rh = $rh
                WHERE id_usuario = $id_usuario";
 
-         $ejecutar = $obj->update($sql);
+            $ejecutar = $obj->update($sql);
 
-         if($ejecutar){
-            redirect(getUrl("Usuario","Usuario","getUsuario"));
-         }else{
-            echo "Hubo un error al momento de actualizar";
-         }
+            if($ejecutar){
+               redirect(getUrl("Usuario","Usuario","getUsuario"));
+            }else{
+               echo "Hubo un error al momento de actualizar";
+            }
          }
          else{
-            
-
             $errores[] = "Este usuario esta activo en un zoocriadero o sitio no puedes modificar su rol.";
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError($errores, getUrl('Usuario', 'Usuario', 'getUsuario'));
@@ -186,12 +184,20 @@
 
       public function postCambiarEstado(){
          $obj = new UsuarioModel();
-         $id_usuario = $_POST['id_usuario'];
-         $id_estado_actual = $_POST['id_estado_actual'];
-         $nuevo_estado = ($id_estado_actual == 1) ? 0 : 1;
+         $id_usuario = $_POST['id_usuariof'];
+         echo $_SESSION['id_usuario'];
+         /*if($id_usuario === $_SESSION['id_usuario']){
+            echo "Error";
+            return;
+         }
+         echo "Bien";*/
+         //$id_estado_actual = $_POST['id_estado_actual'];
+         //$nuevo_estado = ($id_estado_actual == 1) ? 0 : 1;
+         /*
          $sql = "UPDATE usuarios SET id_estado = $nuevo_estado WHERE id_usuario = $id_usuario";
          $obj->update($sql);
-         redirect(getUrl("Usuario","Usuario","getUsuario"));
+         redirect(getUrl("Usuario","Usuario","getUsuario"));*/
+         
       }
 
 

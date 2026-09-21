@@ -1,5 +1,6 @@
 <?php 
 include_once '../view/usuario/edit.php';
+include_once '../view/usuario/habilitar.php';
 include_once '../view/usuario/disable.php';
 ?>
 <div class="page-header">
@@ -87,13 +88,18 @@ include_once '../view/usuario/disable.php';
                                     <button type="button"
                                         class="btn btn-success"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modalEstado"
+                                        data-bs-target="#modalEstadoH"
                                         data-id-usuario="<?= htmlspecialchars($usu['id_usuario']) ?>"
                                         data-id-estado-actual="<?= htmlspecialchars($usu['id_estado']) ?>">
                                         Habilitado
                                     </button>
                                 <?php else: ?>
-                                    <button type="button" class="btn btn-danger" disabled>
+                                    <button type="button"
+                                        class="btn btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEstadoH"
+                                        data-id-usuario="<?= htmlspecialchars($usu['id_usuario']) ?>"
+                                        data-id-estado-actual="<?= htmlspecialchars($usu['id_estado']) ?>">
                                         Deshabilitado
                                     </button>
                                 <?php endif; ?>

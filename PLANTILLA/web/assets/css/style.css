@@ -19,12 +19,13 @@ body{
     height: 200px;
 }
 #alcaldia{
-    width: 200px;
-    height: 100px;
+    width: 270px;
+    height: 150px;
 }
+
 .container{
-    width: 70%;
-    height: 600px;
+    width: 75%;
+    height: 680px;
     display: flex;
     position: relative;
     background-color: white;
