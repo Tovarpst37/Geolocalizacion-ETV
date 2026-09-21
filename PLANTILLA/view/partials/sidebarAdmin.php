@@ -183,8 +183,8 @@
                         <i class="bx bx-chevron-down navCaret text"></i>
                     </a>
                     <ul class="submenu">
-                        <li><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getRegistrar"); ?>"><span class="sub-item">Registrar actividad</span> </a></li>
-                        <li><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar"); ?>"><span class="sub-item">Consultar actividad</span> </a></li>
+                        <li><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getRegistrar"); ?>"><span class="sub-item">Registrar actividad</span> <span class="badge-pending">Próximo</span></a></li>
+                        <li><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar"); ?>"><span class="sub-item">Consultar actividad</span> <span class="badge-pending">Próximo</span></a></li>
                     </ul>
                 </li>
                 <?php endif; ?>
@@ -250,13 +250,16 @@
                         <li><a href="<?php echo getUrl('ReporteActividadTerreno', 'ReporteActividadTerreno', 'getReporteActividadTerreno'); ?>"><span class="sub-item">Actividades de terreno por tipo</span> </a></li>
                         <li><a href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span class="sub-item">Actividades por auxiliar</span> </a></li>
                         <li><a href="<?php echo getUrl("ReportesTipoDeposito", "ReportesTipoDeposito", "getReporteTipoDeposito  "); ?>"><span class="sub-item">Tipo de depósitos</span> </a></li>
+                         <li><a href="<?php echo getUrl("Auditoria", "Auditoria", "getConsultar  "); ?>"><span class="sub-item">Auditoria</span> </a></li>
                         
                     </ul>
                 </li>
-
-                
                 <?php endif; ?>
             </ul>
+
+            
+
+            
 
             <span class="menu-tag text">Configuracion</span>
             <ul>

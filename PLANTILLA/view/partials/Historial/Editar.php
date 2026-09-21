@@ -95,7 +95,8 @@ $renderCampo = function ($col, $registro, $name, $disabled = false) use ($ui, $h
 };
 ?>
 <div class="modal show" tabindex="-1" style="display:block; background: rgba(0,0,0,0.5);">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
+
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <?php if (!$seguimiento): ?>
                 <div class="modal-body">
