@@ -1,10 +1,10 @@
 <aside class="sideMenu" id="sideMenu">
 
-  <button class="toggleBtn" id="toggleBtn" type="button">
-    <i class='bx bx-chevron-left' id="toggleIcon"></i>
-  </button>
+    <button class="toggleBtn" id="toggleBtn" type="button">
+        <i class='bx bx-chevron-left' id="toggleIcon"></i>
+    </button>
 
-  <div class="sideMenuScroll">
+    <div class="sideMenuScroll">
 
         <h2 class="logo">
             <a href="index.php"><span href="index.php" class="name_logo">M</span></a>
@@ -200,7 +200,7 @@
                         <li><a href="<?php echo getUrl("ReportePecesNacidosMuertos", "ReportePecesNacidosMuertos", "getReportePecesNacidosMuertos"); ?>"><span class="sub-item">Peces nacidos/muertos por tanque</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques"); ?>"><span class="sub-item">Tanques por zoocriadero</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReporteSitios", "ReporteSitios", "getReporteSitios"); ?>"><span class="sub-item">Sitios registrados</span> <span class="badge-pending">Próximo</span></a></li>
-                        <li><a href="#"><span class="sub-item">Actividades de terreno por tipo</span> <span class="badge-pending">Próximo</span></a></li>
+                        <li><a href="<?php echo getUrl('ReporteActividadTerreno', 'ReporteActividadTerreno', 'getReporteActividadTerreno'); ?>"><span class="sub-item">Actividades de terreno por tipo</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span class="sub-item">Actividades por auxiliar</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReportesTipoDeposito", "ReportesTipoDeposito", "getReporteTipoDeposito  "); ?>"><span class="sub-item">Tipo de depósitos</span> <span class="badge-pending">Próximo</span></a></li>
 
@@ -219,9 +219,9 @@
             </div>
         </div>
 
-    
 
-   
 
-  </div>
+
+
+    </div>
 </aside>
