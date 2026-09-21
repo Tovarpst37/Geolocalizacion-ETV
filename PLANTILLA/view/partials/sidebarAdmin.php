@@ -1,3 +1,9 @@
+<style>
+#logoP{
+    width: 90px;
+    height: 50px;
+}
+</style>
 <aside class="sideMenu" id="sideMenu">
 
     <button class="toggleBtn" id="toggleBtn" type="button">
@@ -7,8 +13,8 @@
     <div class="sideMenuScroll">
 
         <h2 class="logo">
-            <a href="index.php"><span href="index.php" class="name_logo">M</span></a>
-            <span class="name text">Geolocalizacion-ETV</span>
+            <a href="index.php"><img src="../web/assets/img/login/logo.png" id = "logoP" alt=""></a>
+            <span class="name text">Geo-ETV</span>
         </h2>
 
         <div class="search">

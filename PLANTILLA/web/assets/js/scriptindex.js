@@ -32,6 +32,37 @@ $(function () {
         });
     });
 
+    
+    $("#Buscar").on("keyup", function () {
+        const query = $(this).val().toLowerCase().trim();
+
+        $(".nav-item").each(function () {
+            const $item = $(this);
+            const itemText = $item.find("> .nav-link .text").text().toLowerCase();
+            const $subItems = $item.find(".submenu li");
+            let hasMatch = itemText.includes(query);
+
+            $subItems.each(function () {
+                const subText = $(this).find(".sub-item").text().toLowerCase();
+                const matches = query === "" || subText.includes(query);
+                $(this).toggle(matches);
+                if (subText.includes(query)) hasMatch = true;
+            });
+
+            if (query === "") {
+                $item.show().removeClass("open");
+            } else {
+                $item.toggle(hasMatch).toggleClass("open", hasMatch);
+            }
+        });
+
+        $(".menu-tag").each(function () {
+            const $group = $(this).nextUntil(".menu-tag", "ul");
+            const anyVisible = $group.find(".nav-item:visible").length > 0;
+            $(this).toggle(query === "" || anyVisible);
+        });
+    });
+
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -62,4 +93,3 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("theme", next);
     });
 });
- 

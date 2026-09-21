@@ -404,6 +404,8 @@ html, body{
 .contenedortext h1{
     color : white;
     font-family: "Montserrat", sans-serif;
-
+}
+.txt{
+    color: white;
 }
 

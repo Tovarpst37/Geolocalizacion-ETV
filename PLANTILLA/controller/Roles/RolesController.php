@@ -90,7 +90,7 @@
 
         public function getRoles(){
             $obj = new RolesModel();
-            $sql = "SELECT * FROM rol";
+            $sql = "SELECT * FROM rol ORDER BY id_rol;";
             $roles = $obj->select($sql);
             include_once '../view/Roles/list.php';
         }
