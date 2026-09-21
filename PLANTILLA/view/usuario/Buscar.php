@@ -12,7 +12,7 @@ include_once '../view/usuario/disable.php';
           <input type="hidden" name="controlador" value="Usuario">
           <input type="hidden" name="funcion" value="getBuscar">
 
-          <input type="text" name="busqueda" placeholder="Search ..." class="form-control"  value = "<?php echo $palabra; ?>"/>
+          <input type="number" name="busqueda" placeholder="Search ..." class="form-control"  value = "<?php echo $palabra; ?>"/>
           <button type="submit" class="btn btn-outline-secondary">
             <i class="fa fa-search"></i>
           </button>

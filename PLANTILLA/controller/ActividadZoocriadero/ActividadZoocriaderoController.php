@@ -12,6 +12,29 @@ class ActividadZoocriaderoController
         $sql4 = "SELECT MAX(id_actividad_zoo) FROM actividad_zoocriadero";
         $id_seg = $obj->select($sql4);
 
+         if (!empty($_SESSION['mensaje_exito'])): ?>
+        <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm" role="alert" style="border-left: 5px solid #198754 !important; background-color: #fff;">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" style="color:#198754;">
+            <use xlink:href="#check-circle-fill" />
+            </svg>
+            <div>
+            <?php echo $_SESSION['mensaje_exito']; ?>
+            </div>
+        </div>
+        <?php unset($_SESSION['mensaje_exito']); ?>
+
+        <script>
+            setTimeout(function() {
+            var alerta = document.getElementById('alertaExito');
+            if (alerta) {
+                alerta.style.transition = "opacity 0.5s ease";
+                alerta.style.opacity = "0";
+                setTimeout(function() { alerta.remove(); }, 500);
+            }
+            }, 5000);
+        </script>
+        <?php endif;
+
         include_once '../view/partials/ActividadZoocriadero/Registrar.php';
     }
 
@@ -24,16 +47,17 @@ class ActividadZoocriaderoController
 
         $id = $_POST['id'] ?? '';
         $codigo = mb_strtoupper($_POST['codigo'] ?? '');
-        $nombre = $_POST['nombre_actividad'] ?? '';
+        $nombre = mb_strtoupper($_POST['nombre_actividad'] ?? '');
 
         $errores = [];
 
-        $sql_validar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE cod_actividad=$1";
+        $sql_validar = "SELECT id_actividad_zoo FROM actividad_zoocriadero WHERE UPPER(nombre_actividad) = $1";
 
-        $validar_exist = $obj->select($sql_validar, [$codigo]);
-
+        $validar_exist = $obj->select($sql_validar, [$nombre]);
+         
         if (count($validar_exist) > 0) {
-            $errores[] = "Ya existe una actividad con este codigo";
+           
+            $errores[] = "Ya existe una actividad con este nombre";
         }
 
         if (empty($nombre)) {
@@ -79,7 +103,7 @@ class ActividadZoocriaderoController
 
 
         $codigo = mb_strtoupper($_POST['codigo']);
-        $nombre = $_POST['nombre_actividad'];
+        $nombre = mb_strtoupper($_POST['nombre_actividad']);
         $estado = 1;
 
         $sql = "INSERT INTO actividad_zoocriadero (cod_actividad, nombre_actividad, id_estado) VALUES
