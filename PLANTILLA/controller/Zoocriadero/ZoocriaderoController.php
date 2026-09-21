@@ -13,7 +13,7 @@ class ZoocriaderoController
 
         $obj = new ZoocriaderoModel();
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado where tipo_estado = 'general'";
 
         $estados = $obj->select($sql3);
 
