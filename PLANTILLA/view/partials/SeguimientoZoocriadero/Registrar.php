@@ -1,11 +1,14 @@
-<div class="container mt-4">
-  <div class="d-flex justify-content-center">
-    <div class="card shadow" style="width: 100%; max-width: 700px;">
-      <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Registrar Seguimiento Zoocriadero </h4>
+<div class="page-header">
+  <div class="mb-3 contenedortext rounded-4">
+      <br>
+      <div class="d-flex align-items-center justify-content-center gap-2">
+          <i class="bx bxs-user-detail" style="font-size: 2.5rem; color: #fff;"></i>
+          <h1 class="fw-bold mb-0">Registar Seguimiento de zoocreadero</h1>
       </div>
+      <br>
+  </div>
 
-      <div class="card-body p-4">
+  <div class="card" id="table"></div>
         <form action="<?php echo getUrl("SeguimientoZoocriadero","SeguimientoZoocriadero","postRegistrar")?>" method="POST" enctype="multipart/form-data">
 
           <div class="mb-3">
@@ -97,9 +100,6 @@
           </div>
 
         </form>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
