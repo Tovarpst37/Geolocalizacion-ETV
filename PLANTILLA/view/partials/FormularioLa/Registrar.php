@@ -9,9 +9,15 @@
                 <form action="<?php echo getUrl("FormularioLa", "FormularioLa", "postInsert") ?>" method="POST">
 
                     <div class="mb-3">
-                        <label for="codLa" class="form-label">Código del tanque</label>
-                        <input type="text" class="form-control" id="codLa" name="codLa"
-                            placeholder="Ingrese el codigo del tanque" required>
+                        <label for="codLa" class="form-label">Código del Tanque</label>
+                        <select class="form-select" id="codLa" name="codLa" required>
+                            <option value="" selected disabled>Selecciona un tanque</option>
+                            <?php foreach ($tanque as $seg): ?>
+                                <option value="<?php echo $seg['codigo_tanque']; ?>">
+                                    <?php echo $seg['codigo_tanque']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
 
                     <div class="mb-3">

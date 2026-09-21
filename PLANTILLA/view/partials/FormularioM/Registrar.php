@@ -9,9 +9,15 @@
                 <form action="<?php echo getUrl("FormularioM", "FormularioM", "postInsert") ?>" method="POST">
 
                     <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Codigo del Seguimiento</label>
-                        <input type="text" class="form-control" id="codM" name="codM"
-                            placeholder="Ingrese el codigo del seguimiento" required>
+                        <label for="codM" class="form-label">Código del seguimiento</label>
+                        <select class="form-select" id="codM" name="codM" required>
+                            <option value="" selected disabled>Selecciona un seguimiento</option>
+                            <?php foreach ($seguimientos as $seg): ?>
+                                <option value="<?php echo $seg['cod_seguimiento']; ?>">
+                                    <?php echo $seg['cod_seguimiento']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
 
 

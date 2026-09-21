@@ -8,10 +8,18 @@
             <div class="card-body p-4">
                 <form action="<?php echo getUrl("FormularioSiem", "FormularioSiem", "postInsert") ?>" method="POST">
 
+ 
+
                     <div class="mb-3">
-                        <label for="codSeg" class="form-label">Código de seguimiento</label>
-                        <input type="text" class="form-control" id="codSeg" name="codSeg"
-                            placeholder="Ingrese el codigo de seguimiento" required>
+                        <label for="codSeg" class="form-label">Código del seguimiento</label>
+                        <select class="form-select" id="codSeg" name="codSeg" required>
+                            <option value="" selected disabled>Selecciona un seguimiento</option>
+                            <?php foreach ($seguimientos as $seg): ?>
+                                <option value="<?php echo $seg['cod_seguimiento']; ?>">
+                                    <?php echo $seg['cod_seguimiento']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
 
                     <div class="mb-3">

@@ -11,8 +11,8 @@ class FormularioResiController
     {
         $obj = new FormulariosModel();
 
-        $sql = "SELECT * FROM seguimiento_terreno";
-        $seguimientos = $obj->select($sql);
+        $sql10 = "SELECT cod_seguimiento FROM seguimiento_terreno WHERE id_estado = 4";
+        $seguimientos = $obj->select($sql10); 
 
         $sql1 = "SELECT * FROM usuarios";
         $numDocumen = $obj->select($sql1);

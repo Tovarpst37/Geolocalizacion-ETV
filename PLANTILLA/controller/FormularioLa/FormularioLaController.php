@@ -11,14 +11,17 @@ class FormularioLaController
     {
         $obj = new FormulariosModel();
 
-        $sql = "SELECT * FROM seguimiento_zoocriadero";
-        $seguimientos = $obj->select($sql);
+        $sql10 = "SELECT cod_seguimiento FROM seguimiento_zoocriadero WHERE id_estado = 4";
+        $seguimientos = $obj->select($sql10); 
 
         $sql1 = "SELECT * FROM usuarios";
         $numDocumen = $obj->select($sql1);
 
         $sql4 = "SELECT * FROM sub_actividades";
         $observaciones = $obj->select($sql4);
+
+        $sql10 = "SELECT codigo_tanque FROM tanque WHERE id_estado = 1";
+        $tanque = $obj->select($sql10); 
 
         // Documento del usuario que inició sesión, para mostrarlo fijo (no editable) en el formulario
         $documentoSesion = $_SESSION['documento'] ?? '';
