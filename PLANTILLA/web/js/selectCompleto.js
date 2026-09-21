@@ -1,13 +1,26 @@
 function validarSelect(array) {
-
-    let valor = false;
+    let hayError = false;
 
     Array.from(array).forEach(element => {
         if (element.selectedIndex === 0) {
             element.style.borderColor = 'red';
-            if(!valor)valor = true;
+            hayError = true;
+        } else {
+            element.style.borderColor = '';
         }
     });
 
-    return valor;
+    return hayError;
 }
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const selectsValidar = document.getElementsByClassName('select-validar');
+    Array.from(selectsValidar).forEach(element => {
+        element.addEventListener('change', function () {
+            if (element.selectedIndex !== 0) {
+                element.style.borderColor = '';
+            }
+        });
+    });
+});

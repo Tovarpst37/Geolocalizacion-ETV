@@ -20,45 +20,49 @@
          include_once '../view/usuario/create.php';
       }
 
-      public function postCreate(){
+     public function postCreate(){
+      $obj = new UsuarioModel();
+      $documento = $_POST['documento'];
 
-         $obj = new UsuarioModel();
-         $documento = $_POST['documento'];
+      $sql = "SELECT EXISTS (SELECT 1 FROM usuarios WHERE documento = $1)";
+      $existe = $obj->exists($sql, $documento);
 
-         $sql = "SELECT EXISTS (SELECT 1 FROM usuarios WHERE documento = $1)";
-         $existe = $obj->exists($sql, $documento);
+      if ($existe) {
+         echo "<script>alert('ya existe un usuario con ese numero de documento')</script>";
+         return;
+      }
 
-         if ($existe) {
-            echo "<script>alert('ya existe un usuario con ese numero de documento')</script>";
-            return;
-         }
+      $primer_nombre        = $_POST['primer_nombre'];
+      $segundo_nombre       = $_POST['segundo_nombre'] ?? '';
+      $primer_apellido      = $_POST['primer_apellido'];
+      $segundo_apellido     = $_POST['segundo_apellido'] ?? '';
+      $tipo_documento       = $_POST['tipo_documento'];
+      $fecha_nacimiento     = $_POST['fecha_nacimiento'];
+      $correo_electronico   = $_POST['correo'];
+      $password             = Hash::encripHash($_POST['password']);
+      $genero               = $_POST['genero'];
+      $rol                  = $_POST['rol'];
+      $rh                   = $_POST['rh'];
+      $id                   = $obj->autoincrement("usuarios", "id_usuario");
 
-         $primer_nombre        = $_POST['primer_nombre'];
-         $segundo_nombre       = $_POST['segundo_nombre'] ?? '';
-         $primer_apellido      = $_POST['primer_apellido'];
-         $segundo_apellido     = $_POST['segundo_apellido'] ?? '';
-         $tipo_documento       = $_POST['tipo_documento'];
-         $fecha_nacimiento     = $_POST['fecha_nacimiento'];
-         $correo_electronico   = $_POST['correo'];
-         $password             = Hash::encripHash($_POST['password']);
-         $genero               = $_POST['genero'];
-         $rol                  = $_POST['rol'];
-         $rh                   = $_POST['rh'];
-         $id                   = $obj->autoincrement("usuarios", "id_usuario");
-
-         $sql = "INSERT INTO usuarios OVERRIDING SYSTEM VALUE VALUES($id,'$primer_nombre',
+      $sql = "INSERT INTO usuarios
+         (id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido,
+         id_tipo_documento, documento, fecha_nacimiento, correo, contraseña,
+         id_genero, id_rol, id_rh, id_estado)
+         OVERRIDING SYSTEM VALUE
+         VALUES($id,'$primer_nombre',
             '$segundo_nombre','$primer_apellido',
             '$segundo_apellido',$tipo_documento,
             '$documento','$fecha_nacimiento',
             '$correo_electronico','$password',$genero,$rol,$rh,". self::$id_estado .")";
-
-         $ejecutar = $obj->insert($sql);
-         if ($ejecutar) {
-            redirect(getUrl("Usuario", "Usuario", "getUsuario"));
-         } else {
-            echo "Hubo un error al momento de la insercion";
-         }
+      
+      $ejecutar = $obj->insert($sql);
+      if ($ejecutar) {
+         redirect(getUrl("Usuario", "Usuario", "getUsuario"));
+      } else {
+         echo "Hubo un error al momento de la insercion";
       }
+   }
 
       public function getUsuario(){
          $obj = new UsuarioModel();
@@ -104,19 +108,18 @@
       public function postEditar(){
          $obj = new UsuarioModel();
 
-         $id_usuario          = $_POST['id_usuarioF'];
-         $primer_nombre       = $_POST['primer_nombreF'];
-         $segundo_nombre      = $_POST['segundo_nombreF'] ?? '';
-         $primer_apellido     = $_POST['primer_apellidoF'];
-         $segundo_apellido    = $_POST['segundo_apellidoF'] ?? '';
-         $tipo_documento      = $_POST['tipo_documentoF'];
-         $documento           = $_POST['documentoF'];
-         $fecha_nacimiento    = $_POST['fecha_nacimientoF'];
-         $correo_electronico  = $_POST['correoF'];
-         $genero              = $_POST['generoF'];
-         $rol                 = $_POST['rolF'];
-         $rh                  = $_POST['rhF'];
-
+         $id_usuario          = $_POST['id_usuario'];
+         $primer_nombre       = $_POST['primer_nombre'];
+         $segundo_nombre      = $_POST['segundo_nombre'] ?? '';
+         $primer_apellido     = $_POST['primer_apellido'];
+         $segundo_apellido    = $_POST['segundo_apellido'] ?? '';
+         $tipo_documento      = $_POST['tipo_documento'];
+         $documento           = $_POST['documento'];
+         $fecha_nacimiento    = $_POST['fecha_nacimiento'];
+         $correo_electronico  = $_POST['correo'];
+         $genero              = $_POST['genero'];
+         $rol                 = $_POST['rol'];
+         $rh                  = $_POST['rh'];
 
          $sql = "SELECT id_zoocriadero, id_sitio FROM usuarios WHERE id_usuario = $1";
          $sql2 = "SELECT id_rol FROM usuarios WHERE id_usuario = $1";
@@ -184,20 +187,22 @@
 
       public function postCambiarEstado(){
          $obj = new UsuarioModel();
-         $id_usuario = $_POST['id_usuariof'];
-         echo $_SESSION['id_usuario'];
-         /*if($id_usuario === $_SESSION['id_usuario']){
-            echo "Error";
+
+         $id_usuario_sesion = $_SESSION['id_usuarioU'];
+         $id_usuario        = $_POST['id_usuario'];
+         $id_estado_actual  = $_POST['id_estado_actual'];
+
+         if ($id_usuario == $id_usuario_sesion) {
+            echo "<script>alert('No puedes tener esta accion sobre ti');</script>";
             return;
          }
-         echo "Bien";*/
-         //$id_estado_actual = $_POST['id_estado_actual'];
-         //$nuevo_estado = ($id_estado_actual == 1) ? 0 : 1;
-         /*
+
+         $nuevo_estado = ($id_estado_actual == 1) ? 0 : 1;
+      
          $sql = "UPDATE usuarios SET id_estado = $nuevo_estado WHERE id_usuario = $id_usuario";
          $obj->update($sql);
-         redirect(getUrl("Usuario","Usuario","getUsuario"));*/
-         
+
+         redirect(getUrl("Usuario", "Usuario", "getUsuario"));
       }
 
 

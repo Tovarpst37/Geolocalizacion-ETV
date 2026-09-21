@@ -26,4 +26,13 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('estado_id_estado_actual').value = btn.dataset.idEstadoActual;
         });
     }
+
+    const modalEstadoH = document.getElementById('modalEstadoH');
+    if (modalEstadoH) {
+        modalEstadoH.addEventListener('show.bs.modal', function (event) {
+            const btn = event.relatedTarget;
+            document.getElementById('estadoH_id_usuario').value = btn.dataset.idUsuario;
+            document.getElementById('estadoH_id_estado_actual').value = btn.dataset.idEstadoActual;
+        });
+    }
 });
