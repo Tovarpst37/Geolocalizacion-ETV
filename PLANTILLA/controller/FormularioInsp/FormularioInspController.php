@@ -199,6 +199,13 @@ class FormularioInspController
             ]);
 
             if (!empty($resSub)) {
+                $id_sub_actividad = $resSub[0]['id_sub_actividad'];
+
+                // La actividad siempre es Ajustes de Nivel (id fijo = 4)
+                $obj->insert(
+                    "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
+                    [self::ID_ACTIVIDAD_INSPECCION, $id_sub_actividad]
+                );
                 redirect(getUrl("FormularioInsp", "FormularioInsp", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades_terreno.";
