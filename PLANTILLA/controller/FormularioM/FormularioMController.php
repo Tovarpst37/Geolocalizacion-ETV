@@ -11,8 +11,8 @@ class FormularioMController
     {
         $obj = new FormulariosModel();
 
-        $sql = "SELECT * FROM seguimiento_zoocriadero";
-        $seguimientos = $obj->select($sql);
+       $sql10 = "SELECT cod_seguimiento FROM seguimiento_zoocriadero WHERE id_estado = 4";
+        $seguimientos = $obj->select($sql10); 
 
         $sql1 = "SELECT * FROM usuarios";
         $numDocumen = $obj->select($sql1);
