@@ -123,7 +123,7 @@
     public function getRegistrar(){
 
         $obj = new SeguimientoTerrenoModel();
-        $sql = "SELECT * from sitio";
+        $sql = "SELECT * from sitio WHERE id_estado = 1";
         $sitio = $obj->select($sql);
 
         $sql4 = "SELECT MAX(id_seguimiento_terreno) FROM seguimiento_terreno";
@@ -476,7 +476,7 @@ public function getSitios(){
     $sql = "SELECT td.id_tipo_deposito, td.nombre 
             FROM tipo_de_deposito td
             INNER JOIN sitio s ON s.id_tipo_deposito = td.id_tipo_deposito
-            WHERE s.id_sitio = $1;";
+            WHERE s.id_sitio = $1";
             
     $terreno = $obj->select($sql,[$id_sitio]);
     
