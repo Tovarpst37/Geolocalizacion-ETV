@@ -84,20 +84,28 @@
           </div>
 
           <div class="mb-4">
-            <label for="id_usuario" class="form-label">Coordinador Asignado <span class="text-danger">*</span></label>
-            <select class="form-select" id="id_usuario" name="id_coor" required>
-              <option value="" selected disabled>Selecciona un Coordinador</option>
-              <?php foreach ($coord as $usu): ?>
+    <label for="id_usuario" class="form-label">Coordinador Asignado <span class="text-danger">*</span></label>
+    
+    <?php if(empty($coord)): ?>
+        <select class="form-select" disabled>
+            <option value="" selected>No hay coordinadores disponibles</option>
+        </select>
+        <input type="hidden" name="id_coor" value="">
+    <?php else: ?>
+        <select class="form-select" id="id_usuario" name="id_coor" required>
+            <option value="" selected disabled>Selecciona un Coordinador</option>
+            <?php foreach ($coord as $usu): ?>
                 <option value="<?php echo $usu['id_usuario']; ?>">
-                  <?php echo $usu['primer_nombre'] . " " . $usu['segundo_nombre'] . " " . $usu['primer_apellido'] . " " . $usu['segundo_apellido']; ?>
+                    <?php echo $usu['primer_nombre'] . " " . $usu['segundo_nombre'] . " " . $usu['primer_apellido'] . " " . $usu['segundo_apellido']; ?>
                 </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
+            <?php endforeach; ?>
+        </select>
+    <?php endif; ?>
+</div>
 
           <div class="mb-4">
     <div class="mb-4">
-    <label class="form-label">Auxiliares asignados</label>
+    <label class="form-label">Auxiliares asignados<span class="text-danger">*</span></label>
 
     
       <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
