@@ -20,7 +20,6 @@
 
             <span class="menu-tag text">Gestión de usuario</span>
             <ul>
-                <?php if (in_array('Usuarios', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-user-circle"></i>
@@ -32,10 +31,8 @@
                         <li><a href="<?php echo getUrl("Usuario", "Usuario", "getUsuario"); ?>"><span class="sub-item">Consultar Usuario</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
             </ul>
             <ul>
-                <?php if (in_array('Roles', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-user-circle"></i>
@@ -47,12 +44,10 @@
                         <li><a href="<?php echo getUrl("Roles", "Roles", "getRoles"); ?>"><span class="sub-item">Consultar Usuario</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
             </ul>
 
             <span class="menu-tag text">Zoocriadero</span>
             <ul>
-                <?php if (in_array('Zoocriadero', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-water"></i>
@@ -64,9 +59,6 @@
                         <li><a href="<?php echo getUrl("Zoocriadero", "Zoocriadero", "getConsultar"); ?>"><span class="sub-item">Consultar Zoocriadero</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Tanques', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-cylinder"></i>
@@ -78,9 +70,6 @@
                         <li><a href="<?php echo getUrl("Tanque", "Tanque", "getConsultar"); ?>"><span class="sub-item">Consultar tanque</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Actividades Zoocriadero', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-task"></i>
@@ -92,12 +81,9 @@
                         <li><a href="<?php echo getUrl("ActividadZoocriadero", "ActividadZoocriadero", "getConsultar"); ?>"><span class="sub-item">Consultar actividad</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Seguimientos Zoocriadero', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="bx bx-radar"></i>
+                        <i class="bx bx-line-chart"></i>
                         <span class="text">Seguimientos</span>
                         <i class="bx bx-chevron-down navCaret text"></i>
                     </a>
@@ -106,9 +92,6 @@
                         <li><a href="<?php echo getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"); ?>"><span class="sub-item">Consultar seguimiento</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Formularios Zoocriadero', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-file"></i>
@@ -123,9 +106,6 @@
                         <li><a href="<?php echo getUrl("FormularioLa", "FormularioLa", "getRegistrar"); ?>"><span class="sub-item">Registrar Lavado</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Historial Zoocriadero', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-history"></i>
@@ -136,12 +116,21 @@
                         <li><a href="<?php echo getUrl("Historial", "Historial", "getConsultar"); ?>"><span class="sub-item">Consultar Historial</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
             </ul>
 
             <span class="menu-tag text">Trabajo en terreno</span>
             <ul>
-                <?php if (in_array('Sitios', $_SESSION['modulos'] ?? [])): ?>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bx bx-layer"></i>
+                        <span class="text">Terreno</span>
+                        <i class="bx bx-chevron-down navCaret text"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="<?php echo getUrl("Terreno", "Terreno", "getCreate"); ?>"><span class="sub-item">Registrar terreno</span></a></li>
+                        <li><a href="<?php echo getUrl("Terreno", "Terreno", "getConsultar"); ?>"><span class="sub-item">Consultar terreno</span></a></li>
+                    </ul>
+                </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-map"></i>
@@ -153,9 +142,6 @@
                         <li><a href="<?php echo getUrl("Sitios", "Sitios", "getConsultar"); ?>"><span class="sub-item">Consultar sitio</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Tipo de depósito', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-box"></i>
@@ -167,9 +153,6 @@
                         <li><a href="<?php echo getUrl("TipoDeDeposito", "TipoDeDeposito", "getConsultar"); ?>"><span class="sub-item">Consultar tipo de depósito</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Actividades Terreno', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-clipboard"></i>
@@ -181,9 +164,6 @@
                         <li><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar"); ?>"><span class="sub-item">Consultar actividad</span> <span class="badge-pending">Próximo</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Seguimientos Terreno', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-route"></i>
@@ -195,9 +175,6 @@
                         <li><a href="<?php echo getUrl("SeguimientoTerreno", "SeguimientoTerreno", "getConsultar"); ?>"><span class="sub-item">Consultar seguimiento</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Formularios Terreno', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-folder"></i>
@@ -211,9 +188,6 @@
                         <li><a href="<?php echo getUrl("FormularioResi", "FormularioResi", "getRegistrar"); ?>"><span class="sub-item">Registrar Resiembra</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (in_array('Historial Terreno', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-history"></i>
@@ -224,12 +198,10 @@
                         <li><a href="<?php echo getUrl("HistorialTerreno", "HistorialTerreno", "getConsultar"); ?>"><span class="sub-item">Consultar Historial</span></a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
             </ul>
 
             <span class="menu-tag text">Reportes</span>
             <ul>
-                <?php if (in_array('Reportes', $_SESSION['modulos'] ?? [])): ?>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="bx bx-bar-chart-alt-2"></i>
@@ -240,14 +212,15 @@
                         <li><a href="<?php echo getUrl("Reportes", "Reportes", "report"); ?>"><span class="sub-item">Seguimiento de actividades</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReportePecesNacidosMuertos", "ReportePecesNacidosMuertos", "getReportePecesNacidosMuertos"); ?>"><span class="sub-item">Peces nacidos/muertos por tanque</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques"); ?>"><span class="sub-item">Tanques por zoocriadero</span> <span class="badge-pending">Próximo</span></a></li>
-                        <li><a href="#"><span class="sub-item">Sitios registrados</span> <span class="badge-pending">Próximo</span></a></li>
-                        <li><a href="#"><span class="sub-item">Actividades de terreno por tipo</span> <span class="badge-pending">Próximo</span></a></li>
+                        <li><a href="<?php echo getUrl("ReporteSitios", "ReporteSitios", "getReporteSitios"); ?>"><span class="sub-item">Sitios registrados</span> <span class="badge-pending">Próximo</span></a></li>
+                        <li><a href="<?php echo getUrl('ReporteActividadTerreno', 'ReporteActividadTerreno', 'getReporteActividadTerreno'); ?>"><span class="sub-item">Actividades de terreno por tipo</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span class="sub-item">Actividades por auxiliar</span> <span class="badge-pending">Próximo</span></a></li>
-                        <li><a href="#"><span class="sub-item">Tipo de depósitos</span> <span class="badge-pending">Próximo</span></a></li>
-                        <li><a href="#"><i class="bx bxs-file-export"></i><span class="sub-item">Exportar a Excel</span></a></li>
+                        <li><a href="<?php echo getUrl("ReportesTipoDeposito", "ReportesTipoDeposito", "getReporteTipoDeposito  "); ?>"><span class="sub-item">Tipo de depósitos</span> <span class="badge-pending">Próximo</span></a></li>
+
+                        <li><a href="<?php echo getUrl('Auditoria', 'Auditoria', 'getConsultar'); ?>"><i class="bx bxs-file-export"></i><span class="sub-item">Auditoria</span></a></li>
                     </ul>
-                </li>
-                <?php endif; ?>
+            </ul>
+            </li>
             </ul>
 
             <span class="menu-tag text">Configuracion</span>
@@ -267,11 +240,15 @@
 
         <div class="sideBottomCard text">
             <p>CERRAR SESION</p>
-            <span><?php echo $_SESSION['primer_nombre'];?></span>
+            <span><?php echo $_SESSION['primer_nombre']; ?></span>
             <div class="arrow">
                 <a href="<?php echo getUrl("Acceso", "Acceso", "logout"); ?>"><i class="bx bx-right-arrow-alt cerrarsesion" role="button" tabindex="0"></i></a>
             </div>
         </div>
+
+
+
+
 
     </div>
 </aside>
