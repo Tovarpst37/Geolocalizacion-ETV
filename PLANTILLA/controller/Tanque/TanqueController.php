@@ -31,7 +31,7 @@ class TanqueController
         $sql2 = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql2);
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado where tipo_estado = 'general'";
         $estados = $obj->select($sql3);
 
         $old = $_SESSION['old_input'] ?? [];
@@ -179,7 +179,7 @@ class TanqueController
         $sql2 = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql2);
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado where tipo_estado = 'general'";
         $estados = $obj->select($sql3);
 
         include_once '../view/partials/Tanque/Editar.php';
