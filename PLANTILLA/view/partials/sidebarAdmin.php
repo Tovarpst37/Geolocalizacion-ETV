@@ -32,6 +32,19 @@
                     </ul>
                 </li>
             </ul>
+            <ul>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bx bx-user-circle"></i>
+                        <span class="text">Roles</span>
+                        <i class="bx bx-chevron-down navCaret text"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="<?php echo getUrl("Roles", "Roles", "getCreate"); ?>"><span class="sub-item">Registrar Usuario</span></a></li>
+                        <li><a href="<?php echo getUrl("Roles", "Roles", "getRoles"); ?>"><span class="sub-item">Consultar Usuario</span></a></li>
+                    </ul>
+                </li>
+            </ul>
 
             <span class="menu-tag text">Zoocriadero</span>
             <ul>
@@ -48,7 +61,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="bx bx-flask"></i>
+                        <i class="bx bx-cylinder"></i>
                         <span class="text">Tanques</span>
                         <i class="bx bx-chevron-down navCaret text"></i>
                     </a>
@@ -204,6 +217,20 @@
                         <li><a href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span class="sub-item">Actividades por auxiliar</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="#"><span class="sub-item">Tipo de depósitos</span> <span class="badge-pending">Próximo</span></a></li>
                         <li><a href="#"><i class="bx bxs-file-export"></i><span class="sub-item">Exportar a Excel</span></a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <span class="menu-tag text">Configuracion</span>
+            <ul>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bx bx-cog"></i>
+                        <span class="text">config</span>
+                        <i class="bx bx-chevron-down navCaret text"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="<?php echo getUrl("AcercaDe", "AcercaDe", "acercaDe"); ?>"><i class="bx bx-info-circle"></i><span class="sub-item">Acerca De</span></a></li>
                     </ul>
                 </li>
             </ul>

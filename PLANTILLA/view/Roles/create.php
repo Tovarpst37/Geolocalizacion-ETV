@@ -11,11 +11,11 @@
         </div>
         <br>
     </div>
-    <form action="<?php echo getUrl("Roles","Roles","postCreate")?>" method="POST">
+    <form action="<?php echo getUrl("Roles","Roles","postCreate")?>" method="POST" id="formRol">
         <div class="card">
             <div class="card-body">
-                <label for="segundo_apellido" class="form-label">Nombre de rol</label>
-                <input type="text" class="form-control" id="segundo_apellido" name="nombre_rol" required>
+                <label for="nombre_rol" class="form-label">Nombre de rol</label>
+                <input type="text" class="form-control" id="nombre_rol" name="nombre_rol">
             </div>
         </div>
         <div class="table-responsive rounded-4 mb-3" id="table">
@@ -42,12 +42,14 @@
                             </td>
                         <?php endforeach; ?>
                     </tr>
-                    <?php endforeach; ?>                        
-                </tbody>           
+                    <?php endforeach; ?>
+                </tbody>
             </table>
         </div>
         <div class="d-flex justify-content-end gap-2">
-            <button type="submit" value="Registrar" class="btn btn-primary">Guardar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
     </form>
 </div>
+
+<script src="/assets/js/roles-form.js"></script>

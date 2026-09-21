@@ -12,21 +12,25 @@
                 <table class="table table-striped table-hover align-middle">
                     <thead>
                         <tr>
-                            <th>Id Rol</td>
+                            <th>Id Rol</th>
                             <th>Nombre Rol</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                            foreach($roles as $rol){
-                                echo "<tr>";
-                                    echo "<td>".$rol['id_rol']."</td>";
-                                    echo "<td>".$rol['nombre_rol']."</td>";
-                                echo "</tr>";
-                            }
-                        ?>
+                        <?php foreach($roles as $rol): ?>
+                        <tr>
+                            <td><?php echo $rol['id_rol']; ?></td>
+                            <td><?php echo $rol['nombre_rol']; ?></td>
+                            <td>
+                                <a href="<?php echo getUrl("Roles","Roles","getEdit") . "&id_rol=" . $rol['id_rol']; ?>"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
                     </tbody>
-                    
                 </table>
             </div>
         </div>
