@@ -7,20 +7,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class AuditoriaController
 {
-    const ROL_ADMINISTRADOR = 1;
 
-    private function verificarAcceso()
-    {
-        if (empty($_SESSION['id_usuario']) || ($_SESSION['id_rol'] ?? null) != self::ROL_ADMINISTRADOR) {
-            include_once '../model/Errores/ErrorModal.php';
-            ErrorModal::verError(
-                ["No tienes permisos para acceder al módulo de Auditoría."],
-                getUrl('Home', 'Home', 'getIndex')
-            );
-            return false;
-        }
-        return true;
-    }
 
     private function construirFiltros(AuditoriaModel $obj)
     {
@@ -56,9 +43,7 @@ class AuditoriaController
 
     public function getConsultar()
     {
-        if (!$this->verificarAcceso()) {
-            return;
-        }
+     
 
         $obj = new AuditoriaModel();
 
@@ -98,9 +83,7 @@ class AuditoriaController
 
     public function exportarAuditoriaExcel()
     {
-        if (!$this->verificarAcceso()) {
-            return;
-        }
+       
 
         $obj = new AuditoriaModel();
 

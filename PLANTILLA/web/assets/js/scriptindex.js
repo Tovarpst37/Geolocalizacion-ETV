@@ -7,7 +7,6 @@ $(function () {
         }
     });
 
-    
     $(".nav-item").each(function () {
         const $item = $(this);
         const $link = $item.children(".nav-link");
@@ -18,21 +17,18 @@ $(function () {
         $link.on("click", function (e) {
             e.preventDefault();
 
-            
             if ($("#sideMenu").hasClass("collapsed")) {
                 $("#sideMenu").removeClass("collapsed");
             }
 
             const isOpen = $item.hasClass("open");
 
-           
             $(".nav-item.open").not($item).removeClass("open");
 
             $item.toggleClass("open", !isOpen);
         });
     });
 
-    
     $("#Buscar").on("keyup", function () {
         const query = $(this).val().toLowerCase().trim();
 
@@ -62,34 +58,46 @@ $(function () {
             $(this).toggle(query === "" || anyVisible);
         });
     });
-
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    var root = document.documentElement;
-    var btn = document.getElementById("themeToggle");
-    var icon = document.getElementById("themeIcon");
-    if (!btn || !icon) return;
- 
-    function applyTheme(theme) {
-        if (theme === "dark") {
+(function () {
+    function initThemeToggle() {
+        const root = document.documentElement;
+        const btn = document.getElementById("themeToggle");
+        const icon = document.getElementById("themeIcon");
+        if (!btn || !icon) return;
+
+        function syncIcon() {
+            const isDark = root.getAttribute("data-theme") === "dark";
+            icon.classList.toggle("bx-sun", isDark);
+            icon.classList.toggle("bx-moon", !isDark);
+        }
+
+        const saved = localStorage.getItem("theme") || "light";
+        if (saved === "dark") {
             root.setAttribute("data-theme", "dark");
-            icon.classList.remove("bx-moon");
-            icon.classList.add("bx-sun");
         } else {
             root.removeAttribute("data-theme");
-            icon.classList.remove("bx-sun");
-            icon.classList.add("bx-moon");
         }
+        syncIcon();
+
+        btn.addEventListener("click", function () {
+            const isDark = root.getAttribute("data-theme") === "dark";
+            const next = isDark ? "light" : "dark";
+
+            if (next === "dark") {
+                root.setAttribute("data-theme", "dark");
+            } else {
+                root.removeAttribute("data-theme");
+            }
+            localStorage.setItem("theme", next);
+            syncIcon();
+        });
     }
- 
-    var saved = localStorage.getItem("theme") || "light";
-    applyTheme(saved);
- 
-    btn.addEventListener("click", function () {
-        var current = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
-        var next = current === "dark" ? "light" : "dark";
-        applyTheme(next);
-        localStorage.setItem("theme", next);
-    });
-});
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initThemeToggle);
+    } else {
+        initThemeToggle();
+    }
+})();
