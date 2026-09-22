@@ -124,12 +124,12 @@
                             <li><a
                                     href="<?php echo getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getRegistrar"); ?>"><span
                                         class="sub-item">Registrar seguimiento</span></a></li>
-                            <li><a href="<?php echo getUrl("Historial", "Historial", "getConsultar"); ?>"><span
+                            <li><a
+                                    href="<?php echo getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"); ?>"><span
                                         class="sub-item">Consultar seguimiento</span></a></li>
                         </ul>
                     </li>
                 <?php endif; ?>
-
 
 
             </ul>
@@ -201,7 +201,6 @@
                 <?php endif; ?>
 
 
-
             </ul>
 
             <span class="menu-tag text">Reportes</span>
@@ -233,6 +232,8 @@
                             <li><a
                                     href="<?php echo getUrl("ReportesTipoDeposito", "ReportesTipoDeposito", "getReporteTipoDeposito  "); ?>"><span
                                         class="sub-item">Tipo de depósitos</span> </a></li>
+                            <li><a href="<?php echo getUrl("Auditoria", "Auditoria", "getConsultar  "); ?>"><span
+                                        class="sub-item">Auditoria</span> </a></li>
 
                         </ul>
                     </li>
