@@ -124,8 +124,7 @@
                             <li><a
                                     href="<?php echo getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getRegistrar"); ?>"><span
                                         class="sub-item">Registrar seguimiento</span></a></li>
-                            <li><a
-                                    href="<?php echo getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"); ?>"><span
+                            <li><a href="<?php echo getUrl("Historial", "Historial", "getConsultar"); ?>"><span
                                         class="sub-item">Consultar seguimiento</span></a></li>
                         </ul>
                     </li>
