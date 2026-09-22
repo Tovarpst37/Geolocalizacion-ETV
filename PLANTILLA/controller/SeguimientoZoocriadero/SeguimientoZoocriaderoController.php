@@ -299,7 +299,7 @@ class SeguimientoZoocriaderoController
 
         if (!empty($errores)) {
             include_once '../model/Errores/ErrorModal.php';
-            ErrorModal::verError($errores, getUrl('SeguimientoZoocriadero', 'SeguimientoZoocriadero', 'getRegistrar'));
+            ErrorModal::verError($errores, getUrl('Historial', 'Historial', 'getConsultar'));
             return;
         }
 
@@ -342,7 +342,9 @@ class SeguimientoZoocriaderoController
             if ($tieneLavado) {
                 $this->guardarLavado($obj, $id_seguimiento, $codigo, $estadoTanque, $porcAgua, $obLa);
             }
+            redirect(getUrl("Historial", "Historial", "getConsultar"));
         }   // ← aquí estaba faltando la llave de cierre del if ($resultado)
+
 
     }
 
@@ -359,15 +361,15 @@ class SeguimientoZoocriaderoController
             estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
             id_estado, id_seguimiento_zoo, cod_seguimiento) 
            VALUES 
-           ($1, $2, $3, $4, 
+           ($1, CURRENT_TIMESTAMP, $2, $3, 
             NULL, NULL, NULL, NULL, 
             NULL, NULL, NULL, NULL, NULL, 
             NULL, NULL, NULL, NULL, NULL, 
             NULL, NULL, NULL, NULL, 
-            1, $5, $6)
+            1, $4, $5)
            RETURNING id_sub_actividad";
 
-        $resSub = $obj->select($sqlSub, [$tipo_alimen, CURRENT_TIMESTAMP, $tipo_pez, $ob, $id_seguimiento, $codigo]);
+        $resSub = $obj->select($sqlSub, [$tipo_alimen, $tipo_pez, $ob, $id_seguimiento, $codigo]);
 
         if (!empty($resSub)) {
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
@@ -436,13 +438,13 @@ class SeguimientoZoocriaderoController
            VALUES 
            (NULL, NULL, NULL, NULL, 
             NULL, NULL, NULL, NULL, 
-            $1, $2, $3, $4, $5, 
+            $1, $2, $3, CURRENT_TIMESTAMP, $4, 
             NULL, NULL, NULL, NULL, NULL, 
             NULL, NULL, NULL, NULL, 
-            1, $6, $7)
+            1, $5, $6)
            RETURNING id_sub_actividad";
 
-        $resSub = $obj->select($sqlSub, [$estregarParedesSql, $aspirarSql, $succionadorSql, CURRENT_TIMESTAMP, $obserLi, $id_seguimiento, $codigo]);
+        $resSub = $obj->select($sqlSub, [$estregarParedesSql, $aspirarSql, $succionadorSql, $obserLi, $id_seguimiento, $codigo]);
 
         if (!empty($resSub)) {
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
@@ -473,16 +475,16 @@ class SeguimientoZoocriaderoController
            (NULL, NULL, NULL, NULL, 
             NULL, NULL, NULL, NULL, 
             NULL, NULL, NULL, NULL, NULL, 
-            $1, $2, $3, $4, $5, 
+            $1, $2, $3, CURRENT_TIMESTAMP, $4, 
             NULL, NULL, NULL, NULL, 
-            1, $6, $7)
+            1, $5, $6)
            RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [
             $nivelAgua,
             $ph,
             $temp,
-            CURRENT_TIMESTAMP,
+
             $obserAj,
             $id_seguimiento,
             $codigo
@@ -498,7 +500,7 @@ class SeguimientoZoocriaderoController
     }
 
     // ---- NUEVO: Lavado, misma lógica que FormularioLaController::postInsert ----
-    private function guardarLavado($obj, $id_seguimiento, $codigo, $estadoTanque, $porcAgua, $fecha_horaLa, $obLa)
+    private function guardarLavado($obj, $id_seguimiento, $codigo, $estadoTanque, $porcAgua, $obLa)
     {
         $sqlSub = "INSERT INTO sub_actividades 
            (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
@@ -512,11 +514,11 @@ class SeguimientoZoocriaderoController
             NULL, NULL, NULL, NULL, 
             NULL, NULL, NULL, NULL, NULL, 
             NULL, NULL, NULL, NULL, NULL, 
-            $1, $2, $3, $4, 
-            1, $5, $6)
+            $1, $2, CURRENT_TIMESTAMP, $3, 
+            1, $4, $5)
            RETURNING id_sub_actividad";
 
-        $resSub = $obj->select($sqlSub, [$estadoTanque, $porcAgua, CURRENT_TIMESTAMP, $obLa, $id_seguimiento, $codigo]);
+        $resSub = $obj->select($sqlSub, [$estadoTanque, $porcAgua, $obLa, $id_seguimiento, $codigo]);
 
         if (!empty($resSub)) {
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
@@ -658,7 +660,8 @@ class SeguimientoZoocriaderoController
             redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
         } else {
             echo "No se pudo actualizar el seguimiento";
-        };
+        }
+        ;
     }
 
 
