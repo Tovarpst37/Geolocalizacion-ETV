@@ -349,7 +349,7 @@ $clasesEstado = [
             </h6>
             <p class="seg-detail">
               <i class="bx bx-calendar"></i>
-              <span>Fecha: <?php echo $s['fecha'] ?? 'N/A'; ?></span>
+              <span>Fecha: <?php echo $s['fecha'] ? date('d/m/Y h:i A', strtotime($s['fecha'])) : 'N/A'; ?></span>
             </p>
             <p class="seg-detail">
               <i class="bx bx-id-card"></i>

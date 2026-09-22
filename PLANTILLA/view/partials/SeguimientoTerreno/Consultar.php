@@ -360,7 +360,7 @@ $nombresEstado = [
             </h6>
             <p class="seg-detail">
               <i class="bx bx-calendar"></i>
-              <span><strong>Fecha:</strong> <?php echo htmlspecialchars($s['fecha'] ?? 'N/A'); ?></span>
+              <span><strong>Fecha: </strong><?php echo htmlspecialchars($s['fecha'] ? date('d/m/Y h:i A', strtotime($s['fecha'])) : 'N/A'); ?></span>
             </p>
             <p class="seg-detail">
               <i class="bx bx-map"></i>
