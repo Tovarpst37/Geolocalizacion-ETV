@@ -254,11 +254,9 @@ class SeguimientoTerrenoController
         $sql3 = "SELECT * from estado WHERE tipo_estado = 'seguimiento'";
         $estados = $obj->select($sql3);
 
-<<<<<<< HEAD
-        $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1";
-=======
-            $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1 ORDER BY id_actividad_terreno";
->>>>>>> 39896c4642254c11e439eeeaa753037a425fa030
+
+        $sql4 = "SELECT * from actividad_terreno WHERE id_estado = 1 ORDER BY id_actividad_terreno";
+
         $actividades = $obj->select($sql4);
 
 
@@ -487,27 +485,9 @@ class SeguimientoTerrenoController
         $obj = new SeguimientoTerrenoModel();
 
         $sql = "SELECT td.id_tipo_deposito, td.nombre 
-            FROM tipo_de_deposito td
-            INNER JOIN sitio s ON s.id_tipo_deposito = td.id_tipo_deposito
-<<<<<<< HEAD
-            WHERE s.id_sitio = $1;";
-=======
-            WHERE s.id_sitio = $1";
-            
-    $terreno = $obj->select($sql,[$id_sitio]);
-    
-    $sql2 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido FROM usuarios WHERE id_sitio = $1 AND id_rol = 3";
-    $usuarios = $obj->select($sql2,[$id_sitio]);
-    
-    $resultado = [
-        'terreno' => $terreno,
-        'usuarios' => $usuarios
-    ];
-    
-    header('Content-Type: application/json');
-    echo json_encode($resultado);
-}
->>>>>>> fa1c7c57cf9ad48eb99586e3b7566e7737b82c15
+        FROM tipo_de_deposito td
+        INNER JOIN sitio s ON s.id_tipo_deposito = td.id_tipo_deposito
+        WHERE s.id_sitio = $1";
 
         $terreno = $obj->select($sql, [$id_sitio]);
 
