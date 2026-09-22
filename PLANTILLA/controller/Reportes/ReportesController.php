@@ -28,8 +28,8 @@ class ReportesController
 
 
         //verificar si los campos tienen informacion, si se ha selec
-        $inicio = isset($_GET['zoocriadero'] ) || isset($_GET['actividad'] ) || 
-        isset($_GET['fecha_inicio'] ) || isset($_GET['fecha_fin'] );
+        $inicio = isset($_GET['zoocriadero']) || isset($_GET['actividad']) ||
+            isset($_GET['fecha_inicio']) || isset($_GET['fecha_fin']);
 
 
         // name de los input del formulario
@@ -42,16 +42,21 @@ class ReportesController
         $errores = $this->validarFiltros($filtroFechaInicio, $filtroFechaFin);
 
 
-        
-        if ($limpiar || !$inicio ) {
 
-            $seguimientos = [];
-        } elseif (!empty($errores)) {
+        // Limpiar: resetea filtros y muestra todos
+        if ($limpiar) {
+            $filtroZoocriadero = '';
+            $filtroActividad   = '';
+            $filtroFechaInicio = '';
+            $filtroFechaFin    = '';
+            $errores           = [];
+        }
 
-            // si hay errores no se consulta
+        if (!empty($errores)) {
+            // Si hay errores de validación no se consulta
             $seguimientos = [];
         } else {
-
+            // Sin filtros = todos los registros (así al entrar ya viene cargado)
             $seguimientos = $this->consultarSeguimiento(
                 $obj,
                 $filtroZoocriadero,
@@ -60,7 +65,8 @@ class ReportesController
                 $filtroFechaFin
             );
 
-            if (empty($seguimientos)) {
+            // Solo avisa “sin resultados” si el usuario aplicó filtros
+            if (empty($seguimientos) && $inicio && !$limpiar) {
                 $errores[] = "No se encontraron registros con los filtros de busqueda seleccionados.";
             }
         }
@@ -82,23 +88,20 @@ class ReportesController
 
         foreach ($seguimientos as $s) {
             $estado = $s['estado'];
-            
 
-            $retrasada = ($estado ==$pendiente || $estado ==$enProceso)
-                            && $s['fecha_registro']< $hoy;
 
-            if($retrasada){
+            $retrasada = ($estado == $pendiente || $estado == $enProceso)
+                && $s['fecha_registro'] < $hoy;
+
+            if ($retrasada) {
                 $totalRetrasadas++;
-            }else{
-                $conteoEstado[$estado] =($conteoEstado[$estado]?? 0)+ 1;
+            } else {
+                $conteoEstado[$estado] = ($conteoEstado[$estado] ?? 0) + 1;
             }
-
-            
-            
         }
 
 
-        
+
 
         // Fuera del foreach: asi siempre quedan definidos, aunque no haya filas
         $totalCompletas  = $conteoEstado[$finalizado] ?? 0;
@@ -165,25 +168,25 @@ class ReportesController
     // Descarga el reporte en Excel con los mismos filtros de la pantalla
     public function exportarSeguimientosExcel()
     {
- 
+
         // Se carga aqui para que la pantalla no dependa de Composer
         require_once __DIR__ . '/../../../vendor/autoload.php';
- 
+
         $obj = new ReporteSeguimientoModel();
- 
+
         $filtroZoocriadero  = $_GET['zoocriadero'] ?? '';
         $filtroActividad    = $_GET['actividad'] ?? '';
         $filtroFechaInicio  = $_GET['fecha_inicio'] ?? '';
         $filtroFechaFin     = $_GET['fecha_fin'] ?? '';
- 
+
         $errores = $this->validarFiltros($filtroFechaInicio, $filtroFechaFin);
- 
+
         if (!empty($errores)) {
- 
+
             // Se vuelve a la pantalla del reporte, que muestra el mensaje de error
             $url = getUrl('Reportes', 'Reportes', 'report');
             $separador = (strpos($url, '?') === false) ? '?' : '&';
- 
+
             header('Location: ' . $url . $separador . http_build_query([
                 'zoocriadero'  => $filtroZoocriadero,
                 'actividad'    => $filtroActividad,
@@ -192,7 +195,7 @@ class ReportesController
             ]));
             exit;
         }
- 
+
         $seguimientos = $this->consultarSeguimiento(
             $obj,
             $filtroZoocriadero,
@@ -200,13 +203,13 @@ class ReportesController
             $filtroFechaInicio,
             $filtroFechaFin
         );
- 
+
         if (empty($seguimientos)) {
- 
+
             // Se vuelve a la pantalla del reporte, que muestra el mensaje de error
             $url = getUrl('Reportes', 'Reportes', 'report');
             $separador = (strpos($url, '?') === false) ? '?' : '&';
- 
+
             header('Location: ' . $url . $separador . http_build_query([
                 'zoocriadero'  => $filtroZoocriadero,
                 'actividad'    => $filtroActividad,
@@ -215,22 +218,22 @@ class ReportesController
             ]));
             exit;
         }
- 
+
         // ---- Estados (los mismos de la pantalla) ----
         $pendiente  = 'Pendiente';
         $enProceso  = 'En proceso';
         $hoy        = date('Y-m-d');
- 
+
         // ---- Colores del proyecto (los mismos del reporte de tanques) ----
         $azulOscuro = '1B3B5F'; // banda superior
         $azulMedio  = '2F6690'; // franja secundaria
         $grisClaro  = 'F2F2F2'; // zebra
         $grisTexto  = '6B6B6B';
- 
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Seguimiento');
- 
+
         // Título de sección: texto azul con una línea gruesa debajo
         $tituloSeccion = function ($fila, $texto) use ($sheet, $azulOscuro) {
             $sheet->mergeCells("A$fila:G$fila");
@@ -240,7 +243,7 @@ class ReportesController
                 ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM)
                 ->getColor()->setRGB($azulOscuro);
         };
- 
+
         // ================== BANDA SUPERIOR ==================
         $sheet->mergeCells('A1:G1');
         $sheet->setCellValue('A1', 'REPORTE DE SEGUIMIENTO A ZOOCRIADEROS');
@@ -251,17 +254,17 @@ class ReportesController
             ->setIndent(9); // deja espacio a la izquierda para el logo
         $sheet->getStyle('A1:G1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($azulOscuro);
         $sheet->getRowDimension(1)->setRowHeight(46);
- 
+
         $sheet->mergeCells('A2:G2');
         $sheet->setCellValue('A2', 'Proyecto de Control Biológico · Geolocalización ETV');
         $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(9)->getColor()->setRGB('FFFFFF');
         $sheet->getStyle('A2')->getAlignment()->setIndent(9);
         $sheet->getStyle('A2:G2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($azulMedio);
         $sheet->getRowDimension(2)->setRowHeight(18);
- 
+
         // ---- Logos (si la imagen no existe, se omite y el Excel se genera igual) ----
         $rutaImg = __DIR__ . '/../../web/assets/img/';
- 
+
         if (file_exists($rutaImg . 'LogoProye.png')) {
             $logoProyecto = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
             $logoProyecto->setName('Logo Geolocalización ETV');
@@ -273,7 +276,7 @@ class ReportesController
             $logoProyecto->setOffsetY(4);
             $logoProyecto->setWorksheet($sheet);
         }
- 
+
         if (file_exists($rutaImg . 'logo_alcaldia.png')) {
             $logoAlcaldia = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
             $logoAlcaldia->setName('Logo Alcaldía de Santiago de Cali');
@@ -285,37 +288,37 @@ class ReportesController
             $logoAlcaldia->setOffsetY(10);
             $logoAlcaldia->setWorksheet($sheet);
         }
- 
+
         // fila espaciadora
         $sheet->getRowDimension(3)->setRowHeight(8);
- 
+
         // ================== INFORMACIÓN GENERAL ==================
         $tituloSeccion(4, 'INFORMACIÓN GENERAL');
- 
+
         $sheet->setCellValue('A5', 'Total de registros:');
         $sheet->setCellValue('B5', count($seguimientos));
         $sheet->setCellValue('A6', 'Fecha de generación:');
         $sheet->setCellValue('B6', date('d/m/Y H:i'));
         $sheet->getStyle('A5:A6')->getFont()->setBold(true)->getColor()->setRGB($grisTexto);
         $sheet->getStyle('B5:B6')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
- 
+
         $sheet->getRowDimension(7)->setRowHeight(10);
- 
+
         // ================== TABLA DE SEGUIMIENTOS ==================
         $tituloSeccion(8, 'SEGUIMIENTO DE ACTIVIDADES');
- 
+
         $filaEncabezado = 10;
         $encabezados = ['Zoocriadero', 'Actividad', 'Tanque', 'Fecha Inicio', 'Fecha Fin', 'Responsable', 'Estado'];
         foreach ($encabezados as $i => $texto) {
             $sheet->setCellValue(chr(65 + $i) . $filaEncabezado, $texto);
         }
- 
+
         $sheet->getStyle("A$filaEncabezado:G$filaEncabezado")->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
         $sheet->getStyle("A$filaEncabezado:G$filaEncabezado")->getFill()
             ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($azulOscuro);
         $sheet->getStyle("A$filaEncabezado:G$filaEncabezado")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getRowDimension($filaEncabezado)->setRowHeight(20);
- 
+
         // Colores del estado
         $coloresEstado = [
             'Finalizado' => 'ABEBC6',
@@ -323,16 +326,16 @@ class ReportesController
             'Pendiente'  => 'F5B7B1',
             'Retrasada'  => 'F1948A',
         ];
- 
+
         $fila = $filaEncabezado + 1;
         $primeraFilaDatos = $fila;
         foreach ($seguimientos as $s) {
- 
+
             // Igual que en pantalla: pendiente o en proceso con fecha pasada = Retrasada
             $retrasada = ($s['estado'] == $pendiente || $s['estado'] == $enProceso)
                 && $s['fecha_registro'] < $hoy;
             $textoEstado = $retrasada ? 'Retrasada' : $s['estado'];
- 
+
             $sheet->setCellValue("A$fila", $s['zoocriadero']);
             $sheet->setCellValue("B$fila", $s['actividad']);
             $sheet->setCellValue("C$fila", $s['tanque']);
@@ -341,28 +344,28 @@ class ReportesController
             $sheet->setCellValue("E$fila", $s['hora_fin'] ? $fecha . ' ' . substr($s['hora_fin'], 0, 5) : '-');
             $sheet->setCellValue("F$fila", $s['responsable']);
             $sheet->setCellValue("G$fila", $textoEstado);
- 
+
             // zebra striping
             if ((($fila - $primeraFilaDatos) % 2) === 1) {
                 $sheet->getStyle("A$fila:G$fila")->getFill()
                     ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($grisClaro);
             }
- 
+
             $sheet->getStyle("A$fila:G$fila")->getBorders()->getBottom()
                 ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
                 ->getColor()->setRGB('D9D9D9');
             $sheet->getStyle("A$fila:G$fila")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("B$fila")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
             $sheet->getStyle("F$fila")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
- 
+
             // color según el estado
             $sheet->getStyle("G$fila")->getFill()
                 ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($coloresEstado[$textoEstado] ?? 'D5D8DC');
             $sheet->getStyle("G$fila")->getFont()->setBold(true);
- 
+
             $fila++;
         }
- 
+
         // ================== ANCHOS DE COLUMNA ==================
         $sheet->getColumnDimension('A')->setWidth(18);
         $sheet->getColumnDimension('B')->setWidth(34);
@@ -371,23 +374,22 @@ class ReportesController
         $sheet->getColumnDimension('E')->setWidth(20);
         $sheet->getColumnDimension('F')->setWidth(26);
         $sheet->getColumnDimension('G')->setWidth(16);
- 
+
         $sheet->setShowGridlines(false);
- 
+
         // Descarga
         $nombreArchivo = 'reporte_seguimiento_' . date('Y-m-d') . '.xlsx';
- 
+
         while (ob_get_level() > 0) {
             ob_end_clean();
         }
- 
+
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $nombreArchivo . '"');
         header('Cache-Control: max-age=0');
- 
+
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
         exit;
     }
 }
-?>
