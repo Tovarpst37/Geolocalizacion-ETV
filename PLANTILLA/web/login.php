@@ -13,7 +13,7 @@ include_once '../view/partials/head.php';
                         <ion-icon name="person-circle-outline"></ion-icon>
                             <input
                                 type="text"
-                                onpaste="return false;"
+                                
                                 inputmode="numeric"
                                 name="documento"
                                 id = "documento"
@@ -28,7 +28,7 @@ include_once '../view/partials/head.php';
                         <ion-icon name="key-outline"></ion-icon>
                             <input
                                 type="password"
-                                onpaste="return false;"
+                                
                                 id="password"
                                 name="password"
                                 placeholder="Contrasena"
