@@ -337,13 +337,13 @@ $nombresEstado = [
   <div class="seg-header">
     <div class="seg-title-group">
       <i class="bx bx-map-pin"></i>
-      <h3>Historial Terreno</h3>
+      <h3>Seguimiento Terreno</h3>
     </div>
 
     <div class="seg-search-box-wrap">
       <form class="m-0" action="index.php" method="GET">
-        <input type="hidden" name="modulo" value="HistorialTerreno">
-        <input type="hidden" name="controlador" value="HistorialTerreno">
+        <input type="hidden" name="modulo" value="SeguimientoTerreno">
+        <input type="hidden" name="controlador" value="SeguimientoTerreno">
         <input type="hidden" name="funcion" value="getBuscar">
 
         <div class="seg-search-box">
@@ -402,12 +402,7 @@ $nombresEstado = [
               </a>
             </div>
 
-            <div class="seg-btn-group-custom">
-              <a href="<?php echo getUrl("HistorialTerreno", "HistorialTerreno", "getEditar", array('id' => $s['id_seguimiento_terreno'])); ?>"
-                class="btn btn-blue">
-                <i class="bx bx-edit-alt"></i> Editar
-              </a>
-            </div>
+            
           </div>
 
         </div>

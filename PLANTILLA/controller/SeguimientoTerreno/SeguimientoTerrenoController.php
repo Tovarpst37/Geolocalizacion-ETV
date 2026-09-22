@@ -24,101 +24,13 @@ class SeguimientoTerrenoController
 
         $obj = new SeguimientoTerrenoModel();
 
-        $sql = "SELECT 
-                s.id_seguimiento_terreno,
-                s.cod_seguimiento,
-                s.fecha,
-                s.hora_inicio,
-                s.hora_fin,
-                s.id_estado,
-                si.nombre_sitio,
-                td.nombre AS cod_terreno,
-                u.primer_nombre,
-                u.primer_apellido,
-                STRING_AGG(at.nombre_actividad, ', ') AS actividades
-            FROM seguimiento_terreno s
-            INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
-            INNER JOIN rol r ON u.id_rol = r.id_rol
-            LEFT JOIN sitio si ON s.id_sitio = si.id_sitio
-            LEFT JOIN tipo_de_deposito td ON si.id_tipo_deposito = td.id_tipo_deposito
-            LEFT JOIN actividad_seg_terreno ast ON s.id_seguimiento_terreno = ast.id_seguimiento_terreno
-            LEFT JOIN actividad_terreno at ON ast.id_actividad_terreno = at.id_actividad_terreno 
-                                            AND at.id_estado = 1          
-            WHERE r.nombre_rol IN ('Auxiliar', 'Coordinador')
-            GROUP BY 
-                s.id_seguimiento_terreno, 
-                s.cod_seguimiento, 
-                s.fecha, 
-                s.hora_inicio, 
-                s.hora_fin, 
-                s.id_estado, 
-                si.nombre_sitio,
-                td.nombre,
-                u.primer_nombre, 
-                u.primer_apellido
-            ORDER BY s.id_seguimiento_terreno DESC";
+        
+        $sql = "SELECT s.id_seguimiento_terreno, s.cod_seguimiento, s.fecha, u.documento, s.id_estado, si.nombre_sitio
+                FROM seguimiento_terreno s
+                LEFT JOIN usuarios u ON s.id_usuario = u.id_usuario
+                LEFT JOIN sitio si ON s.id_sitio = si.id_sitio
+                ORDER BY s.id_seguimiento_terreno DESC";
 
-
-
-        $seguimientosnew = $obj->select($sql);
-
-        foreach ($seguimientosnew as $se) {
-            $sql15 = "SELECT 
-                                atr.id_actividad_terreno,
-                                atr.nombre_actividad,
-                                EXISTS (
-                                    SELECT 1
-                                    FROM actividad_ter_subactividades ats
-                                    INNER JOIN sub_actividades_ter sa 
-                                        ON sa.id_sub_actividad = ats.id_sub_actividades
-                                    WHERE ats.id_actividad_terreno = atr.id_actividad_terreno
-                                    AND sa.id_seguimiento_terreno = ast.id_seguimiento_terreno
-                                ) AS ya_registrada
-                            FROM actividad_seg_terreno ast
-                            INNER JOIN actividad_terreno atr 
-                                ON ast.id_actividad_terreno = atr.id_actividad_terreno
-                            WHERE ast.id_seguimiento_terreno = $1
-                            ORDER BY atr.id_actividad_terreno";
-            $act = $obj->select($sql15, [$se['id_seguimiento_terreno']]);
-
-
-            if (count($act) == 0)
-                continue;
-
-            $verify = true;
-
-            foreach ($act as $a) {
-                if ($a['ya_registrada'] !== true && $a['ya_registrada'] !== 't') {
-                    $verify = false;
-                    break;
-                }
-            }
-
-            if ($verify) {
-
-                $sql22 = "UPDATE seguimiento_terreno 
-                            SET id_estado = 5 
-                            WHERE id_seguimiento_terreno = $1 AND id_estado = 4";
-                $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_terreno']]);
-            } else {
-
-                $sql22 = "UPDATE seguimiento_terreno 
-                            SET id_estado = 4 
-                            WHERE id_seguimiento_terreno = $1 AND id_estado = 5";
-                $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_terreno']]);
-            }
-        }
-
-
-
-
-        $sql2 = "UPDATE seguimiento_terreno
-                SET id_estado = 3 
-                WHERE fecha = CURRENT_DATE 
-                AND hora_fin < LOCALTIME 
-                AND id_estado =  4";
-
-        $ejecutar = $obj->update($sql2);
         $seguimientos = $obj->select($sql);
 
         if (count($seguimientos) <= 0) {
@@ -153,283 +65,258 @@ class SeguimientoTerrenoController
 
 
     public function postRegistrar()
-    {
-        $obj = new SeguimientoTerrenoModel(); // ajusta el nombre real de tu modelo
+{
+    $obj = new SeguimientoTerrenoModel(); // ajusta el nombre real de tu modelo
 
-        $codigo = mb_strtoupper($_POST['codigo']) ?? '';
-        $sitio = $_POST['select_ter'] ?? '';
-       
-        $usuario = $_POST['selectUsuarios'] ?? '';
-        $deposito = $_POST['selectTerreno'] ?? '';
-        
-        $actividades = $_POST['actividades'] ?? [];
+    $codigo   = mb_strtoupper($_POST['codigo'] ?? '');
+    $sitio    = $_POST['select_ter'] ?? '';
+    $usuario  = $_POST['selectUsuarios'] ?? '';
+    $deposito = $_POST['selectTerreno'] ?? '';
 
-        $sql_validar = "SELECT id_seguimiento_terreno FROM seguimiento_terreno WHERE cod_seguimiento = $1";
-        $existe = $obj->select($sql_validar, [$codigo]);
+    $actividades = $_POST['actividades'] ?? [];
 
-        $errores = [];
-     
+    $sql_validar = "SELECT id_seguimiento_terreno FROM seguimiento_terreno WHERE cod_seguimiento = $1";
+    $existe      = $obj->select($sql_validar, [$codigo]);
 
-        if (!empty($existe)) {
-            $errores[] = "Ya existe un seguimiento con ese código";
+    $errores = [];
+
+    if (!empty($existe)) {
+        $errores[] = "Ya existe un seguimiento con ese código";
+    }
+    if (empty($codigo)) {
+        $errores[] = "Debe ingresar el codigo del seguimiento";
+    }
+    if (empty($sitio)) {
+        $errores[] = "Debe seleccionar el sitio.";
+    }
+    if (empty($usuario)) {
+        $errores[] = "Debe seleccionar el Auxiliar asignado.";
+    }
+    if (empty($deposito)) {
+        $errores[] = "Debe seleccionar el depósito al que se le hará el seguimiento.";
+    }
+
+    // ---- INSPECCIÓN: validar solo si viene marcada esa actividad ----
+    $tieneInspeccion = in_array(self::ID_ACTIVIDAD_INSPECCION, $actividades);
+
+    $depositoDetRaw  = $_POST['depositoDetectado'] ?? '';
+    $phMedido        = $_POST['phMedido'] ?? '';
+    $temperatura     = $_POST['temperatura'] ?? '';
+    $presenciaLarvRaw = $_POST['presenciaLarvas'] ?? '';
+    $obserInsp       = trim($_POST['obserInsp'] ?? '');
+    $obserInsp       = strip_tags($obserInsp);
+
+    if ($tieneInspeccion) {
+        if ($depositoDetRaw !== '0' && $depositoDetRaw !== '1') {
+            $errores[] = "Debe indicar si se detectaron depósitos permanentes de agua.";
         }
-        if (empty($codigo)) {
-            $errores[] = "Debe ingresar el codigo del seguimiento";
+        if ($phMedido === '' || !is_numeric($phMedido)) {
+            $errores[] = "El PH medido es obligatorio y debe ser un número válido.";
+        } elseif ($phMedido < 0 || $phMedido > 14) {
+            $errores[] = "El PH medido debe estar entre 0 y 14.";
         }
-        if (empty($sitio)) {
-            $errores[] = "Debe seleccionar el sitio.";
+        if ($temperatura === '' || !is_numeric($temperatura)) {
+            $errores[] = "La temperatura medida es obligatoria y debe ser un número válido.";
         }
-        
-        if (empty($usuario)) {
-            $errores[] = "Debe seleccionar el Auxiliar asignado.";
+        if ($presenciaLarvRaw !== '0' && $presenciaLarvRaw !== '1') {
+            $errores[] = "Debe indicar si hay presencia de larvas de zancudos.";
         }
-        if (empty($deposito)) {
-            $errores[] = "Debe seleccionar el depósito al que se le hará el seguimiento.";
-        }
-       
-
-        // ---- INSPECCIÓN: validar solo si viene marcada esa actividad ----
-        $tieneInspeccion = in_array(self::ID_ACTIVIDAD_INSPECCION, $actividades);
-
-       
-        $depositoDetRaw = $_POST['depositoDetectado'] ?? '';
-        $phMedido = $_POST['phMedido'] ?? '';
-        $temperatura = $_POST['temperatura'] ?? '';
-        $presenciaLarvRaw = $_POST['presenciaLarvas'] ?? '';
-        $obserInsp = trim($_POST['obserInsp'] ?? '');
-        $obserInsp = strip_tags($obserInsp);
-
-        if ($tieneInspeccion) {
-            
-            if ($depositoDetRaw !== '0' && $depositoDetRaw !== '1') {
-                $errores[] = "Debe indicar si se detectaron depósitos permanentes de agua.";
-            }
-            if ($phMedido === '' || !is_numeric($phMedido)) {
-                $errores[] = "El PH medido es obligatorio y debe ser un número válido.";
-            } elseif ($phMedido < 0 || $phMedido > 14) {
-                $errores[] = "El PH medido debe estar entre 0 y 14.";
-            }
-            if ($temperatura === '' || !is_numeric($temperatura)) {
-                $errores[] = "La temperatura medida es obligatoria y debe ser un número válido.";
-            }
-            if ($presenciaLarvRaw !== '0' && $presenciaLarvRaw !== '1') {
-                $errores[] = "Debe indicar si hay presencia de larvas de zancudos.";
-            }
-            if (empty($obserInsp)) {
-                $errores[] = "Las observaciones de inspección son obligatorias.";
-            }
-            if (strlen($obserInsp) > 250) {
-                $errores[] = "Las observaciones de inspección no pueden superar los 250 caracteres.";
-            }
-        }
-
-        // ---- SIEMBRA: validar solo si viene marcada esa actividad ----
-        $tieneSiembra = in_array(self::ID_ACTIVIDAD_SIEMBRA, $actividades);
-
-        
-        $pecesEmpacados = $_POST['pecesEmpacados'] ?? '';
-        
-        $hembrasSembradas = $_POST['hembrasSembradas'] ?? '';
-        $machosSembrados = $_POST['machosSembrados'] ?? '';
-        $litrosAgua = $_POST['litrosAgua'] ?? '';
-        $presenciaLarvasSiemRaw = $_POST['presenciaLarvasSiem'] ?? '';
-        $presenciaPecesSiemRaw = $_POST['presenciaPecesSiem'] ?? '';
-        $obserSiem = trim($_POST['obserSiem'] ?? '');
-        $obserSiem = strip_tags($obserSiem);
-
-        if ($tieneSiembra) {
-            
-            if ($pecesEmpacados === '' || !is_numeric($pecesEmpacados) || $pecesEmpacados < 0) {
-                $errores[] = "La cantidad de peces empacados es obligatoria y debe ser un número válido.";
-            }
-           
-            if ($hembrasSembradas === '' || !is_numeric($hembrasSembradas) || $hembrasSembradas < 0) {
-                $errores[] = "La cantidad de hembras sembradas es obligatoria y debe ser un número válido.";
-            }
-            if ($machosSembrados === '' || !is_numeric($machosSembrados) || $machosSembrados < 0) {
-                $errores[] = "La cantidad de machos sembrados es obligatoria y debe ser un número válido.";
-            }
-            if ($litrosAgua === '' || !is_numeric($litrosAgua) || $litrosAgua < 0) {
-                $errores[] = "El volumen de agua utilizado es obligatorio y debe ser un número válido.";
-            }
-            if ($presenciaLarvasSiemRaw !== '0' && $presenciaLarvasSiemRaw !== '1') {
-                $errores[] = "Debe indicar si hay presencia de larvas de zancudos en la siembra.";
-            }
-            if ($presenciaPecesSiemRaw !== '0' && $presenciaPecesSiemRaw !== '1') {
-                $errores[] = "Debe indicar si hay presencia de peces en la siembra.";
-            }
-            if (empty($obserSiem)) {
-                $errores[] = "Las observaciones de siembra son obligatorias.";
-            }
-            if (strlen($obserSiem) > 250) {
-                $errores[] = "Las observaciones de siembra no pueden superar los 250 caracteres.";
-            }
-        }
-
-        // ---- SEGUIMIENTO: validar solo si viene marcada esa actividad ----
-        $tieneSeguimientoAct = in_array(self::ID_ACTIVIDAD_SEGUIMIENTO, $actividades);
-
-        
-        $numeroVisitaRaw = $_POST['numeroVisita'] ?? '';
-        $depositoVisRaw = $_POST['depositoVisitado'] ?? '';
-        $presenciaLarvasSegRaw = $_POST['presenciaLarvasSeg'] ?? '';
-        $presenciaPecesSegRaw = $_POST['presenciaPecesSeg'] ?? '';
-        $obserSeg = trim($_POST['obserSeg'] ?? '');
-        $obserSeg = strip_tags($obserSeg);
-
-        if ($tieneSeguimientoAct) {
-            
-            if ($numeroVisitaRaw !== '1' && $numeroVisitaRaw !== '2') {
-                $errores[] = "Debe seleccionar un número de visita válido (1ra o 2da).";
-            }
-            if ($depositoVisRaw !== '0' && $depositoVisRaw !== '1') {
-                $errores[] = "Debe indicar si se visitaron depósitos permanentes con agua.";
-            }
-            if ($presenciaLarvasSegRaw !== '0' && $presenciaLarvasSegRaw !== '1') {
-                $errores[] = "Debe indicar si hay presencia de larvas de zancudos en el seguimiento.";
-            }
-            if ($presenciaPecesSegRaw !== '0' && $presenciaPecesSegRaw !== '1') {
-                $errores[] = "Debe indicar si hay presencia de peces en el seguimiento.";
-            }
-            if (empty($obserSeg)) {
-                $errores[] = "Las observaciones de seguimiento son obligatorias.";
-            }
-            if (strlen($obserSeg) > 250) {
-                $errores[] = "Las observaciones de seguimiento no pueden superar los 250 caracteres.";
-            }
-        }
-
-        // ---- RESIEMBRA: validar solo si viene marcada esa actividad ----
-        $tieneResiembra = in_array(self::ID_ACTIVIDAD_RESIEMBRA, $actividades);
-
-        
-        $canHembrasResi = $_POST['canHembras'] ?? '';
-        $canMachosResi = $_POST['canMachos'] ?? '';
-        $canGuppiesResi = $_POST['canGuppies'] ?? '';
-        $presenciaLarvasResiRaw = $_POST['presenciaLarvasResi'] ?? '';
-        $presenciaPecesResiRaw = $_POST['presenciaPecesResi'] ?? '';
-        $obserResi = trim($_POST['obserResi'] ?? '');
-        $obserResi = strip_tags($obserResi);
-
-        if ($tieneResiembra) {
-            
-            if ($canHembrasResi === '' || !is_numeric($canHembrasResi) || $canHembrasResi < 0) {
-                $errores[] = "La cantidad de hembras sembradas es obligatoria y debe ser un número válido.";
-            }
-            if ($canMachosResi === '' || !is_numeric($canMachosResi) || $canMachosResi < 0) {
-                $errores[] = "La cantidad de machos sembrados es obligatoria y debe ser un número válido.";
-            }
-            if ($canGuppiesResi === '' || !is_numeric($canGuppiesResi) || $canGuppiesResi < 0) {
-                $errores[] = "La cantidad de peces guppies sembrados es obligatoria y debe ser un número válido.";
-            }
-            if ($presenciaLarvasResiRaw !== '0' && $presenciaLarvasResiRaw !== '1') {
-                $errores[] = "Debe indicar si hay presencia de larvas de zancudos en la resiembra.";
-            }
-            if ($presenciaPecesResiRaw !== '0' && $presenciaPecesResiRaw !== '1') {
-                $errores[] = "Debe indicar si hay presencia de peces en la resiembra.";
-            }
-            if (empty($obserResi)) {
-                $errores[] = "Las observaciones de resiembra son obligatorias.";
-            }
-            if (strlen($obserResi) > 250) {
-                $errores[] = "Las observaciones de resiembra no pueden superar los 250 caracteres.";
-            }
-        }
-
-
-        if (!empty($errores)) {
-            include_once '../model/Errores/ErrorModal.php';
-            ErrorModal::verError($errores, getUrl('SeguimientoTerreno', 'SeguimientoTerreno', 'getRegistrar'));
-            return;
-        }
-
-
-        $sql = "INSERT INTO seguimiento_terreno (cod_seguimiento, fecha, id_sitio, id_usuario, id_estado, hora_inicio, hora_fin)
-        VALUES ($1,CURRENT_TIMESTAMP, $2, $3, $4, $5, $6)
-        RETURNING id_seguimiento_terreno";
-
-        $resultado = $obj->select($sql, [$codigo, $sitio, $usuario, 5, null, null]);
-
-        if ($resultado) {
-            $id_seguimiento = $resultado[0]['id_seguimiento_terreno'];
-
-            foreach ($actividades as $id_actividad) {
-                $sql2 = "INSERT INTO actividad_seg_terreno (id_seguimiento_terreno, id_actividad_terreno) 
-                        VALUES ('$id_seguimiento', '$id_actividad')";
-                $obj->insert($sql2);
-            }
-
-            // ---- Guardar Inspección si aplica ----
-            if ($tieneInspeccion) {
-                $this->guardarInspeccion(
-                    $obj,
-                    $id_seguimiento,
-                    $codigo,
-                    
-                    $depositoDetRaw,
-                    $phMedido,
-                    $temperatura,
-                    $presenciaLarvRaw,
-                    $obserInsp
-                );
-            }
-
-            // ---- Guardar Siembra si aplica ----
-            if ($tieneSiembra) {
-                $this->guardarSiembra(
-                    $obj,
-                    $id_seguimiento,
-                    $codigo,
-                    
-                    $pecesEmpacados,
-                    $tiempoAclimat,
-                    $hembrasSembradas,
-                    $machosSembrados,
-                    $litrosAgua,
-                    $presenciaLarvasSiemRaw,
-                    $presenciaPecesSiemRaw,
-                    $obserSiem
-                );
-            }
-
-            // ---- Guardar Seguimiento si aplica ----
-            if ($tieneSeguimientoAct) {
-                $this->guardarSeguimientoAct(
-                    $obj,
-                    $id_seguimiento,
-                    $codigo,
-                    
-                    $numeroVisitaRaw,
-                    $depositoVisRaw,
-                    $presenciaLarvasSegRaw,
-                    $presenciaPecesSegRaw,
-                    $obserSeg
-                );
-            }
-
-            // ---- Guardar Resiembra si aplica ----
-            if ($tieneResiembra) {
-                $this->guardarResiembra(
-                    $obj,
-                    $id_seguimiento,
-                    $codigo,
-                    
-                    $canHembrasResi,
-                    $canMachosResi,
-                    $canGuppiesResi,
-                    $presenciaLarvasResiRaw,
-                    $presenciaPecesResiRaw,
-                    $obserResi
-                );
-            }
-
-            $_SESSION['mensaje_exito'] = "El Seguimiento de Terreno se registró correctamente.";
-
-            redirect(getUrl("HistorialTerreno", "HistorialTerreno", "getConsultar"));
-        } else {
-            echo "No se pudo registrar el seguimiento";
+        // Validar solo longitud si el usuario ingresó algún texto
+        if (!empty($obserInsp) && strlen($obserInsp) > 250) {
+            $errores[] = "Las observaciones de inspección no pueden superar los 250 caracteres.";
         }
     }
+
+    // ---- SIEMBRA: validar solo si viene marcada esa actividad ----
+    $tieneSiembra = in_array(self::ID_ACTIVIDAD_SIEMBRA, $actividades);
+
+    $pecesEmpacados         = $_POST['pecesEmpacados'] ?? '';
+    $tiempoAclimat          = $_POST['tiempoAclimat'] ?? null;
+    $hembrasSembradas       = $_POST['hembrasSembradas'] ?? '';
+    $machosSembrados        = $_POST['machosSembrados'] ?? '';
+    $litrosAgua             = $_POST['litrosAgua'] ?? '';
+    $presenciaLarvasSiemRaw = $_POST['presenciaLarvasSiem'] ?? '';
+    $presenciaPecesSiemRaw  = $_POST['presenciaPecesSiem'] ?? '';
+    $obserSiem              = trim($_POST['obserSiem'] ?? '');
+    $obserSiem              = strip_tags($obserSiem);
+
+    if ($tieneSiembra) {
+        if ($pecesEmpacados === '' || !is_numeric($pecesEmpacados) || $pecesEmpacados < 0) {
+            $errores[] = "La cantidad de peces empacados es obligatoria y debe ser un número válido.";
+        }
+        if ($hembrasSembradas === '' || !is_numeric($hembrasSembradas) || $hembrasSembradas < 0) {
+            $errores[] = "La cantidad de hembras sembradas es obligatoria y debe ser un número válido.";
+        }
+        if ($machosSembrados === '' || !is_numeric($machosSembrados) || $machosSembrados < 0) {
+            $errores[] = "La cantidad de machos sembrados es obligatoria y debe ser un número válido.";
+        }
+        if ($litrosAgua === '' || !is_numeric($litrosAgua) || $litrosAgua < 0) {
+            $errores[] = "El volumen de agua utilizado es obligatorio y debe ser un número válido.";
+        }
+        if ($presenciaLarvasSiemRaw !== '0' && $presenciaLarvasSiemRaw !== '1') {
+            $errores[] = "Debe indicar si hay presencia de larvas de zancudos en la siembra.";
+        }
+        if ($presenciaPecesSiemRaw !== '0' && $presenciaPecesSiemRaw !== '1') {
+            $errores[] = "Debe indicar si hay presencia de peces en la siembra.";
+        }
+        // Validar solo longitud si el usuario ingresó algún texto
+        if (!empty($obserSiem) && strlen($obserSiem) > 250) {
+            $errores[] = "Las observaciones de siembra no pueden superar los 250 caracteres.";
+        }
+    }
+
+    // ---- SEGUIMIENTO: validar solo si viene marcada esa actividad ----
+    $tieneSeguimientoAct = in_array(self::ID_ACTIVIDAD_SEGUIMIENTO, $actividades);
+
+    $numeroVisitaRaw       = $_POST['numeroVisita'] ?? '';
+    $depositoVisRaw        = $_POST['depositoVisitado'] ?? '';
+    $presenciaLarvasSegRaw = $_POST['presenciaLarvasSeg'] ?? '';
+    $presenciaPecesSegRaw  = $_POST['presenciaPecesSeg'] ?? '';
+    $obserSeg              = trim($_POST['obserSeg'] ?? '');
+    $obserSeg              = strip_tags($obserSeg);
+
+    if ($tieneSeguimientoAct) {
+        if ($numeroVisitaRaw !== '1' && $numeroVisitaRaw !== '2') {
+            $errores[] = "Debe seleccionar un número de visita válido (1ra o 2da).";
+        }
+        if ($depositoVisRaw !== '0' && $depositoVisRaw !== '1') {
+            $errores[] = "Debe indicar si se visitaron depósitos permanentes con agua.";
+        }
+        if ($presenciaLarvasSegRaw !== '0' && $presenciaLarvasSegRaw !== '1') {
+            $errores[] = "Debe indicar si hay presencia de larvas de zancudos en el seguimiento.";
+        }
+        if ($presenciaPecesSegRaw !== '0' && $presenciaPecesSegRaw !== '1') {
+            $errores[] = "Debe indicar si hay presencia de peces en el seguimiento.";
+        }
+        // Validar solo longitud si el usuario ingresó algún texto
+        if (!empty($obserSeg) && strlen($obserSeg) > 250) {
+            $errores[] = "Las observaciones de seguimiento no pueden superar los 250 caracteres.";
+        }
+    }
+
+    // ---- RESIEMBRA: validar solo si viene marcada esa actividad ----
+    $tieneResiembra = in_array(self::ID_ACTIVIDAD_RESIEMBRA, $actividades);
+
+    $canHembrasResi         = $_POST['canHembras'] ?? '';
+    $canMachosResi          = $_POST['canMachos'] ?? '';
+    $canGuppiesResi         = $_POST['canGuppies'] ?? '';
+    $presenciaLarvasResiRaw = $_POST['presenciaLarvasResi'] ?? '';
+    $presenciaPecesResiRaw  = $_POST['presenciaPecesResi'] ?? '';
+    $obserResi              = trim($_POST['obserResi'] ?? '');
+    $obserResi              = strip_tags($obserResi);
+
+    if ($tieneResiembra) {
+        if ($canHembrasResi === '' || !is_numeric($canHembrasResi) || $canHembrasResi < 0) {
+            $errores[] = "La cantidad de hembras sembradas es obligatoria y debe ser un número válido.";
+        }
+        if ($canMachosResi === '' || !is_numeric($canMachosResi) || $canMachosResi < 0) {
+            $errores[] = "La cantidad de machos sembrados es obligatoria y debe ser un número válido.";
+        }
+        if ($canGuppiesResi === '' || !is_numeric($canGuppiesResi) || $canGuppiesResi < 0) {
+            $errores[] = "La cantidad de peces guppies sembrados es obligatoria y debe ser un número válido.";
+        }
+        if ($presenciaLarvasResiRaw !== '0' && $presenciaLarvasResiRaw !== '1') {
+            $errores[] = "Debe indicar si hay presencia de larvas de zancudos en la resiembra.";
+        }
+        if ($presenciaPecesResiRaw !== '0' && $presenciaPecesResiRaw !== '1') {
+            $errores[] = "Debe indicar si hay presencia de peces en la resiembra.";
+        }
+        // Validar solo longitud si el usuario ingresó algún texto
+        if (!empty($obserResi) && strlen($obserResi) > 250) {
+            $errores[] = "Las observaciones de resiembra no pueden superar los 250 caracteres.";
+        }
+    }
+
+    // ---- Retorno en caso de error ----
+    if (!empty($errores)) {
+        include_once '../model/Errores/ErrorModal.php';
+        ErrorModal::verError($errores, getUrl('SeguimientoTerreno', 'SeguimientoTerreno', 'getRegistrar'));
+        return;
+    }
+
+    // ---- Inserción Principal ----
+    $sql = "INSERT INTO seguimiento_terreno (cod_seguimiento, fecha, id_sitio, id_usuario, id_estado, hora_inicio, hora_fin)
+            VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5, $6)
+            RETURNING id_seguimiento_terreno";
+
+    $resultado = $obj->select($sql, [$codigo, $sitio, $usuario, 5, null, null]);
+
+    if ($resultado) {
+        $id_seguimiento = $resultado[0]['id_seguimiento_terreno'];
+
+        foreach ($actividades as $id_actividad) {
+            $sql2 = "INSERT INTO actividad_seg_terreno (id_seguimiento_terreno, id_actividad_terreno) 
+                    VALUES ('$id_seguimiento', '$id_actividad')";
+            $obj->insert($sql2);
+        }
+
+        // ---- Guardar Inspección ----
+        if ($tieneInspeccion) {
+            $this->guardarInspeccion(
+                $obj,
+                $id_seguimiento,
+                $codigo,
+                $depositoDetRaw,
+                $phMedido,
+                $temperatura,
+                $presenciaLarvRaw,
+                $obserInsp
+            );
+        }
+
+        // ---- Guardar Siembra ----
+        if ($tieneSiembra) {
+            $this->guardarSiembra(
+                $obj,
+                $id_seguimiento,
+                $codigo,
+                $pecesEmpacados,
+                $tiempoAclimat,
+                $hembrasSembradas,
+                $machosSembrados,
+                $litrosAgua,
+                $presenciaLarvasSiemRaw,
+                $presenciaPecesSiemRaw,
+                $obserSiem
+            );
+        }
+
+        // ---- Guardar Seguimiento ----
+        if ($tieneSeguimientoAct) {
+            $this->guardarSeguimientoAct(
+                $obj,
+                $id_seguimiento,
+                $codigo,
+                $numeroVisitaRaw,
+                $depositoVisRaw,
+                $presenciaLarvasSegRaw,
+                $presenciaPecesSegRaw,
+                $obserSeg
+            );
+        }
+
+        // ---- Guardar Resiembra ----
+        if ($tieneResiembra) {
+            $this->guardarResiembra(
+                $obj,
+                $id_seguimiento,
+                $codigo,
+                $canHembrasResi,
+                $canMachosResi,
+                $canGuppiesResi,
+                $presenciaLarvasResiRaw,
+                $presenciaPecesResiRaw,
+                $obserResi
+            );
+        }
+
+        $_SESSION['mensaje_exito'] = "El Seguimiento de Terreno se registró correctamente.";
+
+        redirect(getUrl("SeguimientoTerreno", "SeguimientoTerreno", "getConsultar"));
+    } else {
+        echo "No se pudo registrar el seguimiento";
+    }
+}
 
     // ---- Inspección, misma lógica que FormularioInspController::postInsert ----
     private function guardarInspeccion($obj, $id_seguimiento, $codigo, $depositoDetRaw, $phMedido, $temperatura, $presenciaLarvRaw, $obser)
@@ -720,105 +607,59 @@ class SeguimientoTerrenoController
     }
 
     public function getBuscar()
-    {
+{
+    $obj = new SeguimientoTerrenoModel();
+    $palabra = $_GET['busqueda'] ?? '';
+    $busqueda = trim($palabra);
 
+    // Actualiza estados vencidos
+    $sqlEstado = "UPDATE seguimiento_terreno
+        SET id_estado = 3 
+        WHERE fecha = CURRENT_DATE 
+        AND hora_fin < LOCALTIME 
+        AND id_estado = 4";
+    $obj->update($sqlEstado);
 
-        $busqueda = mb_strtoupper($_GET['busqueda'] ?? '');
-        if (!empty($busqueda)) {
-            $obj = new SeguimientoTerrenoModel();
+    if (!empty($busqueda)) {
+        $sql = "SELECT 
+                    s.id_seguimiento_terreno, 
+                    s.cod_seguimiento, 
+                    s.fecha, 
+                    u.documento, 
+                    s.id_estado, 
+                    si.nombre_sitio
+                FROM seguimiento_terreno s
+                LEFT JOIN usuarios u ON s.id_usuario = u.id_usuario
+                LEFT JOIN sitio si ON s.id_sitio = si.id_sitio
+                WHERE 
+                    s.cod_seguimiento ILIKE $1
+                    OR CAST(u.documento AS TEXT) ILIKE $1
+                    OR si.nombre_sitio ILIKE $1
+                ORDER BY s.id_seguimiento_terreno DESC";
 
-            $palabra = $_GET['busqueda'];
+        $seguimientos = $obj->select($sql, ['%' . $busqueda . '%']);
 
-            $sql = "SELECT 
-                s.id_seguimiento_terreno,
-                s.cod_seguimiento,
-                s.fecha,
-                s.hora_inicio,
-                s.hora_fin,
-                s.id_estado,
-                si.nombre_sitio,
-                sd.codigo_sitio_deposito AS cod_terreno,
-                u.primer_nombre,
-                u.primer_apellido,
-                STRING_AGG(at.nombre_actividad, ', ') AS actividades
-            FROM seguimiento_terreno s
-            INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
-            INNER JOIN rol r ON u.id_rol = r.id_rol
-            LEFT JOIN sitio si ON s.id_sitio = si.id_sitio
-            LEFT JOIN sitio_deposito sd ON s.id_sitio = sd.id_sitio
-            LEFT JOIN actividad_seg_terreno ast ON s.id_seguimiento_terreno = ast.id_seguimiento_terreno
-            LEFT JOIN actividad_terreno at ON ast.id_actividad_terreno = at.id_actividad_terreno
-            WHERE r.nombre_rol IN ('Auxiliar Terreno', 'Coordinador Terreno') AND s.cod_seguimiento ILIKE $1
-            GROUP BY 
-                s.id_seguimiento_terreno, 
-                s.cod_seguimiento, 
-                s.fecha, 
-                s.hora_inicio, 
-                s.hora_fin, 
-                s.id_estado, 
-                si.nombre_sitio,
-                sd.nombre,
-                u.primer_nombre, 
-                u.primer_apellido
-            ORDER BY s.id_seguimiento_terreno";
+        include_once '../view/partials/SeguimientoTerreno/Buscar.php';
+    } else {
+        $sql = "SELECT 
+                    s.id_seguimiento_terreno, 
+                    s.cod_seguimiento, 
+                    s.fecha, 
+                    u.documento, 
+                    s.id_estado, 
+                    si.nombre_sitio
+                FROM seguimiento_terreno s
+                LEFT JOIN usuarios u ON s.id_usuario = u.id_usuario
+                LEFT JOIN sitio si ON s.id_sitio = si.id_sitio
+                ORDER BY s.id_seguimiento_terreno DESC";
 
+        $seguimientos = $obj->select($sql);
 
-
-            $seguimientos = $obj->select($sql, ['%' . $busqueda . '%']);
-
-            include_once '../view/partials/SeguimientoTerreno/Buscar.php';
-        } else {
-            $obj = new SeguimientoTerrenoModel();
-
-            $sql = "SELECT 
-                s.id_seguimiento_terreno,
-                s.cod_seguimiento,
-                s.fecha,
-                s.hora_inicio,
-                s.hora_fin,
-                s.id_estado,
-                si.nombre_sitio,
-                sd.nombre AS cod_terreno,
-                u.primer_nombre,
-                u.primer_apellido,
-                STRING_AGG(at.nombre_actividad, ', ') AS actividades
-            FROM seguimiento_terreno s
-            INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
-            INNER JOIN rol r ON u.id_rol = r.id_rol
-            LEFT JOIN sitio si ON s.id_sitio = si.id_sitio
-            LEFT JOIN sitio_deposito sd ON s.id_sitio = sd.id_sitio
-            LEFT JOIN actividad_seg_terreno ast ON s.id_seguimiento_terreno = ast.id_seguimiento_terreno
-            LEFT JOIN actividad_terreno at ON ast.id_actividad_terreno = at.id_actividad_terreno
-            WHERE r.nombre_rol IN ('Auxiliar Terreno', 'Coordinador Terreno')
-            GROUP BY 
-                s.id_seguimiento_terreno, 
-                s.cod_seguimiento, 
-                s.fecha, 
-                s.hora_inicio, 
-                s.hora_fin, 
-                s.id_estado, 
-                si.nombre_sitio,
-                sd.nombre,
-                u.primer_nombre, 
-                u.primer_apellido
-            ORDER BY s.id_seguimiento_terreno";
-
-            $seguimientos = $obj->select($sql);
-
-
-            $sql2 = "UPDATE seguimiento_terreno
-                SET id_estado = 3 
-                WHERE fecha = CURRENT_DATE 
-                AND hora_fin < LOCALTIME 
-                AND id_estado =  4";
-
-            $ejecutar = $obj->update($sql2);
-
-
-            include_once '../view/partials/SeguimientoTerreno/consultar.php';
-        }
-
+        include_once '../view/partials/SeguimientoTerreno/consultar.php';
     }
+}
+
+
 
 
 
