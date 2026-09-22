@@ -404,6 +404,7 @@
 <script src="js/expre/correo.js"></script>
 <script src="js/document.js"></script>
 <script src="js/password.js"></script>
+<script src="js/requriedPassword.js"></script>
 <script src="js/checkbox.js"></script>
 <script src="js/soloLetras.js"></script>
 <script src="js/selectCompleto.js"></script>
