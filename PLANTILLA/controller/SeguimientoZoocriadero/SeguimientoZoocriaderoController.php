@@ -216,8 +216,7 @@ class SeguimientoZoocriaderoController
             if ($muerto_Hembra === '' || !is_numeric($muerto_Hembra) || $muerto_Hembra < 0) {
                 $errores[] = "La cantidad de hembras muertas debe ser un número mayor o igual a 0.";
             }
-            if (empty($obPeces))
-                $errores[] = "Las observaciones de peces muertos y nacidos son obligatorias.";
+
             if (strlen($obPeces) > 250)
                 $errores[] = "Las observaciones no pueden superar los 250 caracteres.";
         }
@@ -289,9 +288,7 @@ class SeguimientoZoocriaderoController
             if (empty($estadoTanque)) {
                 $errores[] = "Debe indicar el estado del tanque.";
             }
-            if (empty($obLa)) {
-                $errores[] = "Las observaciones de lavado son obligatorias.";
-            }
+
             if (strlen($obLa) > 250) {
                 $errores[] = "Las observaciones de lavado no pueden superar los 250 caracteres.";
             }
@@ -307,7 +304,7 @@ class SeguimientoZoocriaderoController
         VALUES ($1, CURRENT_TIMESTAMP,$2,$3,$4,$5,$6)
         RETURNING id_seguimiento_zoo";
 
-        $resultado = $obj->select($sql,[$codigo,$tanque, $usuario, 5, null, null]);
+        $resultado = $obj->select($sql, [$codigo, $tanque, $usuario, 5, null, null]);
 
         if ($resultado) {
             $id_seguimiento = $resultado[0]['id_seguimiento_zoo'];
@@ -805,7 +802,7 @@ class SeguimientoZoocriaderoController
             }
 
 
-           
+
 
             $seguimientos = $obj->select($sql);
 

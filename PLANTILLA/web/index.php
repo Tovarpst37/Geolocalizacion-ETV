@@ -1,14 +1,15 @@
 <?php
 ob_start();
-    include_once '../lib/helpers.php';
-    include_once '../lib/persistlogin.php';
-    include_once '../lib/helpersLogin.php';
-    include_once '../view/partials/header.php';
+include_once '../lib/helpers.php';
+include_once '../lib/persistlogin.php';
+include_once '../lib/helpersLogin.php';
+include_once '../view/partials/header.php';
 ?>
+
 <body>
 
     <div class="main">
-        
+
         <button id="themeToggle" class="theme-toggle" type="button" aria-label="Cambiar modo claro/oscuro">
             <i class='bx bx-moon' id="themeIcon"></i>
         </button>
@@ -17,14 +18,14 @@ ob_start();
         <main class="mainContent" id="mainContent">
 
             <div class="moduleContent">
-               <div class='container'>
+                <div class='container'>
                     <div class='page-inner'>
                         <?php
-                            if (isset($_GET['modulo'])) {
-                                resolve();
-                            } else {
-                                include_once '../view/partials/content.php';
-                            }
+                        if (isset($_GET['modulo'])) {
+                            resolve();
+                        } else {
+                            include_once '../view/partials/content.php';
+                        }
                         ?>
                     </div>
                 </div>
@@ -35,10 +36,11 @@ ob_start();
     </div>
 
     <?php
-        include_once '../view/partials/bootstrap.php';
+    include_once '../view/partials/bootstrap.php';
     ?>
 
     <script src='https://code.jquery.com/jquery-3.7.1.min.js'></script>
     <script src='../web/assets/js/scriptindex.js'></script>
 </body>
+
 </html>
