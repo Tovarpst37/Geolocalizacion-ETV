@@ -220,5 +220,6 @@ $nombreEstado = $seguimiento['nombre_estado'] ?? 'Sin estado';
             </div>
         <?php endif; ?>
     <?php endforeach; ?>
+    
 
 </div>

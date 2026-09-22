@@ -384,6 +384,8 @@ class HistorialController
         include_once '../view/partials/Historial/Ver.php';
     }
 
+    //subiendo cambios
+
 
 
     private function actualizarRegistro($obj, $idSub, $idSeg, $cfg, $datos, $cod)
