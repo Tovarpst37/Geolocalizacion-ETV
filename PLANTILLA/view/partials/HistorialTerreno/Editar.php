@@ -1,206 +1,251 @@
-<?php
-// Escapa valores para usarlos dentro de atributos HTML
-$h = function ($v) {
-    return htmlspecialchars((string) ($v ?? ''), ENT_QUOTES, 'UTF-8');
-};
+<style>
+  .terreno-list {
+    --accent: #3b5bdb;
+    --accent-dark: #2f49b5;
+    --accent-soft: #edf1ff;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --line: #dfe4ec;
+    --field: #f7f9fc;
+  }
 
-// El input type="date" necesita Y-m-d
-$fechaGeneral = (!empty($seguimiento['fecha'])) ? date('Y-m-d', strtotime($seguimiento['fecha'])) : '';
+  .terreno-list .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
 
-// Etiqueta, tipo de input y ancho de columna de cada campo de sub_actividades_ter
-$ui = [
-    'deposito_agua_detectado' => ['Depósito de agua detectado', 'check', 'col-md-6'],
-    'presencia_larvas_inspeccion' => ['Presencia de larvas', 'check', 'col-md-6'],
-    'temperatura' => ['Temperatura', 'decimal', 'col-md-4'],
-    'ph_medido' => ['PH medido', 'decimal', 'col-md-4'],
-    'fecha_inspeccion' => ['Fecha y hora de inspección', 'datetime', 'col-md-4'],
-    'obser_inspeccion' => ['Observaciones', 'text', 'col-md-12'],
+  .terreno-list .page-header h4 {
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
 
-    'presencia_larvas_siembra' => ['Presencia de larvas', 'check', 'col-md-6'],
-    'presencia_peces_siembra' => ['Presencia de peces', 'check', 'col-md-6'],
-    'tiempo_aclimatacion' => ['Tiempo de aclimatación (min)', 'int', 'col-md-4'],
-    'can_peces_empacados' => ['Peces empacados', 'int', 'col-md-4'],
-    'litros_utilizados' => ['Litros utilizados', 'decimal', 'col-md-4'],
-    'can_hembras_sembradas' => ['Hembras sembradas', 'int', 'col-md-4'],
-    'can_machos_sembrados' => ['Machos sembrados', 'int', 'col-md-4'],
-    'can_peces_guppies_sembrados' => ['Guppies sembrados', 'int', 'col-md-4'],
-    'fecha_siembra' => ['Fecha y hora de siembra', 'datetime', 'col-md-6'],
-    'obser_siembra' => ['Observaciones', 'text', 'col-md-6'],
+  .terreno-list .search-box {
+    max-width: 360px;
+    width: 100%;
+  }
 
-    'deposito_agua_visitado' => ['Depósito de agua visitado', 'check', 'col-md-4'],
-    'presencia_larvas_seguimiento' => ['Presencia de larvas', 'check', 'col-md-4'],
-    'presencia_peces_seguimiento' => ['Presencia de peces', 'check', 'col-md-4'],
-    'numero_visita' => ['Número de visita', 'visita', 'col-md-4'],
-    'fecha_seguimiento' => ['Fecha y hora de seguimiento', 'datetime', 'col-md-8'],
-    'obser_seguimiento' => ['Observaciones', 'text', 'col-md-12'],
+  .terreno-list .search-box .input-group {
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--field);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
 
-    'presencia_larvas_resiembra' => ['Presencia de larvas', 'check', 'col-md-6'],
-    'presencia_peces_resiembra' => ['Presencia de peces', 'check', 'col-md-6'],
-    'fecha_resiembra' => ['Fecha y hora de resiembra', 'datetime', 'col-md-6'],
-    'obser_resiembra' => ['Observaciones', 'text', 'col-md-6'],
-];
+  .terreno-list .search-box .input-group:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(59, 91, 219, .16);
+    background: #fff;
+  }
 
-// Dibuja un campo. $disabled se activa cuando la actividad NO está asignada al seguimiento.
-// $registro es null cuando se está creando el primer registro de la actividad.
-$renderCampo = function ($col, $registro, $name, $disabled = false) use ($ui, $h) {
-    $label = $ui[$col][0];
-    $kind = $ui[$col][1];
-    $ancho = $ui[$col][2];
-    $valor = $registro[$col] ?? '';
-    $idInput = 'f_' . preg_replace('/[^A-Za-z0-9_]/', '_', $name);
-    $disAttr = $disabled ? ' disabled' : '';
+  .terreno-list .search-box .form-control {
+    border: 0;
+    background: transparent;
+    min-height: 2.75rem;
+    padding: .6rem 1rem;
+    font-size: .95rem;
+    color: var(--ink);
+    box-shadow: none !important;
+  }
 
-    if ($kind === 'check') {
-        echo '<div class="' . $ancho . ' mb-2"><div class="form-check">';
-        echo '<input class="form-check-input" type="checkbox" value="1" id="' . $idInput . '" name="' . $h($name) . '"' . (!empty($valor) ? ' checked' : '') . $disAttr . '>';
-        echo '<label class="form-check-label" for="' . $idInput . '">' . $label . '</label>';
-        echo '</div></div>';
-        return;
-    }
+  .terreno-list .search-box .form-control::placeholder {
+    color: #a3acba;
+  }
 
-    echo '<div class="' . $ancho . ' mb-3">';
-    echo '<label class="form-label" for="' . $idInput . '">' . $label . '</label>';
+  .terreno-list .search-box .btn {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 0 1rem;
+    transition: color .15s ease;
+  }
 
-    switch ($kind) {
-        case 'visita':
-            echo '<select class="form-select" id="' . $idInput . '" name="' . $h($name) . '"' . $disAttr . '>';
-            if ($registro === null) {
-                echo '<option value="" selected>-- Seleccione --</option>';
-            }
-            echo '<option value="1"' . ($valor == 1 ? ' selected' : '') . '>1ra visita</option>';
-            echo '<option value="2"' . ($valor == 2 ? ' selected' : '') . '>2da visita</option>';
-            echo '</select>';
-            break;
+  .terreno-list .search-box .btn:hover {
+    color: var(--accent);
+  }
 
-        case 'datetime':
-            $v = $registro[$col . '_input'] ?? '';
-            echo '<input type="datetime-local" class="form-control" id="' . $idInput . '" name="' . $h($name) . '" value="' . $h($v) . '"' . $disAttr . '>';
-            break;
+  .terreno-list .seg-card {
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 14px rgba(31, 41, 55, .05);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
 
-        case 'int':
-            echo '<input type="number" min="0" class="form-control" id="' . $idInput . '" name="' . $h($name) . '" value="' . $h($valor) . '"' . $disAttr . '>';
-            break;
+  .terreno-list .seg-card:hover {
+    border-color: #c3cbd9;
+    box-shadow: 0 8px 22px rgba(31, 41, 55, .08);
+  }
 
-        case 'decimal':
-            echo '<input type="number" step="any" class="form-control" id="' . $idInput . '" name="' . $h($name) . '" value="' . $h($valor) . '"' . $disAttr . '>';
-            break;
+  .terreno-list .seg-card h6 {
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: .35rem;
+    font-size: 1rem;
+  }
 
-        default:
-            echo '<input type="text" class="form-control" id="' . $idInput . '" name="' . $h($name) . '" value="' . $h($valor) . '"' . $disAttr . '>';
-    }
+  .terreno-list .seg-meta {
+    font-size: .875rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
 
-    echo '</div>';
-};
-?>
-<div class="modal show" tabindex="-1" style="display:block; background: rgba(0,0,0,0.5);">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <?php if (!$seguimiento): ?>
-                <div class="modal-body">
-                    <div class="alert alert-danger">No se encontró el seguimiento solicitado.</div>
-                </div>
-            <?php else: ?>
-                <?php
-                // Solo los estados de tipo "seguimiento"
-                $estadosSeg = array_filter($estados, function ($est) {
-                    return ($est['tipo_estado'] ?? '') === 'seguimiento';
-                });
-                $estadoActualValido = in_array($seguimiento['id_estado'], array_column($estadosSeg, 'id_estado'));
-                ?>
-                <form action="<?php echo getUrl('HistorialTerreno', 'HistorialTerreno', 'postUpdate'); ?>" method="POST">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Editar Historial - Código: <?php echo $h($seguimiento['cod_seguimiento']); ?></h5>
-                        <a href="<?php echo getUrl('HistorialTerreno', 'HistorialTerreno', 'getConsultar') ?>" class="btn-close"></a>
-                    </div>
+  .terreno-list .seg-actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
 
-                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+  .terreno-list .badge {
+    font-weight: 600;
+    font-size: .78rem;
+    padding: .4rem .75rem;
+    border-radius: 8px;
+  }
 
-                        <input type="hidden" name="id_seguimiento_terreno"
-                            value="<?php echo $h($seguimiento['id_seguimiento_terreno']); ?>">
+  .terreno-list .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .5rem 1.1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: .88rem;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
 
-                        <!-- Datos generales -->
-                        <h6 class="text-primary">Datos generales</h6>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Código del Seguimiento</label>
-                                <input type="text" class="form-control" name="cod_seguimiento"
-                                    value="<?php echo $h($seguimiento['cod_seguimiento']); ?>" readonly>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Fecha</label>
-                                <input type="date" class="form-control" name="fecha"
-                                    value="<?php echo $h($fechaGeneral); ?>" required>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Estado</label>
-                                <select class="form-select" name="id_estado" required>
-                                    <?php if (!$estadoActualValido): ?>
-                                        <option value="" selected disabled>-- Seleccione el estado --</option>
-                                    <?php endif; ?>
-                                    <?php foreach ($estadosSeg as $est): ?>
-                                        <option value="<?php echo $h($est['id_estado']); ?>"
-                                            <?php echo ($seguimiento['id_estado'] == $est['id_estado']) ? 'selected' : ''; ?>>
-                                            <?php echo $h($est['nombre_estado']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
+  .terreno-list .btn-primary {
+    background-color: var(--accent);
+    border-color: var(--accent);
+  }
 
-                        <hr>
+  .terreno-list .btn-primary:hover {
+    background-color: var(--accent-dark);
+    border-color: var(--accent-dark);
+    transform: translateY(-1px);
+  }
 
-                        <?php foreach ($config as $slug => $cfgAct):
-                            $registros = $grupos[$slug] ?? [];
-                            $estaAsignada = !empty($actividadesAsignadas[$slug]);
+  .terreno-list .btn-danger {
+    border-radius: 10px;
+  }
 
-                            // Solo se muestra lo relevante: actividades asignadas o que ya tengan registros
-                            if (!$estaAsignada && empty($registros)) {
-                                continue;
-                            }
-                            ?>
-                            <h6 class="text-primary">
-                                <?php echo $h($cfgAct['titulo']); ?>
-                                <?php if (!$estaAsignada): ?>
-                                    <span class="badge bg-secondary">No editable</span>
-                                <?php endif; ?>
-                            </h6>
+  .terreno-list .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--muted);
+  }
 
-                            <?php if (empty($registros)): ?>
-                                <!-- Sin registros: campos en blanco para crear el primero (vacío = no se guarda) -->
-                                <div class="row">
-                                    <?php foreach ($cfgAct['campos'] as $col => $tipoDato) {
-                                        $renderCampo($col, null, "nuevos[$slug][$col]", false);
-                                    } ?>
-                                </div>
-                            <?php else: ?>
-                                <?php foreach ($registros as $i => $r):
-                                    $idSub = $r['id_sub_actividad'];
-                                    ?>
-                                    <input type="hidden" name="registros[<?php echo $h($idSub); ?>][__tipo]"
-                                        value="<?php echo $h($slug); ?>">
-                                    <?php if (count($registros) > 1): ?>
-                                        <div class="small text-muted mb-2">Registro <?php echo $i + 1; ?></div>
-                                    <?php endif; ?>
-                                    <div class="row">
-                                        <?php foreach ($cfgAct['campos'] as $col => $tipoDato) {
-                                            $renderCampo($col, $r, "registros[$idSub][$col]", !$estaAsignada);
-                                        } ?>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+  .terreno-list .empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: .5;
+  }
 
-                            <hr>
-                        <?php endforeach; ?>
+  .terreno-list .empty-state p {
+    font-size: 1.05rem;
+    margin: 0;
+  }
+</style>
 
-                    </div>
+<div class="terreno-list">
+  <div class="page-header">
+    <h4>Seguimiento Terreno</h4>
 
-                    <div class="modal-footer">
-                        <a href="<?php echo getUrl('HistorialTerreno', 'HistorialTerreno', 'getConsultar') ?>"
-                            class="btn btn-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                    </div>
-                </form>
-            <?php endif; ?>
-        </div>
+    <div class="search-box">
+      <form class="input-group" action="index.php" method="GET">
+        <input type="hidden" name="modulo" value="SeguimientoTerreno">
+        <input type="hidden" name="controlador" value="SeguimientoTerreno">
+        <input type="hidden" name="funcion" value="getBuscar">
+
+        <input type="text" name="busqueda" placeholder="Buscar seguimiento..." class="form-control"
+          value="<?php echo $palabra; ?>" />
+
+        <button type="submit" class="btn">
+          <i class="fa fa-search"></i>
+        </button>
+      </form>
     </div>
+  </div>
+
+  <div class="mt-2">
+    <?php if (!empty($seguimientos)) {
+      foreach ($seguimientos as $s) { ?>
+
+        <div class="seg-card d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+          <div>
+            <h6><?php echo $s['cod_seguimiento']; ?> — Sitio <?php echo $s['nombre_sitio']; ?> — Deposito <?php echo $s['cod_terreno']; ?></h6>
+            <div class="seg-meta">
+              <?php echo $s['hora_inicio']; ?> - <?php echo $s['hora_fin']; ?>
+              &nbsp;|&nbsp; Auxiliar: <?php echo $s['primer_nombre'] . " " . $s['primer_apellido']; ?>
+            </div>
+            <div class="seg-meta">
+              <b>Actividades:</b> <?php echo $s['actividades'] ?? 'Sin actividades asignadas'; ?>
+            </div>
+          </div>
+
+          <div class="seg-actions">
+            <span class="badge <?php echo $s['id_estado'] == 3 ? 'bg-danger' : ($s['id_estado'] == 4 ? 'bg-primary' : ($s['id_estado'] == 5 ? 'bg-success' : '')); ?>">
+              <?php
+              switch ($s['id_estado']) {
+                case 3: echo 'Pendiente'; break;
+                case 4: echo 'En proceso'; break;
+                case 5: echo 'Finalizado'; break;
+              }
+              ?>
+            </span>
+
+            <a href="<?php echo getUrl("SeguimientoTerreno", "SeguimientoTerreno", "getEditar", array('id' => $s['id_seguimiento_terreno'])) ?>"
+              class="btn btn-primary">
+              <i class="bx bx-edit"></i> Editar
+            </a>
+
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+              data-bs-target="#seg<?php echo $s['id_seguimiento_terreno'] ?>">
+              <i class="bx bx-trash"></i> Inhabilitar
+            </button>
+          </div>
+
+          <!-- Modal -->
+          <div class="modal fade" id="seg<?php echo $s['id_seguimiento_terreno'] ?>" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Inhabilitar Seguimiento</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <p>¿Estás seguro de inhabilitar el seguimiento de <?php echo $s['cod_terreno']; ?>
+                    (<?php echo $s['hora_inicio']; ?> - <?php echo $s['hora_fin']; ?>)?</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                  <a href="<?php echo getUrl('SeguimientoTerreno', 'SeguimientoTerreno', 'postDelete', array('id' => $s['id_seguimiento_terreno'])); ?>"
+                    class="btn btn-danger">Inhabilitar</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      <?php }
+    } else { ?>
+
+      <div class="empty-state">
+        <i class="fa fa-search"></i>
+        <p>No se encontraron resultados</p>
+      </div>
+
+    <?php } ?>
+  </div>
 </div>

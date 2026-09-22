@@ -11,6 +11,19 @@ $clasesEstado = [
 $idEstado = (int) ($seguimiento['id_estado'] ?? 0);
 $claseBadge = $clasesEstado[$idEstado] ?? 'bg-secondary';
 $nombreEstado = $seguimiento['nombre_estado'] ?? 'Sin estado';
+
+/** Formatea fecha/hora con segundos: dd/mm/yyyy HH:mm:ss */
+function formatearFechaHora($valor)
+{
+    if ($valor === null || $valor === '' || $valor === '0000-00-00' || $valor === '0000-00-00 00:00:00') {
+        return 'N/A';
+    }
+    $ts = strtotime((string) $valor);
+    if ($ts === false) {
+        return htmlspecialchars((string) $valor);
+    }
+    return date('d/m/Y H:i:s', $ts);
+}
 ?>
 <style>
     .ver-page {
@@ -169,7 +182,7 @@ $nombreEstado = $seguimiento['nombre_estado'] ?? 'Sin estado';
         </div>
         <div class="ver-row">
             <span class="lbl">Fecha:</span>
-            <span><?php echo htmlspecialchars($seguimiento['fecha'] ?? 'N/A'); ?></span>
+            <span><?php echo formatearFechaHora($seguimiento['fecha'] ?? null); ?></span>
         </div>
         <div class="ver-row">
             <span class="lbl">Sitio:</span>
@@ -202,15 +215,26 @@ $nombreEstado = $seguimiento['nombre_estado'] ?? 'Sin estado';
                             <div class="ver-row">
                                 <span class="lbl"><?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $campo))); ?>:</span>
                                 <span>
-                                    <?php
-                                    $valor = $registro[$campo] ?? '';
-                                    if ($tipo === 'bool') {
-                                        echo !empty($valor) ? 'Sí' : 'No';
-                                    } else {
-                                        echo $valor !== '' && $valor !== null ? htmlspecialchars($valor) : 'N/A';
-                                    }
-                                    ?>
-                                </span>
+    <?php
+    $valor = $registro[$campo] ?? '';
+    if ($tipo === 'bool') {
+        echo !empty($valor) ? 'Sí' : 'No';
+    } elseif ($tipo === 'fecha' || stripos($campo, 'fecha') !== false) {
+        if ($valor === null || $valor === '' || $valor === '0000-00-00' || $valor === '0000-00-00 00:00:00') {
+            echo 'N/A';
+        } else {
+            $ts = strtotime((string) $valor);
+            echo ($ts !== false)
+                ? htmlspecialchars(date('d/m/Y g:i A', $ts))
+                : 'N/A';
+        }
+    } else {
+        echo ($valor !== '' && $valor !== null)
+            ? htmlspecialchars((string) $valor)
+            : 'N/A';
+    }
+    ?>
+</span>
                             </div>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
@@ -220,6 +244,5 @@ $nombreEstado = $seguimiento['nombre_estado'] ?? 'Sin estado';
             </div>
         <?php endif; ?>
     <?php endforeach; ?>
-    
 
 </div>

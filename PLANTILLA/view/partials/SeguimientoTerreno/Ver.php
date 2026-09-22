@@ -154,7 +154,7 @@ $nombreEstado = $seguimiento['nombre_estado'] ?? 'Sin estado';
             <i class="bx bx-detail"></i>
             <h3>Detalle del Seguimiento en Terreno</h3>
         </div>
-        <a href="<?php echo getUrl("HistorialTerreno", "HistorialTerreno", "getConsultar"); ?>"
+        <a href="<?php echo getUrl("SeguimientoTerreno", "SeguimientoTerreno", "getConsultar"); ?>"
             class="btn btn-white ver-back-btn">
             <i class="bx bx-arrow-back"></i> Volver
         </a>
@@ -189,36 +189,45 @@ $nombreEstado = $seguimiento['nombre_estado'] ?? 'Sin estado';
     </div>
 
     <!-- Actividades -->
-      <?php foreach ($config as $slug => $cfg): ?>
-            <?php if (!empty($actividadesAsignadas[$slug])): ?>
-            <div class="ver-card">
-                <h5><i class="bx bx-task"></i> <?php echo htmlspecialchars($cfg['titulo']); ?></h5>
+<?php foreach ($config as $slug => $cfg): ?>
+  <?php if (!empty($actividadesAsignadas[$slug])): ?>
+    <div class="ver-card">
+      <h5><i class="bx bx-task"></i> <?php echo htmlspecialchars($cfg['titulo']); ?></h5>
 
-                        <?php if (!empty($grupos[$slug])): ?>
-                              <?php foreach ($grupos[$slug] as $i => $registro): ?>
-                                    <?php if ($i > 0): ?>
-                            <hr class="my-2"><?php endif; ?>
-                                    <?php foreach ($cfg['campos'] as $campo => $tipo): ?>
-                            <div class="ver-row">
-                                <span class="lbl"><?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $campo))); ?>:</span>
-                                <span>
-                                                      <?php
-                                                      $valor = $registro[$campo] ?? '';
-                                                      if ($tipo === 'bool') {
-                                                          echo !empty($valor) ? 'Sí' : 'No';
-                                                      } else {
-                                                          echo $valor !== '' && $valor !== null ? htmlspecialchars($valor) : 'N/A';
-                                                      }
-                                                      ?>
-                                </span>
-                            </div>
-                                    <?php endforeach; ?>
-                              <?php endforeach; ?>
-                        <?php else: ?>
-                    <div class="ver-empty">Sin registros para esta actividad.</div>
-                        <?php endif; ?>
+      <?php if (!empty($grupos[$slug])): ?>
+        <?php foreach ($grupos[$slug] as $i => $registro): ?>
+          <?php if ($i > 0): ?>
+            <hr class="my-2">
+          <?php endif; ?>
+
+          <?php foreach ($cfg['campos'] as $campo => $tipo): ?>
+            <div class="ver-row">
+              <span class="lbl"><?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $campo))); ?>:</span>
+              <span>
+                <?php
+                $valor = $registro[$campo] ?? '';
+
+                if ($tipo === 'bool') {
+                  echo !empty($valor) ? 'Sí' : 'No';
+                } elseif ($tipo === 'date' || stripos($campo, 'fecha') !== false) {
+                  echo (!empty($valor) && $valor !== '0000-00-00')
+                    ? htmlspecialchars(date('d/m/Y', strtotime($valor)))
+                    : 'N/A';
+                } else {
+                  echo ($valor !== '' && $valor !== null)
+                    ? htmlspecialchars($valor)
+                    : 'N/A';
+                }
+                ?>
+              </span>
             </div>
-            <?php endif; ?>
-      <?php endforeach; ?>
+          <?php endforeach; ?>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="ver-empty">Sin registros para esta actividad.</div>
+      <?php endif; ?>
+    </div>
+  <?php endif; ?>
+<?php endforeach; ?>
 
 </div>

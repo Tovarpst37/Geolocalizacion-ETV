@@ -325,7 +325,7 @@ $clasesEstado = [
   <div class="seg-header">
     <div class="seg-title-group">
       <i class="bx bx-list-check"></i>
-      <h3 style="color: #ffffff">Seguimientos Zoocriadero</h3>
+      <h3>Seguimientos Zoocriadero</h3>
     </div>
 
     <div class="seg-search-box-wrap">

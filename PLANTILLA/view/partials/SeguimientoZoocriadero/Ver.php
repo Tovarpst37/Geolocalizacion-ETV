@@ -152,7 +152,7 @@ $nombreEstado = $seguimiento['nombre_estado'] ?? 'Sin estado';
     <div class="ver-header">
         <div class="ver-title-group">
             <i class="bx bx-detail"></i>
-            <h3>Detalle del Seguimiento</h3>
+            <h3>Detalle del Seguimiento en Zoocriadero</h3>
         </div>
         <a href="<?php echo getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"); ?>" class="btn btn-white ver-back-btn">
             <i class="bx bx-arrow-back"></i> Volver
