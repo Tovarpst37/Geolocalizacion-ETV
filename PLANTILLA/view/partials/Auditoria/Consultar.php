@@ -43,7 +43,7 @@ $filtroFecha = $filtroFecha ?? '';
                 <button type="submit" class="btn-aplicar">Filtrar</button>
                 <?php if (!empty($registros)): ?>
                     <button type="button" class="btn-reportes"
-                        onclick="location.href='<?= getUrl('Auditoria', 'Auditoria', 'getConsultar') ?>&usuario=<?= urlencode($filtroUsuario) ?>&modulo_filtro=<?= urlencode($filtroModulo) ?>&fecha=<?= urlencode($filtroFecha) ?>'">
+                        onclick="location.href='<?= getUrl('Auditoria', 'Auditoria', 'exportarAuditoriaExcel') ?>&usuario=<?= urlencode($filtroUsuario) ?>&modulo_filtro=<?= urlencode($filtroModulo) ?>&fecha=<?= urlencode($filtroFecha) ?>'">
                         Exportar a Excel
                     </button>
                 <?php endif; ?>

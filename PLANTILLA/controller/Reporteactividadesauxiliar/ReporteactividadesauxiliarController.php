@@ -270,9 +270,10 @@ class ReporteactividadesauxiliarController
             $fila++;
         }
 
-        foreach (['A', 'B', 'C', 'D', 'E', 'F'] as $col) {
+        foreach (['A', 'B', 'C', 'D', 'E'] as $col) {
             $sheet->getColumnDimension($col)->setWidth(20);
         }
+        $sheet->getColumnDimension('F')->setWidth(30);
         $sheet->setShowGridlines(false);
 
         $nombre_archivo = "reporte_actividades_" . preg_replace('/[^A-Za-z0-9_-]/', '_', $nombre_auxiliar) . "_" . date('Y-m-d') . ".xlsx";

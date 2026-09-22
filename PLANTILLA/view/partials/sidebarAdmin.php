@@ -123,7 +123,7 @@
                         <ul class="submenu">
 
                             <li><a href="<?php echo getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getRegistrar"); ?>"><span class="sub-item">Registrar seguimiento</span></a></li>
-                            <li><a href="<?php echo getUrl("Historial", "Historial", "getConsultar"); ?>"><span class="sub-item">Consultar seguimiento</span></a></li>
+                            <li><a href="<?php echo getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"); ?>"><span class="sub-item">Consultar seguimiento</span></a></li>
 
                         </ul>
                     </li>
@@ -240,20 +240,10 @@
                 <?php endif; ?>
             </ul>
 
-            <span class="menu-tag text">Configuracion</span>
-            <ul>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" title="Configuración">
-                        <i class="bx bx-cog"></i>
-                        <span class="text">config</span>
-                        <i class="bx bx-chevron-down navCaret text"></i>
-                    </a>
-                    <ul class="submenu">
-                        <li><a href="<?php echo getUrl("AcercaDe", "AcercaDe", "acercaDe"); ?>"><i
-                                    class="bx bx-info-circle"></i><span class="sub-item">Acerca De</span></a></li>
-                    </ul>
-                </li>
-            </ul>
+            <span class="menu-tag text">Configuracion</span>           
+            
+            <li><a href="<?php echo getUrl("AcercaDe", "AcercaDe", "acercaDe"); ?>"><i class="bx bx-info-circle"></i><span class="sub-item">Acerca De</span></a></li>
+           
         </nav>
 
         <?php

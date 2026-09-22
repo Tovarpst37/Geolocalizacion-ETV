@@ -325,13 +325,13 @@ $clasesEstado = [
   <div class="seg-header">
     <div class="seg-title-group">
       <i class="bx bx-list-check"></i>
-      <h3>Seguimientos</h3>
+      <h3 style="color: #ffffff">Seguimientos Zoocriadero</h3>
     </div>
 
     <div class="seg-search-box-wrap">
       <form class="m-0" action="index.php" method="GET">
-        <input type="hidden" name="modulo" value="Historial">
-        <input type="hidden" name="controlador" value="Historial">
+        <input type="hidden" name="modulo" value="SeguimientoZoocriadero">
+        <input type="hidden" name="controlador" value="SeguimientoZoocriadero">
         <input type="hidden" name="funcion" value="getBuscar">
 
         <div class="seg-search-box">
@@ -364,7 +364,7 @@ $clasesEstado = [
             </h6>
             <p class="seg-detail">
               <i class="bx bx-calendar"></i>
-              <span>Fecha: <?php echo $s['fecha'] ?? 'N/A'; ?></span>
+              <span>Fecha: <?php echo $s['fecha'] ? date('d/m/Y h:i A', strtotime($s['fecha'])) : 'N/A'; ?></span>
             </p>
             <p class="seg-detail">
               <i class="bx bx-id-card"></i>
@@ -386,12 +386,7 @@ $clasesEstado = [
               </a>
             </div>
 
-            <div class="seg-btn-group-custom">
-              <a href="<?php echo getUrl("Historial", "Historial", "getEditar", array('id' => $s['id_seguimiento_zoo'])); ?>"
-                class="btn btn-blue">
-                <i class="bx bx-edit-alt"></i> Editar
-              </a>
-            </div>
+            
           </div>
 
         </div>

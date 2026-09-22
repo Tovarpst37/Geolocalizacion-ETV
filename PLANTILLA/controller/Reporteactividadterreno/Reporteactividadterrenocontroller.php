@@ -7,7 +7,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReporteActividadTerrenoController
 {
-  
+
 
 
     private function tiposValidos(): array
@@ -20,8 +20,8 @@ class ReporteActividadTerrenoController
         ];
     }
 
-   
-  
+
+
 
     private function consultarActividades(ReporteActividadTerrenoModel $obj, string $col): array
     {
@@ -46,7 +46,7 @@ class ReporteActividadTerrenoController
 
     public function getReporteActividadTerreno()
     {
-    
+
 
         $obj = new ReporteActividadTerrenoModel();
         $tipos = $this->tiposValidos();
@@ -82,9 +82,7 @@ class ReporteActividadTerrenoController
 
     public function exportarActividadTerrenoExcel()
     {
-        if (!$this->verificarAcceso()) {
-            return;
-        }
+
 
         $obj = new ReporteActividadTerrenoModel();
         $tipos = $this->tiposValidos();
@@ -219,9 +217,10 @@ class ReporteActividadTerrenoController
             $fila++;
         }
 
-        foreach (['A', 'B', 'C', 'D', 'E'] as $col) {
+        foreach (['A', 'B', 'C', 'D'] as $col) {
             $sheet->getColumnDimension($col)->setWidth(22);
         }
+        $sheet->getColumnDimension('E')->setWidth(30);
         $sheet->setShowGridlines(false);
 
         $nombre_archivo = "reporte_actividades_terreno_" . preg_replace('/[^A-Za-z0-9_-]/', '_', $etiquetaTipo) . "_" . date('Y-m-d') . ".xlsx";

@@ -381,7 +381,7 @@ class HistorialController
         $grupos = $this->getSubActividadesPorTipo($obj, $id);
         $actividadesAsignadas = $this->getActividadesAsignadas($obj, $id);
 
-        include_once '../view/partials/Historial/Ver.php';
+        include_once '../view/partials/SeguimientoZoocriadero/Ver.php';
     }
 
     //subiendo cambios

@@ -14,32 +14,32 @@ use PhpOffice\PhpSpreadsheet\Chart\Title;
 class ReportesTipoDepositoController
 {
 
-   public function getReporteTipoDeposito()
-{
-    $obj = new ReportesTipoDepositoModel();
+    public function getReporteTipoDeposito()
+    {
+        $obj = new ReportesTipoDepositoModel();
 
-    $sql_tipo_de_deposito = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito ORDER BY nombre";
-    $tipoDeposito = $obj->select($sql_tipo_de_deposito);
+        $sql_tipo_de_deposito = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito ORDER BY nombre";
+        $tipoDeposito = $obj->select($sql_tipo_de_deposito);
 
-    $generar = isset($_GET['generar']);
-    $filtroTipoDeposito = $_GET['tipo_deposito'] ?? '';
+        $generar = isset($_GET['generar']);
+        $filtroTipoDeposito = $_GET['tipo_deposito'] ?? '';
 
-    $datosReporte = [];
-    $mensajeVacio = null;
+        $datosReporte = [];
+        $mensajeVacio = null;
 
-    if ($generar) {
+        if ($generar) {
 
-        if (empty($filtroTipoDeposito)) {
-            include_once '../model/Errores/ErrorModal.php';
+            if (empty($filtroTipoDeposito)) {
+                include_once '../model/Errores/ErrorModal.php';
 
-            ErrorModal::verError(
-                ["Seleccione un tipo de deposito antes de generar el reporte."],
-                getUrl('ReportesTipoDeposito', 'ReportesTipoDeposito', 'getReporteTipoDeposito')
-            );
-            return;
-        }
+                ErrorModal::verError(
+                    ["Seleccione un tipo de deposito antes de generar el reporte."],
+                    getUrl('ReportesTipoDeposito', 'ReportesTipoDeposito', 'getReporteTipoDeposito')
+                );
+                return;
+            }
 
-        $sql = "SELECT td.id_tipo_deposito, td.nombre AS tipo_deposito,
+            $sql = "SELECT td.id_tipo_deposito, td.nombre AS tipo_deposito,
                     COUNT(sd.id_sitio_deposito) AS cantidad
                 FROM tipo_de_deposito td
                 LEFT JOIN sitio_deposito sd
@@ -48,33 +48,33 @@ class ReportesTipoDepositoController
                 WHERE td.id_tipo_deposito = $1
                 GROUP BY td.id_tipo_deposito, td.nombre
                 ORDER BY td.nombre";
-        $datosReporte = $obj->select($sql, [(int) $filtroTipoDeposito]);
+            $datosReporte = $obj->select($sql, [(int) $filtroTipoDeposito]);
 
-        if (empty($datosReporte)) {
-            $mensajeVacio = "No hay registros de sitios de depositos actualmente.";
+            if (empty($datosReporte)) {
+                $mensajeVacio = "No hay registros de sitios de depositos actualmente.";
+            }
         }
+
+        include_once '../view/ReportesTipoDeposito/ReportesTipoDeposito.php';
     }
 
-    include_once '../view/ReportesTipoDeposito/ReportesTipoDeposito.php';
-}
+    public function exportarTipoDepositoExcel()
+    {
+        $obj = new ReportesTipoDepositoModel();
 
-public function exportarTipoDepositoExcel()
-{
-    $obj = new ReportesTipoDepositoModel();
+        $filtroTipoDeposito = $_GET['tipo_deposito'] ?? '';
 
-    $filtroTipoDeposito = $_GET['tipo_deposito'] ?? '';
+        if (empty($filtroTipoDeposito)) {
+            include_once '../model/Errores/ErrorModal.php';
 
-    if (empty($filtroTipoDeposito)) {
-        include_once '../model/Errores/ErrorModal.php';
+            ErrorModal::verError(
+                ["Seleccione un tipo de deposito antes de descargar el reporte."],
+                getUrl('ReportesTipoDeposito', 'ReportesTipoDeposito', 'getReporteTipoDeposito')
+            );
+            return;
+        }
 
-        ErrorModal::verError(
-            ["Seleccione un tipo de deposito antes de descargar el reporte."],
-            getUrl('ReportesTipoDeposito', 'ReportesTipoDeposito', 'getReporteTipoDeposito')
-        );
-        return;
-    }
-
-    $sql = "SELECT td.id_tipo_deposito, td.nombre AS tipo_deposito,
+        $sql = "SELECT td.id_tipo_deposito, td.nombre AS tipo_deposito,
                 COUNT(sd.id_sitio_deposito) AS cantidad
             FROM tipo_de_deposito td
             LEFT JOIN sitio_deposito sd
@@ -84,7 +84,7 @@ public function exportarTipoDepositoExcel()
             GROUP BY td.id_tipo_deposito, td.nombre
             ORDER BY td.nombre";
 
-    $datosReporte = $obj->select($sql, [(int) $filtroTipoDeposito]);
+        $datosReporte = $obj->select($sql, [(int) $filtroTipoDeposito]);
 
 
         if (empty($datosReporte)) {
@@ -142,8 +142,8 @@ public function exportarTipoDepositoExcel()
         $logoAlcaldia->setPath($rutaImg . 'logo_alcaldia.png');
         $logoAlcaldia->setHeight(26);
         $logoAlcaldia->setCoordinates('C1');
-        $logoAlcaldia->setOffsetX(70);
-        $logoAlcaldia->setOffsetY(10);
+        $logoAlcaldia->setOffsetX(120);
+        $logoAlcaldia->setOffsetY(5);
         $logoAlcaldia->setWorksheet($sheet);
 
         $sheet->getRowDimension(3)->setRowHeight(8);
@@ -201,44 +201,12 @@ public function exportarTipoDepositoExcel()
 
             $fila++;
         }
-        $ultimaFilaDatos = $fila - 1;
 
-        // ================== GRÁFICA ESTADÍSTICA ==================
-        $categorias = new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, "'Tipo de Deposito'!\$B\${$primeraFilaDatos}:\$B\${$ultimaFilaDatos}", null, count($datosReporte));
-        $valoresCantidad = new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, "'Tipo de Deposito'!\$C\${$primeraFilaDatos}:\$C\${$ultimaFilaDatos}", null, count($datosReporte));
-        $etiquetaCantidad = new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, "'Tipo de Deposito'!\$C\${$filaEncabezado}", null, 1);
-
-        $series = new DataSeries(
-            DataSeries::TYPE_BARCHART,
-            DataSeries::GROUPING_CLUSTERED,
-            [0],
-            [$etiquetaCantidad],
-            [$categorias],
-            [$valoresCantidad]
-        );
-        $series->setPlotDirection(DataSeries::DIRECTION_COL);
-
-        $plotArea = new PlotArea(null, [$series]);
-        $legend = new Legend(Legend::POSITION_BOTTOM, null, false);
-        $titulo = new Title('Cantidad de sitios por tipo de depósito');
-
-        $chart = new Chart(
-            'graficaTipoDeposito',
-            $titulo,
-            $legend,
-            $plotArea
-        );
-
-        $filaGrafica = $fila + 3;
-        $chart->setTopLeftPosition("A$filaGrafica");
-        $chart->setBottomRightPosition('H' . ($filaGrafica + 18));
-
-        $sheet->addChart($chart);
 
         // ================== ANCHOS DE COLUMNA ==================
         $sheet->getColumnDimension('A')->setWidth(20);
         $sheet->getColumnDimension('B')->setWidth(30);
-        $sheet->getColumnDimension('C')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(40);
 
         $sheet->setShowGridlines(false);
 

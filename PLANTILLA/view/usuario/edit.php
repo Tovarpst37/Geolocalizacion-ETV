@@ -1,3 +1,8 @@
+<style>
+    .negro{
+        color:black;
+    }
+</style>
 <!-- Modal Edit-->
 <div class="modal fade" id="modalEditar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -12,7 +17,7 @@
 
             <input type="hidden" id="edit_id_usuario" name="id_usuario">
 
-            <h4 class="mb-4">Datos Del usuario</h4>
+            <h4 class="mb-4 negro">Datos Del usuario</h4>
 
             <div class ="row row-cols-2">
             <div class="col mb-3">

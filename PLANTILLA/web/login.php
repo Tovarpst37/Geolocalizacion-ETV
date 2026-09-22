@@ -43,8 +43,6 @@ include_once '../view/partials/head.php';
                     ?>
                     <!--mostarr error de contrasena-->
                     <small id="passwordError" class="text-danger d-none mb-3 d-block"></small>
-                    <!--revisar contrasena en tiempo real-->
-                    <?php include_once '../view/partials/contentPassword.php';?>
 
                     <div class="justify-content-between">
                         <div class="form-check">
