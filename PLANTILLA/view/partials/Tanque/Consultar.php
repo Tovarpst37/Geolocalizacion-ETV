@@ -478,19 +478,22 @@
 
             <!-- Acciones -->
             <div class="tank-card-actions">
+            <?php if (in_array('EDITAR', $_SESSION['permisos']['Tanques'] ?? [])): ?>
               <a href="<?php echo getUrl('Tanque', 'Tanque', 'getEdit', array('id' => $ob->getId())); ?>" class="btn btn-outline-primary">
                 <i class="bx bx-edit-alt"></i> Editar
               </a>
-
               <?php if ($estadoActivo): ?>
                 <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModalInhabilitar<?php echo $ob->getId() ?>">
                   <i class="bx bx-block"></i> Inhabilitar
                 </button>
               <?php else: ?>
-                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $ob->getId() ?>">
-                  <i class="bx bx-check-circle"></i> Habilitar
-                </button>
+                <?php if (in_array('ELIMINAR', $_SESSION['permisos']['Tanques'] ?? [])): ?>
+                  <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $ob->getId() ?>">
+                    <i class="bx bx-check-circle"></i> Habilitar
+                  </button>
+                <?php endif; ?>
               <?php endif; ?>
+            <?php endif;?>
             </div>
 
           </div>
