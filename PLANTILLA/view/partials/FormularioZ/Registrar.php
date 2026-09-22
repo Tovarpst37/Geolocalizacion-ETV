@@ -58,7 +58,7 @@
                                 <option value="<?php echo $tA; ?>" <?php echo (($old['tipo_alimen'] ?? '') == $tA) ? 'selected' : ''; ?>><?php echo $tA; ?></option>
                             <?php endforeach; ?>
                         </select>
-                        </select>
+                       
 
                     </div>
 

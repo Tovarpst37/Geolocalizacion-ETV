@@ -4,9 +4,24 @@ include_once '../model/Historial/HistorialModel.php';
 
 class HistorialController
 {
-    const ESTADO_GENERAL_ACTIVO = 1;
-    const ESTADO_SEGUIMIENTO_EN_PROCESO = 4;
-    const ESTADO_SEGUIMIENTO_FINALIZADO = 5; // Ajusta este ID si en tu tabla 'estado' el estado "Finalizado" tiene otro número
+    private const ID_ESTADO_PENDIENTE = 3;
+    private const ID_ESTADO_EN_PROCESO = 4;
+    private const ID_ESTADO_FINALIZADO = 5;
+
+    private function seguimientoEnProceso($obj, $id_seguimiento_zoo)
+    {
+        $sql = "SELECT id_estado FROM seguimiento_zoocriadero WHERE id_seguimiento_zoo = $1";
+        $res = $obj->select($sql, [$id_seguimiento_zoo]);
+
+        if (empty($res)) {
+            return false;
+        }
+
+        return in_array($res[0]['id_estado'], [
+            self::ID_ESTADO_PENDIENTE,
+            self::ID_ESTADO_EN_PROCESO
+        ]);
+    } // Ajusta este ID si en tu tabla 'estado' el estado "Finalizado" tiene otro número
 
     public function getConsultar()
     {
@@ -312,7 +327,7 @@ class HistorialController
         if (!$this->seguimientoEnProceso($obj, $id)) {
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError(
-                ["Lo siento, el seguimiento no está en proceso, por lo que no se puede editar."],
+                ["Lo siento, el seguimiento debe estar Pendiente o En proceso para poder editarlo."],
                 getUrl('Historial', 'Historial', 'getConsultar')
             );
             return;
@@ -339,14 +354,39 @@ class HistorialController
         include_once '../view/partials/Historial/Editar.php';
     }
 
-    private function seguimientoEnProceso($obj, $id_seguimiento_zoo)
+    public function getVer()
     {
-        $sql = "SELECT 1 FROM seguimiento_zoocriadero
-                WHERE id_seguimiento_zoo = $1 AND id_estado = $2";
-        $res = $obj->select($sql, [$id_seguimiento_zoo, self::ESTADO_SEGUIMIENTO_EN_PROCESO]);
+        $id = (int) ($_GET['id'] ?? 0);
+        $obj = new HistorialModel();
 
-        return !empty($res);
+        $sqlSeg = "SELECT s.id_seguimiento_zoo, s.cod_seguimiento, s.fecha, s.id_estado,
+                      e.nombre_estado, u.documento
+               FROM seguimiento_zoocriadero s
+               LEFT JOIN estado e ON s.id_estado = e.id_estado
+               LEFT JOIN usuarios u ON s.id_usuario = u.id_usuario
+               WHERE s.id_seguimiento_zoo = $id";
+        $segResult = $obj->select($sqlSeg);
+        $seguimiento = !empty($segResult) ? $segResult[0] : null;
+
+        if (!$seguimiento) {
+            include_once '../model/Errores/ErrorModal.php';
+            ErrorModal::verError(
+                ["Lo siento, el seguimiento solicitado no existe."],
+                getUrl('Historial', 'Historial', 'getConsultar')
+            );
+            return;
+        }
+
+        $config = $this->getConfigActividades();
+        $grupos = $this->getSubActividadesPorTipo($obj, $id);
+        $actividadesAsignadas = $this->getActividadesAsignadas($obj, $id);
+
+        include_once '../view/partials/SeguimientoZoocriadero/Ver.php';
     }
+
+    //subiendo cambios
+
+
 
     private function actualizarRegistro($obj, $idSub, $idSeg, $cfg, $datos, $cod)
     {
@@ -548,6 +588,6 @@ class HistorialController
         }
     }
 
-    
+
 }
 ?>

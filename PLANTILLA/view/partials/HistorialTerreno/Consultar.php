@@ -52,8 +52,8 @@ $nombresEstado = [
                                 <?php echo htmlspecialchars($s['cod_seguimiento']); ?>
                             </h6>
                             <small class="text-muted d-block">
-                                <strong>Fecha:</strong>
-                                <?php echo htmlspecialchars($s['fecha'] ?? 'N/A'); ?>
+                               <strong>Fecha:</strong>
+                                <?php echo htmlspecialchars($s['fecha'] ? date('d/m/Y h:i A', strtotime($s['fecha'])) : 'N/A'); ?>
                                 <strong>Sitio:</strong>
                                 <?php echo htmlspecialchars($s['nombre_sitio'] ?? 'N/A'); ?>
                                 <strong>Documento Usuario:</strong>

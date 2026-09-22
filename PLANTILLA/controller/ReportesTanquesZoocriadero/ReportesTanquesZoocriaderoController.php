@@ -106,6 +106,8 @@ class ReportesTanquesZoocriaderoController
         $sheet->setTitle('Tanques por Zoocriadero');
 
         // ================== BANDA SUPERIOR ==================
+        // Se mantiene el banner en A:D (como el original) para no achicar el
+        // ancho total del reporte; lo que se ensancha son las columnas de datos.
         $sheet->mergeCells('A1:D1');
         $sheet->setCellValue('A1', 'REPORTE DE TANQUES POR ZOOCRIADERO');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(15)->getColor()->setRGB('FFFFFF');
@@ -213,10 +215,13 @@ class ReportesTanquesZoocriaderoController
         }
 
         // ================== ANCHOS DE COLUMNA ==================
-        $sheet->getColumnDimension('A')->setWidth(26);
-        $sheet->getColumnDimension('B')->setWidth(26);
-        $sheet->getColumnDimension('C')->setWidth(18);
-        $sheet->getColumnDimension('D')->setWidth(18);
+        // Se ensanchan A y B (las columnas con datos reales) para que la tabla
+        // se vea más grande que antes; C y D se mantienen como en el original
+        // para no perder el ancho total del banner.
+        $sheet->getColumnDimension('A')->setWidth(28);
+        $sheet->getColumnDimension('B')->setWidth(46);
+        $sheet->getColumnDimension('C')->setWidth(20);
+        $sheet->getColumnDimension('D')->setWidth(20);
 
         $sheet->setShowGridlines(false);
 
