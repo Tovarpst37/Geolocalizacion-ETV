@@ -484,19 +484,22 @@
           </span>
 
           <div class="btn-group-custom">
+          <?php if (in_array('EDITAR', $_SESSION['permisos']['Zoocriadero'] ?? [])): ?>
             <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-blue">
               <i class="bx bx-edit-alt"></i> Editar
             </a>
-
             <?php if ($isActivo): ?>
               <button type="button" class="btn btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $z['id_zoocriadero']; ?>">
                 <i class="bx bx-block"></i> Inhabilitar
               </button>
             <?php else: ?>
-              <button type="button" class="btn btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalHabilitar<?php echo $z['id_zoocriadero']; ?>">
-                <i class="bx bx-check-circle"></i> Habilitar
-              </button>
+              <?php if (in_array('ELIMINAR', $_SESSION['permisos']['Zoocriadero'] ?? [])): ?>
+                <button type="button" class="btn btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalHabilitar<?php echo $z['id_zoocriadero']; ?>">
+                  <i class="bx bx-check-circle"></i> Habilitar
+                </button>
+              <?php endif;?>
             <?php endif; ?>
+          <?php endif;?>
           </div>
         </div>
 

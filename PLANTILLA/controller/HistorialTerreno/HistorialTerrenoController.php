@@ -420,7 +420,7 @@ class HistorialTerrenoController
             include_once '../model/Errores/ErrorModal.php';
             ErrorModal::verError(
                 ["Lo siento, el seguimiento solicitado no existe."],
-                getUrl('HistorialTerreno', 'HistorialTerreno', 'getConsultar')
+                getUrl('SeguimientoTerreno', 'SeguimientoTerreno', 'getConsultar')
             );
             return;
         }

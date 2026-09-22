@@ -490,19 +490,23 @@ else:
               </div>
 
               <div class="card-footer-activity">
-                <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEditar', array('id' => $o->getId())); ?>" class="btn-outline-custom-blue">
-                  <i class="bx bx-edit-alt"></i> Editar
-                </a>
+                <?php if(in_array('EDITAR', $_SESSION['permisos']['Actividades Zoocriadero'] ?? [])):?>
+                  <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEditar', array('id' => $o->getId())); ?>" class="btn-outline-custom-blue">
+                    <i class="bx bx-edit-alt"></i> Editar
+                  </a>
 
-                <?php if ($estadoA): ?>
-                  <button type="button" class="btn-outline-custom-red" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $o->getId(); ?>">
-                    <i class="bx bx-block"></i> Inhabilitar
-                  </button>
-                <?php else: ?>
-                  <button type="button" class="btn-outline-custom-green" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $o->getId(); ?>">
-                    <i class="bx bx-check-circle"></i> Habilitar
-                  </button>
-                <?php endif; ?>
+                  <?php if ($estadoA): ?>
+                    <button type="button" class="btn-outline-custom-red" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $o->getId(); ?>">
+                      <i class="bx bx-block"></i> Inhabilitar
+                    </button>
+                  <?php else: ?>
+                    <?php if(in_array('ELIMINAR', $_SESSION['permisos']['Actividades Zoocriadero'] ?? [])):?>
+                      <button type="button" class="btn-outline-custom-green" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $o->getId(); ?>">
+                        <i class="bx bx-check-circle"></i> Habilitar
+                      </button>
+                    <?php endif; ?>
+                  <?php endif; ?>
+                <?php endif;?>
               </div>
 
             </div>
