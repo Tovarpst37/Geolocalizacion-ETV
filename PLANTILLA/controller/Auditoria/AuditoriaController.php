@@ -81,74 +81,92 @@ class AuditoriaController
         include_once '../view/partials/Auditoria/Consultar.php';
     }
 
-    public function exportarAuditoriaExcel()
-    {
-       
+   public function exportarAuditoriaExcel()
+{
+    
+    require_once __DIR__ . '/../../../vendor/autoload.php';
 
-        $obj = new AuditoriaModel();
+    $obj = new AuditoriaModel();
 
-        $f = $this->construirFiltros($obj);
-        $filtroUsuario = $f['filtroUsuario'];
-        $filtroModulo = $f['filtroModulo'];
-        $filtroFecha = $f['filtroFecha'];
+    $f = $this->construirFiltros($obj);
+    $filtroUsuario = $f['filtroUsuario'];
+    $filtroModulo  = $f['filtroModulo'];
+    $filtroFecha   = $f['filtroFecha'];
 
-        $nombre_usuario_filtro = 'Todos los usuarios';
-        if (!empty($filtroUsuario)) {
-            $sql_u = "SELECT primer_nombre, primer_apellido FROM usuarios WHERE id_usuario = $1";
-            $u_result = $obj->select($sql_u, [(int) $filtroUsuario]);
-            if ($u_result) {
-                $nombre_usuario_filtro = trim($u_result[0]['primer_nombre'] . ' ' . $u_result[0]['primer_apellido']);
-            }
+    $nombre_usuario_filtro = 'Todos los usuarios';
+    if (!empty($filtroUsuario)) {
+        $sql_u = "SELECT primer_nombre, primer_apellido FROM usuarios WHERE id_usuario = $1";
+        $u_result = $obj->select($sql_u, [(int) $filtroUsuario]);
+        if ($u_result) {
+            $nombre_usuario_filtro = trim($u_result[0]['primer_nombre'] . ' ' . $u_result[0]['primer_apellido']);
         }
+    }
 
-        $where = !empty($f['condiciones']) ? "WHERE " . implode(" AND ", $f['condiciones']) : "";
+    $where = !empty($f['condiciones']) ? "WHERE " . implode(" AND ", $f['condiciones']) : "";
 
-        $sql = "SELECT
-                    a.fecha_hora,
-                    a.modulo,
-                    a.accion,
-                    a.tabla_afectada,
-                    a.id_registro,
-                    a.descripcion,
-                    a.resultado,
-                    TRIM(CONCAT(u.primer_nombre, ' ', u.primer_apellido)) AS nombre_usuario
-                FROM auditoria a
-                LEFT JOIN usuarios u ON a.id_usuario = u.id_usuario
-                $where
-                ORDER BY a.fecha_hora DESC
-                LIMIT 300";
+    $sql = "SELECT
+                a.fecha_hora,
+                a.modulo,
+                a.accion,
+                a.tabla_afectada,
+                a.id_registro,
+                a.descripcion,
+                a.resultado,
+                TRIM(CONCAT(u.primer_nombre, ' ', u.primer_apellido)) AS nombre_usuario
+            FROM auditoria a
+            LEFT JOIN usuarios u ON a.id_usuario = u.id_usuario
+            $where
+            ORDER BY a.fecha_hora DESC
+            LIMIT 300";
 
-        $registros = $obj->select($sql, $f['params']);
+    $registros = $obj->select($sql, $f['params']) ?: [];
 
-        // ---- Colores del proyecto ----
-        $azulOscuro = '1B3B5F';
-        $azulMedio  = '2F6690';
-        $grisClaro  = 'F2F2F2';
-        $grisTexto  = '6B6B6B';
+    // ---- Colores del proyecto (iguales que seguimiento) ----
+    $azulOscuro = '1B3B5F';
+    $azulMedio  = '2F6690';
+    $grisClaro  = 'F2F2F2';
+    $grisTexto  = '6B6B6B';
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Auditoría del Sistema');
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setTitle('Auditoría');
 
-        // ================== BANDA SUPERIOR ==================
-        $sheet->mergeCells('A1:H1');
-        $sheet->setCellValue('A1', 'REPORTE DE AUDITORÍA DEL SISTEMA');
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(15)->getColor()->setRGB('FFFFFF');
-        $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT)
-            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
-            ->setIndent(9);
-        $sheet->getStyle('A1:H1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB($azulOscuro);
-        $sheet->getRowDimension(1)->setRowHeight(46);
+    // Título de sección: texto azul con línea gruesa debajo
+    $tituloSeccion = function ($fila, $texto) use ($sheet, $azulOscuro) {
+        $sheet->mergeCells("A$fila:H$fila");
+        $sheet->setCellValue("A$fila", $texto);
+        $sheet->getStyle("A$fila:H$fila")->getFont()->setBold(true)->setSize(11)->getColor()->setRGB($azulOscuro);
+        $sheet->getStyle("A$fila:H$fila")->getBorders()->getBottom()
+            ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM)
+            ->getColor()->setRGB($azulOscuro);
+    };
 
-        $sheet->mergeCells('A2:H2');
-        $sheet->setCellValue('A2', 'Proyecto de Control Biológico · Geolocalización ETV');
-        $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(9)->getColor()->setRGB('FFFFFF');
-        $sheet->getStyle('A2')->getAlignment()->setIndent(9);
-        $sheet->getStyle('A2:H2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB($azulMedio);
-        $sheet->getRowDimension(2)->setRowHeight(18);
+    // ================== BANDA SUPERIOR ==================
+    $sheet->mergeCells('A1:H1');
+    $sheet->setCellValue('A1', 'REPORTE DE AUDITORÍA DEL SISTEMA');
+    $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(15)->getColor()->setRGB('FFFFFF');
+    $sheet->getStyle('A1')->getAlignment()
+        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT)
+        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+        ->setIndent(9);
+    $sheet->getStyle('A1:H1')->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setRGB($azulOscuro);
+    $sheet->getRowDimension(1)->setRowHeight(46);
 
-        $rutaImg = __DIR__ . '/../../web/assets/img/';
+    $sheet->mergeCells('A2:H2');
+    $sheet->setCellValue('A2', 'Proyecto de Control Biológico · Geolocalización ETV');
+    $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(9)->getColor()->setRGB('FFFFFF');
+    $sheet->getStyle('A2')->getAlignment()->setIndent(9);
+    $sheet->getStyle('A2:H2')->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setRGB($azulMedio);
+    $sheet->getRowDimension(2)->setRowHeight(18);
 
+    // ---- Logos (si no existen, se omite y el Excel se genera igual) ----
+    $rutaImg = __DIR__ . '/../../web/assets/img/';
+
+    if (file_exists($rutaImg . 'LogoProye.png')) {
         $logoProyecto = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $logoProyecto->setName('Logo Geolocalización ETV');
         $logoProyecto->setDescription('Logo del proyecto');
@@ -158,62 +176,78 @@ class AuditoriaController
         $logoProyecto->setOffsetX(6);
         $logoProyecto->setOffsetY(4);
         $logoProyecto->setWorksheet($sheet);
+    }
 
+    if (file_exists($rutaImg . 'logo_alcaldia.png')) {
         $logoAlcaldia = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $logoAlcaldia->setName('Logo Alcaldía de Santiago de Cali');
         $logoAlcaldia->setDescription('Logo institucional');
         $logoAlcaldia->setPath($rutaImg . 'logo_alcaldia.png');
         $logoAlcaldia->setHeight(26);
         $logoAlcaldia->setCoordinates('H1');
-        $logoAlcaldia->setOffsetX(70);
+        $logoAlcaldia->setOffsetX(5);
         $logoAlcaldia->setOffsetY(10);
         $logoAlcaldia->setWorksheet($sheet);
+    }
 
-        $sheet->getRowDimension(3)->setRowHeight(8);
+    $sheet->getRowDimension(3)->setRowHeight(8);
 
-        // ================== TÍTULO ==================
-        $sheet->mergeCells('A4:H4');
-        $sheet->setCellValue('A4', 'Auditoría del Sistema');
-        $sheet->getStyle('A4')->getFont()->setBold(true)->setSize(22)->getColor()->setRGB($azulOscuro);
-        $sheet->getStyle('A4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension(4)->setRowHeight(32);
+    // ================== INFORMACIÓN GENERAL ==================
+    $tituloSeccion(4, 'INFORMACIÓN GENERAL');
 
-        $sheet->getRowDimension(5)->setRowHeight(6);
+    $sheet->setCellValue('A5', 'Usuario filtrado:');
+    $sheet->setCellValue('B5', $nombre_usuario_filtro);
+    $sheet->setCellValue('A6', 'Módulo filtrado:');
+    $sheet->setCellValue('B6', $filtroModulo !== '' ? $filtroModulo : 'Todos');
+    $sheet->setCellValue('A7', 'Fecha consultada:');
+    $sheet->setCellValue('B7', $filtroFecha !== '' ? $filtroFecha : 'Todas las fechas');
+    $sheet->setCellValue('A8', 'Total de registros:');
+    $sheet->setCellValue('B8', count($registros));
+    $sheet->setCellValue('A9', 'Fecha de generación:');
+    $sheet->setCellValue('B9', date('d/m/Y H:i'));
 
-        // ================== INFORMACIÓN GENERAL ==================
-        $sheet->mergeCells('A6:H6');
-        $sheet->setCellValue('A6', 'INFORMACIÓN GENERAL');
-        $sheet->getStyle('A6')->getFont()->setBold(true)->setSize(11)->getColor()->setRGB($azulOscuro);
-        $sheet->getStyle('A6')->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM)->getColor()->setRGB($azulOscuro);
+    $sheet->getStyle('A5:A9')->getFont()->setBold(true)->getColor()->setRGB($grisTexto);
+    $sheet->getStyle('B5:B9')->getAlignment()
+        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
-        $sheet->setCellValue('A7', 'Usuario filtrado:');
-        $sheet->setCellValue('B7', $nombre_usuario_filtro);
-        $sheet->setCellValue('A8', 'Módulo filtrado:');
-        $sheet->setCellValue('B8', $filtroModulo ?: 'Todos');
-        $sheet->setCellValue('A9', 'Fecha consultada:');
-        $sheet->setCellValue('B9', $filtroFecha ?: 'Todas las fechas');
-        $sheet->setCellValue('A10', 'Cantidad de registros:');
-        $sheet->setCellValue('B10', count($registros));
-        $sheet->getStyle('A7:A10')->getFont()->setBold(true)->getColor()->setRGB($grisTexto);
+    $sheet->getRowDimension(10)->setRowHeight(10);
 
-        $sheet->getRowDimension(11)->setRowHeight(10);
+    // ================== TABLA DE REGISTROS ==================
+    $tituloSeccion(11, 'REGISTROS DE AUDITORÍA');
 
-        // ================== TABLA DE REGISTROS ==================
-        $sheet->mergeCells('A12:H12');
-        $sheet->setCellValue('A12', 'REGISTROS DE AUDITORÍA');
-        $sheet->getStyle('A12')->getFont()->setBold(true)->setSize(11)->getColor()->setRGB($azulOscuro);
-        $sheet->getStyle('A12')->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM)->getColor()->setRGB($azulOscuro);
+    $filaEncabezado = 13;
+    $encabezados = [
+        'Fecha y hora',
+        'Usuario',
+        'Módulo',
+        'Acción',
+        'Tabla afectada',
+        'ID registro',
+        'Descripción',
+        'Resultado'
+    ];
+    foreach ($encabezados as $i => $texto) {
+        $sheet->setCellValue(chr(65 + $i) . $filaEncabezado, $texto);
+    }
 
-        $filaEncabezado = 14;
-        $encabezados = ['Fecha y hora', 'Usuario', 'Módulo', 'Acción', 'Tabla afectada', 'ID registro', 'Descripción', 'Resultado'];
-        $sheet->fromArray($encabezados, null, "A$filaEncabezado");
-        $sheet->getStyle("A$filaEncabezado:H$filaEncabezado")->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
-        $sheet->getStyle("A$filaEncabezado:H$filaEncabezado")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB($azulOscuro);
-        $sheet->getStyle("A$filaEncabezado:H$filaEncabezado")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension($filaEncabezado)->setRowHeight(20);
+    $sheet->getStyle("A$filaEncabezado:H$filaEncabezado")->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
+    $sheet->getStyle("A$filaEncabezado:H$filaEncabezado")->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setRGB($azulOscuro);
+    $sheet->getStyle("A$filaEncabezado:H$filaEncabezado")->getAlignment()
+        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $sheet->getRowDimension($filaEncabezado)->setRowHeight(20);
 
-        $fila = $filaEncabezado + 1;
-        $primeraFilaDatos = $fila;
+    $fila = $filaEncabezado + 1;
+    $primeraFilaDatos = $fila;
+
+    if (empty($registros)) {
+        $sheet->mergeCells("A$fila:H$fila");
+        $sheet->setCellValue("A$fila", 'No hay registros de auditoría con los filtros seleccionados.');
+        $sheet->getStyle("A$fila")->getFont()->setItalic(true)->getColor()->setRGB($grisTexto);
+        $sheet->getStyle("A$fila")->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    } else {
         foreach ($registros as $r) {
             $sheet->setCellValue("A$fila", $r['fecha_hora']);
             $sheet->setCellValue("B$fila", $r['nombre_usuario'] ?: 'Desconocido');
@@ -224,40 +258,53 @@ class AuditoriaController
             $sheet->setCellValue("G$fila", $r['descripcion']);
             $sheet->setCellValue("H$fila", $r['resultado']);
 
+            // zebra
             if ((($fila - $primeraFilaDatos) % 2) === 1) {
-                $sheet->getStyle("A$fila:H$fila")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB($grisClaro);
+                $sheet->getStyle("A$fila:H$fila")->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setRGB($grisClaro);
             }
-            $sheet->getStyle("A$fila:H$fila")->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)->getColor()->setRGB('D9D9D9');
-            $sheet->getStyle("A$fila:H$fila")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+            $sheet->getStyle("A$fila:H$fila")->getBorders()->getBottom()
+                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN)
+                ->getColor()->setRGB('D9D9D9');
+
+            $sheet->getStyle("A$fila:H$fila")->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("B$fila")->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle("G$fila")->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
             $fila++;
         }
-
-        if (empty($registros)) {
-            $sheet->mergeCells("A$fila:H$fila");
-            $sheet->setCellValue("A$fila", 'No hay registros de auditoría con los filtros seleccionados.');
-            $sheet->getStyle("A$fila")->getFont()->setItalic(true)->getColor()->setRGB($grisTexto);
-            $sheet->getStyle("A$fila")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        }
-
-        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] as $col) {
-            $sheet->getColumnDimension($col)->setWidth(18);
-        }
-        $sheet->getColumnDimension('G')->setWidth(35);
-        $sheet->setShowGridlines(false);
-
-        $nombre_archivo = "reporte_auditoria_" . date('Y-m-d_His') . ".xlsx";
-
-        while (ob_get_level() > 0) {
-            ob_end_clean();
-        }
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $nombre_archivo . '"');
-        header('Cache-Control: max-age=0');
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save('php://output');
-        exit;
     }
+
+    // ================== ANCHOS DE COLUMNA ==================
+    $sheet->getColumnDimension('A')->setWidth(20);
+    $sheet->getColumnDimension('B')->setWidth(22);
+    $sheet->getColumnDimension('C')->setWidth(16);
+    $sheet->getColumnDimension('D')->setWidth(14);
+    $sheet->getColumnDimension('E')->setWidth(18);
+    $sheet->getColumnDimension('F')->setWidth(12);
+    $sheet->getColumnDimension('G')->setWidth(40);
+    $sheet->getColumnDimension('H')->setWidth(20);
+
+    $sheet->setShowGridlines(false);
+
+    // Descarga
+    $nombreArchivo = 'reporte_auditoria_' . date('Y-m-d_His') . '.xlsx';
+
+    while (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="' . $nombreArchivo . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer = new Xlsx($spreadsheet);
+    $writer->save('php://output');
+    exit;
+}
 }
