@@ -259,282 +259,236 @@ if (!function_exists('zoo_tipoActividad')) {
               <option value="<?php echo $zoo['id_zoocriadero']; ?>">
                 <?php echo $zoo['cod_zoocriadero']; ?>
               </option>
-            <?php }
-            ; ?>
+            <?php }; ?>
           </select>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Horario*</label>
-          <select class="form-select" id="horario" name="horario" required>
-            <option value="" selected disabled>Selecciona un horario</option>
-            <option value="06:00-12:00">6:00AM - 12:00PM</option>
-            <option value="12:00-17:00">12:00PM - 5:00PM</option>
-          </select>
-        </div>
-      </div>
 
-      <div class="form-section">
-        <h5 class="section-title">
-          <span class="section-icon"><i class="bx bx-group"></i></span>
-          Asignación
-        </h5>
 
-        <div class="mb-4">
-          <label for="id_estado" class="form-label">Tanque*</label>
-          <select class="form-select" id="selectTanques" name="selectTanques" required disabled>
-            <option value="" selected disabled>Primero selecciona un zoocriadero</option>
-          </select>
-        </div>
+        <div class="form-section">
+          <h5 class="section-title">
+            <span class="section-icon"><i class="bx bx-group"></i></span>
+            Asignación
+          </h5>
 
-        <div class="mb-4">
-          <label for="id_estado" class="form-label">Auxiliar Asignado*</label>
-          <select class="form-select" id="selectUsuarios" name="selectUsuarios" required disabled>
-            <option value="" selected>Primero selecciona un zoocriadero</option>
-          </select>
+          <div class="mb-4">
+            <label for="id_estado" class="form-label">Tanque*</label>
+            <select class="form-select" id="selectTanques" name="selectTanques" required disabled>
+              <option value="" selected disabled>Primero selecciona un zoocriadero</option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label for="id_estado" class="form-label">Auxiliar Asignado*</label>
+            <select class="form-select" id="selectUsuarios" name="selectUsuarios" required disabled>
+              <option value="" selected>Primero selecciona un zoocriadero</option>
+            </select>
+          </div>
+
         </div>
 
-        <div class="mb-4">
-          <label for="id_estado" class="form-label">Estado*</label>
-          <select class="form-select" id="id_estado" name="id_estado" required>
-            <option value="" selected disabled>Selecciona un estado</option>
-            <?php foreach ($estados as $est) { ?>
-              <option value="<?php echo $est['id_estado']; ?>">
-                <?php echo $est['nombre_estado']; ?>
-              </option>
-            <?php }
-            ; ?>
-          </select>
-        </div>
-      </div>
+        <div class="form-section">
+          <h5 class="section-title">
+            <span class="section-icon"><i class="bx bx-list-check"></i></span>
+            Actividades a realizar
+          </h5>
 
-      <div class="form-section">
-        <h5 class="section-title">
-          <span class="section-icon"><i class="bx bx-list-check"></i></span>
-          Actividades a realizar
-        </h5>
-
-        <?php if (empty($actividades)): ?>
-          <p class="text-muted">No hay actividades disponibles</p>
-        <?php else: ?>
-          <?php foreach ($actividades as $act):
-            $tipo = zoo_tipoActividad($act['nombre_actividad']);
+          <?php if (empty($actividades)): ?>
+            <p class="text-muted">No hay actividades disponibles</p>
+          <?php else: ?>
+            <?php foreach ($actividades as $act):
+              $tipo = zoo_tipoActividad($act['nombre_actividad']);
             ?>
-            <div class="activity-item">
-              <div class="form-check">
-                <input class="form-check-input activity-checkbox" type="checkbox" name="actividades[]"
-                  style="width: 1.5em; height: 1.5em;" value="<?php echo $act['id_actividad_zoo']; ?>"
-                  id="act<?php echo $act['id_actividad_zoo']; ?>"
-                  data-panel="panel-<?php echo $act['id_actividad_zoo']; ?>">
-                <label class="form-check-label" for="act<?php echo $act['id_actividad_zoo']; ?>">
-                  <?php echo $act['nombre_actividad']; ?>
-                </label>
-              </div>
-
-              <?php if ($tipo): ?>
-                <div class="activity-edit-card" id="panel-<?php echo $act['id_actividad_zoo']; ?>">
-                  <h6 class="section-title small-title">
-                    <span class="section-icon"><i class="bx bx-edit"></i></span>
+              <div class="activity-item">
+                <div class="form-check">
+                  <input class="form-check-input activity-checkbox" type="checkbox" name="actividades[]"
+                    style="width: 1.5em; height: 1.5em;" value="<?php echo $act['id_actividad_zoo']; ?>"
+                    id="act<?php echo $act['id_actividad_zoo']; ?>"
+                    data-panel="panel-<?php echo $act['id_actividad_zoo']; ?>">
+                  <label class="form-check-label" for="act<?php echo $act['id_actividad_zoo']; ?>">
                     <?php echo $act['nombre_actividad']; ?>
-                  </h6>
-
-                  <?php if ($tipo === 'alimentacion'): ?>
-                    <div class="mb-3">
-                      <label class="form-label">Fecha y hora de alimentación</label>
-                      <input type="datetime-local" class="form-control"
-                        name="datos_actividad[<?php echo $act['id_actividad_zoo']; ?>][fecha_hora]"
-                        min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
-                        max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;" required>>
-                    </div>
-                    <div class="mb-3">
-                      <label for="formulariopez" class="form-label">Tipo de peces</label>
-                      <select name="tipo_pez" id="tipo_pez" class="form-control">
-                        <?php
-                        include_once '../model/Formularioz/tipoPez.php';
-                        foreach (tipoPez as $tp): ?>
-                          <option value="<?php echo $tp; ?>" <?php echo (($old['tipo_pez'] ?? '') == $tp) ? 'selected' : ''; ?>>
-                            <?php echo $tp; ?>
-                          </option>
-                        <?php endforeach; ?>
-                      </select>
-                    </div>
-
-
-                    <div class="mb-3">
-                      <label for="formularioAli" class="form-label">Tipo de Alimentación</label>
-                      <select name="tipo_alimen" id="tipo_alimen" class="form-control">
-                        <?php
-                        include_once '../model/Formularioz/tipoAlimen.php';
-                        foreach (tipoAlimen as $tA): ?>
-                          <option value="<?php echo $tA; ?>" <?php echo (($old['tipo_alimen'] ?? '') == $tA) ? 'selected' : ''; ?>>
-                            <?php echo $tA; ?>
-                          </option>
-                        <?php endforeach; ?>
-                      </select>
-
-
-                    </div>
-
-
-
-                    <div class="mb-3">
-                      <label for="alimenObser" class="form-label">Observaciones</label>
-                      <input type="text" class="form-control" id="ob" name="ob" placeholder="Ingrese el codigo del seguimiento"
-                        required>
-                    </div>
-
-
-
-
-                  <?php elseif ($tipo === 'muertos_nacidos'): ?>
-                    <div class="mb-3">
-                      <label for="formulariocod" class="form-label">Cantidad de peces nacidos</label>
-                      <div class="input-group">
-                        <input type="number" class="form-control" id="canpez" name="canpez" placeholder="Cantidad de peces"
-                          min="0" max="100" required>
-                      </div>
-                    </div>
-
-
-                    <div class="mb-3">
-                      <label for="formulariocod" class="form-label">Cantidad de peces machos muertos</label>
-                      <div class="input-group">
-                        <input type="number" class="form-control" id="muerto_Macho" name="muerto_Macho"
-                          placeholder="Ingrese el codigo del seguimiento" min="0" max="100" required>
-                      </div>
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="formulariocod" class="form-label">Cantidad de peces hembra muertos</label>
-                      <div class="input-group">
-                        <input type="number" class="form-control" id="muerto_Hembra" name="muerto_Hembra"
-                          placeholder="Ingrese el codigo del seguimiento" min="0" max="100" required>
-                      </div>
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="formulariocod" class="form-label">Observaciones</label>
-                      <input type="text" class="form-control" id="obM" name="obM"
-                        placeholder="Ingrese el codigo del seguimiento" required>
-                    </div>
-
-                  <?php elseif ($tipo === 'limpieza'): ?>
-                    <div class="mb-3">
-                      <label for="fecha_horaLi" class="form-label">Fecha y hora de Limpieza</label>
-                      <span class="icono">
-                        <i class="fa-solid fa-calendar"></i>
-                      </span>
-                      <input type="datetime-local" class="form-control" id="fecha_horaLi" name="fecha_horaLi"
-                        min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
-                        max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;" required>
-                    </div>
-
-
-
-                    <div class="mb-3">
-                      <label class="form-label">Tipo de Limpieza</label>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="estregarParedes" name="estregarParedes" value="1">
-                        <label class="form-check-label" for="estregarParedes">Sí, estregar paredes</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="aspirar" name="aspirar" value="1">
-                        <label class="form-check-label" for="aspirar">Sí, aspirar</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="succionador" name="succionador" value="1">
-                        <label class="form-check-label" for="succionador">Sí, succionador</label>
-                      </div>
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="obserLi" class="form-label">Observaciones</label>
-                      <input type="text" class="form-control" id="obserLi" name="obserLi"
-                        placeholder="Ingrese las observaciones" required>
-                    </div>
-
-                  <?php elseif ($tipo === 'ajuste_nivel'): ?>
-                    <div class="mb-3">
-                      <label for="formulariocod" class="form-label">Nivel de agua adicionado</label>
-                      <div class="input-group">
-                        <input type="number" class="form-control" id="nv" name="nv" placeholder="Cantidad de peces" min="0"
-                          max="100" required>
-                      </div>
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="formulariocod" class="form-label">PH medido</label>
-                      <div class="input-group">
-                        <input type="number" class="form-control" id="ph" name="ph" placeholder="Ingrese el Ph del tanque"
-                          placeholder="Cantidad de peces" min="0" max="100" required>
-                      </div>
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="formulariocod" class="form-label">Temperatura</label>
-                      <div class="input-group">
-                        <input type="number" class="form-control" id="tem" name="tem" placeholder="Ingrese la temperatura"
-                          placeholder="Cantidad de peces" min="0" max="100" required>
-                      </div>
-                    </div>
-
-
-                    <div class="mb-3">
-                      <label for="formulariocod" class="form-label">Observaciones</label>
-                      <input type="text" class="form-control" id="ob" name="ob" placeholder="Ingrese las observaciones"
-                        required>
-                    </div>
-
-                  <?php elseif ($tipo === 'lavado'): ?>
-                    <div class="mb-3">
-                      <label for="fecha_horaLa" class="form-label">Fecha y hora de lavado</label>
-                      <span class="icono">
-                        <i class="fa-solid fa-calendar"></i>
-                      </span>
-                      <input type="datetime-local" class="form-control" id="fecha_horaLa" name="fecha_horaLa"
-                        min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
-                        max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;" required>
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="porcAgua" class="form-label">Porcentaje de agua cambiada</label>
-                      <div class="input-group">
-                        <input type="number" class="form-control" id="porcAgua" name="porcAgua" placeholder="Ej. 20" min="0"
-                          max="100" required>
-                      </div>
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="estadoTanque" class="form-label">Estado del tanque</label>
-                      <input type="text" class="form-control" id="estadoTanque" name="estadoTanque"
-                        placeholder="Ingrese el estado del tanque" required>
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="obLa" class="form-label">Observaciones</label>
-                      <input type="text" class="form-control" id="obLa" name="obLa" placeholder="Ingrese las observaciones"
-                        required>
-                    </div>
-                  <?php endif; ?>
-
+                  </label>
                 </div>
-              <?php endif; ?>
-            </div>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </div>
 
-      <div class="form-actions">
-        <button type="reset" class="btn btn-outline-secondary"><i class="bx bx-eraser"></i>Limpiar</button>
-        <button type="submit" class="btn btn-primary"><i class="bx bx-save"></i>Guardar zoocriadero</button>
-      </div>
+                <?php if ($tipo): ?>
+                  <div class="activity-edit-card" id="panel-<?php echo $act['id_actividad_zoo']; ?>">
+                    <h6 class="section-title small-title">
+                      <span class="section-icon"><i class="bx bx-edit"></i></span>
+                      <?php echo $act['nombre_actividad']; ?>
+                    </h6>
+
+                    <?php if ($tipo === 'alimentacion'): ?>
+
+                      <div class="mb-3">
+                        <label for="formulariopez" class="form-label">Tipo de peces</label>
+                        <select name="tipo_pez" id="tipo_pez" class="form-control">
+                          <?php
+                          include_once '../model/Formularioz/tipoPez.php';
+                          foreach (tipoPez as $tp): ?>
+                            <option value="<?php echo $tp; ?>" <?php echo (($old['tipo_pez'] ?? '') == $tp) ? 'selected' : ''; ?>>
+                              <?php echo $tp; ?>
+                            </option>
+                          <?php endforeach; ?>
+                        </select>
+                      </div>
+
+
+                      <div class="mb-3">
+                        <label for="formularioAli" class="form-label">Tipo de Alimentación</label>
+                        <select name="tipo_alimen" id="tipo_alimen" class="form-control">
+                          <?php
+                          include_once '../model/Formularioz/tipoAlimen.php';
+                          foreach (tipoAlimen as $tA): ?>
+                            <option value="<?php echo $tA; ?>" <?php echo (($old['tipo_alimen'] ?? '') == $tA) ? 'selected' : ''; ?>>
+                              <?php echo $tA; ?>
+                            </option>
+                          <?php endforeach; ?>
+                        </select>
+
+
+                      </div>
+
+
+
+                      <div class="mb-3">
+                        <label for="alimenObser" class="form-label">Observaciones</label>
+                        <input type="text" class="form-control" id="ob" name="ob" placeholder="Ingrese el codigo del seguimiento"
+                          required>
+                      </div>
+
+
+
+
+                    <?php elseif ($tipo === 'muertos_nacidos'): ?>
+                      <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Cantidad de peces nacidos</label>
+                        <div class="input-group">
+                          <input type="number" class="form-control" id="canpez" name="canpez" placeholder="Cantidad de peces"
+                            min="0" max="100" required>
+                        </div>
+                      </div>
+
+
+                      <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Cantidad de peces machos muertos</label>
+                        <div class="input-group">
+                          <input type="number" class="form-control" id="muerto_Macho" name="muerto_Macho"
+                            placeholder="Ingrese el codigo del seguimiento" min="0" max="100" required>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Cantidad de peces hembra muertos</label>
+                        <div class="input-group">
+                          <input type="number" class="form-control" id="muerto_Hembra" name="muerto_Hembra"
+                            placeholder="Ingrese el codigo del seguimiento" min="0" max="100" required>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Observaciones</label>
+                        <input type="text" class="form-control" id="obM" name="obM"
+                          placeholder="Ingrese el codigo del seguimiento" required>
+                      </div>
+
+                    <?php elseif ($tipo === 'limpieza'): ?>
+
+                      <div class="mb-3">
+                        <label class="form-label">Tipo de Limpieza</label>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="estregarParedes" name="estregarParedes" value="1">
+                          <label class="form-check-label" for="estregarParedes">Sí, estregar paredes</label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="aspirar" name="aspirar" value="1">
+                          <label class="form-check-label" for="aspirar">Sí, aspirar</label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="succionador" name="succionador" value="1">
+                          <label class="form-check-label" for="succionador">Sí, succionador</label>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="obserLi" class="form-label">Observaciones</label>
+                        <input type="text" class="form-control" id="obserLi" name="obserLi"
+                          placeholder="Ingrese las observaciones" required>
+                      </div>
+
+                    <?php elseif ($tipo === 'ajuste_nivel'): ?>
+                      <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Nivel de agua adicionado</label>
+                        <div class="input-group">
+                          <input type="number" class="form-control" id="nv" name="nv" placeholder="Cantidad de peces" min="0"
+                            max="100" required>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="formulariocod" class="form-label">PH medido</label>
+                        <div class="input-group">
+                          <input type="number" class="form-control" id="ph" name="ph" placeholder="Ingrese el Ph del tanque"
+                            placeholder="Cantidad de peces" min="0" max="100" required>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Temperatura</label>
+                        <div class="input-group">
+                          <input type="number" class="form-control" id="tem" name="tem" placeholder="Ingrese la temperatura"
+                            placeholder="Cantidad de peces" min="0" max="100" required>
+                        </div>
+                      </div>
+
+
+                      <div class="mb-3">
+                        <label for="formulariocod" class="form-label">Observaciones</label>
+                        <input type="text" class="form-control" id="ob" name="ob" placeholder="Ingrese las observaciones"
+                          required>
+                      </div>
+
+                    <?php elseif ($tipo === 'lavado'): ?>
+
+
+                      <div class="mb-3">
+                        <label for="porcAgua" class="form-label">Porcentaje de agua cambiada</label>
+                        <div class="input-group">
+                          <input type="number" class="form-control" id="porcAgua" name="porcAgua" placeholder="Ej. 20" min="0"
+                            max="100" required>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="estadoTanque" class="form-label">Estado del tanque</label>
+                        <input type="text" class="form-control" id="estadoTanque" name="estadoTanque"
+                          placeholder="Ingrese el estado del tanque" required>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="obLa" class="form-label">Observaciones</label>
+                        <input type="text" class="form-control" id="obLa" name="obLa" placeholder="Ingrese las observaciones"
+                          required>
+                      </div>
+                    <?php endif; ?>
+
+                  </div>
+                <?php endif; ?>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
+
+        <div class="form-actions">
+          <button type="reset" class="btn btn-outline-secondary"><i class="bx bx-eraser"></i>Limpiar</button>
+          <button type="submit" class="btn btn-primary"><i class="bx bx-save"></i>Guardar zoocriadero</button>
+        </div>
 
     </form>
   </div>
 </div>
 
 <script>
-  document.querySelector('#select_zoo').addEventListener('change', function (e) {
+  document.querySelector('#select_zoo').addEventListener('change', function(e) {
 
     const idZoocriadero = e.target.value;
 
@@ -576,7 +530,7 @@ if (!function_exists('zoo_tipoActividad')) {
 
   /* [CAMBIO] La lógica de abrir/cerrar paneles se movió a una función para reutilizarla
      al marcar el check, al pulsar "Limpiar" y al recargar la página. */
-  (function () {
+  (function() {
     const checks = document.querySelectorAll('.activity-checkbox');
 
     function setPanel(checkbox, abierto, enfocar) {
@@ -591,8 +545,8 @@ if (!function_exists('zoo_tipoActividad')) {
     }
 
     // Marcar / desmarcar una actividad
-    checks.forEach(function (checkbox) {
-      checkbox.addEventListener('change', function () {
+    checks.forEach(function(checkbox) {
+      checkbox.addEventListener('change', function() {
         setPanel(this, this.checked, true);
       });
     });
@@ -601,8 +555,8 @@ if (!function_exists('zoo_tipoActividad')) {
     // (Sin esto los campos obligatorios quedarían activos y bloquearían el envío)
     const form = document.querySelector('.zoo-seg-form form');
     if (form) {
-      form.addEventListener('reset', function () {
-        setTimeout(function () {
+      form.addEventListener('reset', function() {
+        setTimeout(function() {
           checks.forEach(cb => setPanel(cb, false, false));
         }, 0);
       });

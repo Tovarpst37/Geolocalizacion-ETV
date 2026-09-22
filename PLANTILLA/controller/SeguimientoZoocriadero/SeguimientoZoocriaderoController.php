@@ -135,7 +135,6 @@ class SeguimientoZoocriaderoController
         $actividades = $obj->select($sql3);
 
         include_once '../view/partials/SeguimientoZoocriadero/Registrar.php';
-
     }
 
 
@@ -149,16 +148,15 @@ class SeguimientoZoocriaderoController
 
         $codigo = mb_strtoupper($_POST['codigo']) ?? '';
         $zoo = $_POST['select_zoo'] ?? '';
-        $estado = $_POST['id_estado'];
+        $estado = 5;
         $usuario = $_POST['selectUsuarios'] ?? '';
         $tanque = $_POST['selectTanques'] ?? '';
-        $horario = $_POST['horario'] ?? '';
         $actividades = $_POST['actividades'] ?? [];
         $sql_validar = "SELECT id_seguimiento_zoo FROM seguimiento_zoocriadero WHERE cod_seguimiento = $1 ";
         $existe = $obj->select($sql_validar, [$codigo]);
 
         $errores = [];
-        list($hora_inicio, $hora_fin) = explode('-', $horario);
+
 
         if (!empty($existe)) {
             $errores[] = "Ya existe un seguimiento con ese código";
@@ -178,9 +176,6 @@ class SeguimientoZoocriaderoController
         if (empty($tanque)) {
             $errores[] = "Debe seleccionar el tanque al que se le hara el seguimiento.";
         }
-        if (empty($horario)) {
-            $errores[] = "Debe seleccionar el horario.";
-        }
 
         // ---- ALIMENTACIÓN ----
         $tieneAlimentacion = in_array(self::ID_ACTIVIDAD_ALIMENTACION, $actividades);
@@ -189,7 +184,7 @@ class SeguimientoZoocriaderoController
         $tipo_alimen = $_POST['tipo_alimen'] ?? '';
         $obAlimen = trim($_POST['ob'] ?? '');
         $obAlimen = strip_tags($obAlimen);
-        $fecha_hora = $_POST['fecha_hora'] ?? '';
+
 
         if ($tieneAlimentacion) {
             if (empty($tipo_pez))
@@ -230,7 +225,7 @@ class SeguimientoZoocriaderoController
         // ---- LIMPIEZA ----
         $tieneLimpieza = in_array(self::ID_ACTIVIDAD_LIMPIEZA, $actividades);
 
-        $fecha_horaLi = $_POST['fecha_horaLi'] ?? '';
+
         $obserLi = trim($_POST['obserLi'] ?? '');
         $obserLi = strip_tags($obserLi);
         $estregarParedes = isset($_POST['estregarParedes']);
@@ -238,9 +233,7 @@ class SeguimientoZoocriaderoController
         $succionador = isset($_POST['succionador']);
 
         if ($tieneLimpieza) {
-            if (empty($fecha_horaLi)) {
-                $errores[] = "La fecha y hora de limpieza son obligatorias.";
-            }
+
             if (!$estregarParedes && !$aspirar && !$succionador) {
                 $errores[] = "Debe seleccionar al menos un tipo de limpieza.";
             }
@@ -280,16 +273,14 @@ class SeguimientoZoocriaderoController
         // ---- NUEVO: LAVADO ----
         $tieneLavado = in_array(self::ID_ACTIVIDAD_LAVADO, $actividades);
 
-        $fecha_horaLa = $_POST['fecha_horaLa'] ?? '';
+
         $porcAgua = $_POST['porcAgua'] ?? '';
         $estadoTanque = trim($_POST['estadoTanque'] ?? '');
         $obLa = trim($_POST['obLa'] ?? '');
         $obLa = strip_tags($obLa);
 
         if ($tieneLavado) {
-            if (empty($fecha_horaLa)) {
-                $errores[] = "La fecha y hora de lavado son obligatorias.";
-            }
+
             if ($porcAgua === '' || !is_numeric($porcAgua)) {
                 $errores[] = "El porcentaje de agua es obligatorio y debe ser un número.";
             } elseif ($porcAgua < 0 || $porcAgua > 100) {
@@ -313,7 +304,7 @@ class SeguimientoZoocriaderoController
         }
 
         $sql = "INSERT INTO seguimiento_zoocriadero (cod_seguimiento, fecha, id_tanque, id_usuario, id_estado, hora_inicio, hora_fin)
-                VALUES ('$codigo', CURRENT_DATE, '$tanque', '$usuario', '$estado', '$hora_inicio', '$hora_fin')
+                VALUES ('$codigo', CURRENT_TIMESTAMP, '$tanque', '$usuario', '$estado', null, null)
                 RETURNING id_seguimiento_zoo";
 
         $resultado = $obj->select($sql);
@@ -329,7 +320,7 @@ class SeguimientoZoocriaderoController
 
             // ---- Guardar Alimentación si aplica ----
             if ($tieneAlimentacion) {
-                $this->guardarAlimentacion($obj, $id_seguimiento, $codigo, $tipo_pez, $tipo_alimen, $obAlimen, $fecha_hora);
+                $this->guardarAlimentacion($obj, $id_seguimiento, $codigo, $tipo_pez, $tipo_alimen, $obAlimen);
             }
 
             // ---- Guardar Peces Muertos y Nacidos si aplica ----
@@ -339,7 +330,7 @@ class SeguimientoZoocriaderoController
 
             // ---- Guardar Limpieza si aplica ----
             if ($tieneLimpieza) {
-                $this->guardarLimpieza($obj, $id_seguimiento, $codigo, $estregarParedes, $aspirar, $succionador, $fecha_horaLi, $obserLi);
+                $this->guardarLimpieza($obj, $id_seguimiento, $codigo, $estregarParedes, $aspirar, $succionador, $obserLi);
             }
 
             // ---- Guardar Ajustes de Nivel si aplica ----
@@ -349,29 +340,16 @@ class SeguimientoZoocriaderoController
 
             // ---- NUEVO: Guardar Lavado si aplica ----
             if ($tieneLavado) {
-                $this->guardarLavado($obj, $id_seguimiento, $codigo, $estadoTanque, $porcAgua, $fecha_horaLa, $obLa);
+                $this->guardarLavado($obj, $id_seguimiento, $codigo, $estadoTanque, $porcAgua, $obLa);
             }
+        }   // ← aquí estaba faltando la llave de cierre del if ($resultado)
 
-            $_SESSION['mensaje_exito'] = "El Seguimiento de Zoocriadero se registro correctamente.";
-
-            $sql2 = "UPDATE seguimiento_zoocriadero 
-                    SET id_estado = 3 
-                    WHERE fecha = CURRENT_DATE 
-                    AND hora_fin < LOCALTIME 
-                    AND id_estado = 4";
-            $obj->update($sql2);
-
-            redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
-        } else {
-            echo "No se pudo registrar el seguimiento";
-        }
     }
 
     // ---- Alimentación ----
-    private function guardarAlimentacion($obj, $id_seguimiento, $codigo, $tipo_pez, $tipo_alimen, $ob, $fecha_hora)
+    public function guardarAlimentacion($obj, $id_seguimiento, $codigo, $tipo_pez, $tipo_alimen, $ob)
     {
-        $fecha_array = explode(" ", $fecha_hora);
-        $fecha = !empty($fecha_array[0]) ? $fecha_array[0] : date('Y-m-d');
+
 
         $sqlSub = "INSERT INTO sub_actividades 
            (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
@@ -389,7 +367,7 @@ class SeguimientoZoocriaderoController
             1, $5, $6)
            RETURNING id_sub_actividad";
 
-        $resSub = $obj->select($sqlSub, [$tipo_alimen, $fecha, $tipo_pez, $ob, $id_seguimiento, $codigo]);
+        $resSub = $obj->select($sqlSub, [$tipo_alimen, CURRENT_TIMESTAMP, $tipo_pez, $ob, $id_seguimiento, $codigo]);
 
         if (!empty($resSub)) {
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
@@ -442,7 +420,7 @@ class SeguimientoZoocriaderoController
     }
 
     // ---- Limpieza ----
-    private function guardarLimpieza($obj, $id_seguimiento, $codigo, $estregarParedes, $aspirar, $succionador, $fecha_horaLi, $obserLi)
+    private function guardarLimpieza($obj, $id_seguimiento, $codigo, $estregarParedes, $aspirar, $succionador, $obserLi)
     {
         $estregarParedesSql = $estregarParedes ? 'true' : 'false';
         $aspirarSql = $aspirar ? 'true' : 'false';
@@ -464,7 +442,7 @@ class SeguimientoZoocriaderoController
             1, $6, $7)
            RETURNING id_sub_actividad";
 
-        $resSub = $obj->select($sqlSub, [$estregarParedesSql, $aspirarSql, $succionadorSql, $fecha_horaLi, $obserLi, $id_seguimiento, $codigo]);
+        $resSub = $obj->select($sqlSub, [$estregarParedesSql, $aspirarSql, $succionadorSql, CURRENT_TIMESTAMP, $obserLi, $id_seguimiento, $codigo]);
 
         if (!empty($resSub)) {
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
@@ -481,7 +459,7 @@ class SeguimientoZoocriaderoController
         $nivelAgua = (float) $nivelAgua;
         $ph = (float) $ph;
         $temp = (float) $temp;
-        $fechaHora = date('Y-m-d H:i:s');
+
         $obserAj = !empty($obserAj) ? $obserAj : null;
 
         $sqlSub = "INSERT INTO sub_actividades 
@@ -504,7 +482,7 @@ class SeguimientoZoocriaderoController
             $nivelAgua,
             $ph,
             $temp,
-            $fechaHora,
+            CURRENT_TIMESTAMP,
             $obserAj,
             $id_seguimiento,
             $codigo
@@ -538,7 +516,7 @@ class SeguimientoZoocriaderoController
             1, $5, $6)
            RETURNING id_sub_actividad";
 
-        $resSub = $obj->select($sqlSub, [$estadoTanque, $porcAgua, $fecha_horaLa, $obLa, $id_seguimiento, $codigo]);
+        $resSub = $obj->select($sqlSub, [$estadoTanque, $porcAgua, CURRENT_TIMESTAMP, $obLa, $id_seguimiento, $codigo]);
 
         if (!empty($resSub)) {
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
@@ -675,15 +653,12 @@ class SeguimientoZoocriaderoController
                 WHERE id_seguimiento_zoo = $1";
 
                 $ejecutar2 = $obj->update($sql22, [$id]);
-
             }
 
             redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
         } else {
             echo "No se pudo actualizar el seguimiento";
-        }
-        ;
-
+        };
     }
 
 
@@ -817,14 +792,12 @@ class SeguimientoZoocriaderoController
                 WHERE id_seguimiento_zoo = $1 AND id_estado = 4";
 
                     $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_zoo']]);
-
                 } else {
                     $sql22 = "UPDATE seguimiento_zoocriadero 
                 SET id_estado = 4 
                 WHERE id_seguimiento_zoo = $1 AND id_estado = 5";
 
                     $ejecutar2 = $obj->update($sql22, [$se['id_seguimiento_zoo']]);
-
                 }
             }
 
@@ -842,7 +815,6 @@ class SeguimientoZoocriaderoController
 
             include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
         }
-
     }
 
 
@@ -868,11 +840,4 @@ class SeguimientoZoocriaderoController
         header('Content-Type: application/json');
         echo json_encode($resultado);
     }
-
-
-
-
-
 }
-
-?>
