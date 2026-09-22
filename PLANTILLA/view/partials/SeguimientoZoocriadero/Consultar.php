@@ -380,6 +380,13 @@ $clasesEstado = [
             </span>
 
             <div class="seg-btn-group-custom">
+              <a href="<?php echo getUrl("Historial", "Historial", "getVer", array('id' => $s['id_seguimiento_zoo'])); ?>"
+                class="btn btn-white">
+                <i class="bx bx-edit-alt"></i> ver más
+              </a>
+            </div>
+
+            <div class="seg-btn-group-custom">
               <a href="<?php echo getUrl("Historial", "Historial", "getEditar", array('id' => $s['id_seguimiento_zoo'])); ?>"
                 class="btn btn-blue">
                 <i class="bx bx-edit-alt"></i> Editar
