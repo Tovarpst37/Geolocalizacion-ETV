@@ -130,41 +130,8 @@
                     </li>
                 <?php endif; ?>
 
-                <?php if (in_array('Formularios Zoocriadero', $_SESSION['modulos'] ?? [])): ?>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" title="Formularios">
-                            <i class="bx bx-file"></i>
-                            <span class="text">Formularios</span>
-                            <i class="bx bx-chevron-down navCaret text"></i>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="<?php echo getUrl("FormularioZ", "FormularioZ", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar Alimentación</span></a></li>
-                            <li><a href="<?php echo getUrl("FormularioM", "FormularioM", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar Peces Muertos y nacidos</span></a></li>
-                            <li><a href="<?php echo getUrl("FormularioLi", "FormularioLi", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar Limpieza</span></a></li>
-                            <li><a href="<?php echo getUrl("FormularioAj", "FormularioAj", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar Ajuste de Nivel</span></a></li>
-                            <li><a href="<?php echo getUrl("FormularioLa", "FormularioLa", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar Lavado</span></a></li>
-                        </ul>
-                    </li>
-                <?php endif; ?>
 
-                <?php if (in_array('Historial Zoocriadero', $_SESSION['modulos'] ?? [])): ?>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" title="Historial">
-                            <i class="bx bx-history"></i>
-                            <span class="text">Historial</span>
-                            <i class="bx bx-chevron-down navCaret text"></i>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="<?php echo getUrl("Historial", "Historial", "getConsultar"); ?>"><span
-                                        class="sub-item">Consultar Historial</span></a></li>
-                        </ul>
-                    </li>
-                <?php endif; ?>
+
             </ul>
 
             <span class="menu-tag text">Trabajo en terreno</span>
@@ -233,39 +200,8 @@
                     </li>
                 <?php endif; ?>
 
-                <?php if (in_array('Formularios Terreno', $_SESSION['modulos'] ?? [])): ?>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" title="Formularios">
-                            <i class="bx bx-folder"></i>
-                            <span class="text">Formularios</span>
-                            <i class="bx bx-chevron-down navCaret text"></i>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="<?php echo getUrl("FormularioInsp", "FormularioInsp", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar Inspección</span></a></li>
-                            <li><a href="<?php echo getUrl("FormularioSiem", "FormularioSiem", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar Siembra</span></a></li>
-                            <li><a href="<?php echo getUrl("FormularioSegT", "FormularioSegT", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar Seguimiento</span></a></li>
-                            <li><a href="<?php echo getUrl("FormularioResi", "FormularioResi", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar Resiembra</span></a></li>
-                        </ul>
-                    </li>
-                <?php endif; ?>
 
-                <?php if (in_array('Historial Terreno', $_SESSION['modulos'] ?? [])): ?>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" title="Historial">
-                            <i class="bx bx-history"></i>
-                            <span class="text">Historial</span>
-                            <i class="bx bx-chevron-down navCaret text"></i>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="<?php echo getUrl("HistorialTerreno", "HistorialTerreno", "getConsultar"); ?>"><span
-                                        class="sub-item">Consultar Historial</span></a></li>
-                        </ul>
-                    </li>
-                <?php endif; ?>
+
             </ul>
 
             <span class="menu-tag text">Reportes</span>
