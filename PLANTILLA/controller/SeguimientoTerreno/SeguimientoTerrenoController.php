@@ -142,8 +142,7 @@ class SeguimientoTerrenoController
         $sql4 = "SELECT MAX(id_seguimiento_terreno) FROM seguimiento_terreno";
         $id_seg = $obj->select($sql4);
 
-        $sql2 = "SELECT * from estado where tipo_estado = 'seguimiento'";
-        $estados = $obj->select($sql2);
+        
 
         $sql3 = "SELECT * from actividad_terreno WHERE id_estado = 1";
         $actividades = $obj->select($sql3);
@@ -159,17 +158,17 @@ class SeguimientoTerrenoController
 
         $codigo = mb_strtoupper($_POST['codigo']) ?? '';
         $sitio = $_POST['select_ter'] ?? '';
-        $estado = $_POST['id_estado'];
+       
         $usuario = $_POST['selectUsuarios'] ?? '';
         $deposito = $_POST['selectTerreno'] ?? '';
-        $horario = $_POST['horario'] ?? '';
+        
         $actividades = $_POST['actividades'] ?? [];
 
         $sql_validar = "SELECT id_seguimiento_terreno FROM seguimiento_terreno WHERE cod_seguimiento = $1";
         $existe = $obj->select($sql_validar, [$codigo]);
 
         $errores = [];
-        list($hora_inicio, $hora_fin) = explode('-', $horario);
+     
 
         if (!empty($existe)) {
             $errores[] = "Ya existe un seguimiento con ese código";
@@ -180,23 +179,19 @@ class SeguimientoTerrenoController
         if (empty($sitio)) {
             $errores[] = "Debe seleccionar el sitio.";
         }
-        if (empty($estado)) {
-            $errores[] = "Debe seleccionar el estado del seguimiento.";
-        }
+        
         if (empty($usuario)) {
             $errores[] = "Debe seleccionar el Auxiliar asignado.";
         }
         if (empty($deposito)) {
             $errores[] = "Debe seleccionar el depósito al que se le hará el seguimiento.";
         }
-        if (empty($horario)) {
-            $errores[] = "Debe seleccionar el horario.";
-        }
+       
 
         // ---- INSPECCIÓN: validar solo si viene marcada esa actividad ----
         $tieneInspeccion = in_array(self::ID_ACTIVIDAD_INSPECCION, $actividades);
 
-        $fecha_horaInsp = $_POST['fecha_horaInsp'] ?? '';
+       
         $depositoDetRaw = $_POST['depositoDetectado'] ?? '';
         $phMedido = $_POST['phMedido'] ?? '';
         $temperatura = $_POST['temperatura'] ?? '';
@@ -205,9 +200,7 @@ class SeguimientoTerrenoController
         $obserInsp = strip_tags($obserInsp);
 
         if ($tieneInspeccion) {
-            if (empty($fecha_horaInsp)) {
-                $errores[] = "La fecha y hora de inspección son obligatorias.";
-            }
+            
             if ($depositoDetRaw !== '0' && $depositoDetRaw !== '1') {
                 $errores[] = "Debe indicar si se detectaron depósitos permanentes de agua.";
             }
@@ -233,9 +226,9 @@ class SeguimientoTerrenoController
         // ---- SIEMBRA: validar solo si viene marcada esa actividad ----
         $tieneSiembra = in_array(self::ID_ACTIVIDAD_SIEMBRA, $actividades);
 
-        $fecha_horaSiem = $_POST['fecha_horaSiem'] ?? '';
+        
         $pecesEmpacados = $_POST['pecesEmpacados'] ?? '';
-        $tiempoAclimat = $_POST['tiempoAclimat'] ?? '';
+        
         $hembrasSembradas = $_POST['hembrasSembradas'] ?? '';
         $machosSembrados = $_POST['machosSembrados'] ?? '';
         $litrosAgua = $_POST['litrosAgua'] ?? '';
@@ -245,15 +238,11 @@ class SeguimientoTerrenoController
         $obserSiem = strip_tags($obserSiem);
 
         if ($tieneSiembra) {
-            if (empty($fecha_horaSiem)) {
-                $errores[] = "La fecha y hora de siembra son obligatorias.";
-            }
+            
             if ($pecesEmpacados === '' || !is_numeric($pecesEmpacados) || $pecesEmpacados < 0) {
                 $errores[] = "La cantidad de peces empacados es obligatoria y debe ser un número válido.";
             }
-            if ($tiempoAclimat === '' || !is_numeric($tiempoAclimat) || $tiempoAclimat < 0) {
-                $errores[] = "El tiempo de aclimatación es obligatorio y debe ser un número válido.";
-            }
+           
             if ($hembrasSembradas === '' || !is_numeric($hembrasSembradas) || $hembrasSembradas < 0) {
                 $errores[] = "La cantidad de hembras sembradas es obligatoria y debe ser un número válido.";
             }
@@ -280,7 +269,7 @@ class SeguimientoTerrenoController
         // ---- SEGUIMIENTO: validar solo si viene marcada esa actividad ----
         $tieneSeguimientoAct = in_array(self::ID_ACTIVIDAD_SEGUIMIENTO, $actividades);
 
-        $fecha_horaSeg = $_POST['fecha_horaSeg'] ?? '';
+        
         $numeroVisitaRaw = $_POST['numeroVisita'] ?? '';
         $depositoVisRaw = $_POST['depositoVisitado'] ?? '';
         $presenciaLarvasSegRaw = $_POST['presenciaLarvasSeg'] ?? '';
@@ -289,9 +278,7 @@ class SeguimientoTerrenoController
         $obserSeg = strip_tags($obserSeg);
 
         if ($tieneSeguimientoAct) {
-            if (empty($fecha_horaSeg)) {
-                $errores[] = "La fecha y hora de seguimiento son obligatorias.";
-            }
+            
             if ($numeroVisitaRaw !== '1' && $numeroVisitaRaw !== '2') {
                 $errores[] = "Debe seleccionar un número de visita válido (1ra o 2da).";
             }
@@ -315,7 +302,7 @@ class SeguimientoTerrenoController
         // ---- RESIEMBRA: validar solo si viene marcada esa actividad ----
         $tieneResiembra = in_array(self::ID_ACTIVIDAD_RESIEMBRA, $actividades);
 
-        $fecha_horaResi = $_POST['fecha_horaResi'] ?? '';
+        
         $canHembrasResi = $_POST['canHembras'] ?? '';
         $canMachosResi = $_POST['canMachos'] ?? '';
         $canGuppiesResi = $_POST['canGuppies'] ?? '';
@@ -325,9 +312,7 @@ class SeguimientoTerrenoController
         $obserResi = strip_tags($obserResi);
 
         if ($tieneResiembra) {
-            if (empty($fecha_horaResi)) {
-                $errores[] = "La fecha y hora de resiembra son obligatorias.";
-            }
+            
             if ($canHembrasResi === '' || !is_numeric($canHembrasResi) || $canHembrasResi < 0) {
                 $errores[] = "La cantidad de hembras sembradas es obligatoria y debe ser un número válido.";
             }
@@ -360,10 +345,10 @@ class SeguimientoTerrenoController
 
 
         $sql = "INSERT INTO seguimiento_terreno (cod_seguimiento, fecha, id_sitio, id_usuario, id_estado, hora_inicio, hora_fin)
-        VALUES ($1, CURRENT_DATE, $2, $3, $4, $5, $6)
+        VALUES ($1,CURRENT_TIMESTAMP, $2, $3, $4, $5, $6)
         RETURNING id_seguimiento_terreno";
 
-        $resultado = $obj->select($sql, [$codigo, $sitio, $usuario, $estado, $hora_inicio, $hora_fin]);
+        $resultado = $obj->select($sql, [$codigo, $sitio, $usuario, 5, null, null]);
 
         if ($resultado) {
             $id_seguimiento = $resultado[0]['id_seguimiento_terreno'];
@@ -380,7 +365,7 @@ class SeguimientoTerrenoController
                     $obj,
                     $id_seguimiento,
                     $codigo,
-                    $fecha_horaInsp,
+                    
                     $depositoDetRaw,
                     $phMedido,
                     $temperatura,
@@ -395,7 +380,7 @@ class SeguimientoTerrenoController
                     $obj,
                     $id_seguimiento,
                     $codigo,
-                    $fecha_horaSiem,
+                    
                     $pecesEmpacados,
                     $tiempoAclimat,
                     $hembrasSembradas,
@@ -413,7 +398,7 @@ class SeguimientoTerrenoController
                     $obj,
                     $id_seguimiento,
                     $codigo,
-                    $fecha_horaSeg,
+                    
                     $numeroVisitaRaw,
                     $depositoVisRaw,
                     $presenciaLarvasSegRaw,
@@ -428,7 +413,7 @@ class SeguimientoTerrenoController
                     $obj,
                     $id_seguimiento,
                     $codigo,
-                    $fecha_horaResi,
+                    
                     $canHembrasResi,
                     $canMachosResi,
                     $canGuppiesResi,
@@ -440,14 +425,14 @@ class SeguimientoTerrenoController
 
             $_SESSION['mensaje_exito'] = "El Seguimiento de Terreno se registró correctamente.";
 
-            redirect(getUrl("SeguimientoTerreno", "SeguimientoTerreno", "getConsultar"));
+            redirect(getUrl("HistorialTerreno", "HistorialTerreno", "getConsultar"));
         } else {
             echo "No se pudo registrar el seguimiento";
         }
     }
 
     // ---- Inspección, misma lógica que FormularioInspController::postInsert ----
-    private function guardarInspeccion($obj, $id_seguimiento, $codigo, $fechaHora, $depositoDetRaw, $phMedido, $temperatura, $presenciaLarvRaw, $obser)
+    private function guardarInspeccion($obj, $id_seguimiento, $codigo, $depositoDetRaw, $phMedido, $temperatura, $presenciaLarvRaw, $obser)
     {
         $depositoDet = $depositoDetRaw === '1' ? 'true' : 'false';
         $presenciaLarv = $presenciaLarvRaw === '1' ? 'true' : 'false';
@@ -457,13 +442,13 @@ class SeguimientoTerrenoController
             presencia_larvas_inspeccion, obser_inspeccion, 
             id_estado, id_seguimiento_terreno, cod_seguimiento) 
            VALUES 
-           ($1, $2, $3, $4, 
-            $5, $6, 
-            1, $7, $8)
+           (CURRENT_TIMESTAMP, $1, $2, $3, 
+            $4, $5, 
+            1, $6, $7)
            RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [
-            $fechaHora,
+            
             $depositoDet,
             $phMedido,
             $temperatura,
@@ -483,7 +468,7 @@ class SeguimientoTerrenoController
     }
 
     // ---- Siembra, misma lógica que FormularioSiemController::postInsert ----
-    private function guardarSiembra($obj, $id_seguimiento, $codigo, $fechaHora, $pecesEmpacados, $tiempoAclimat, $hembrasSembradas, $machosSembrados, $litrosAgua, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
+    private function guardarSiembra($obj, $id_seguimiento, $codigo,  $pecesEmpacados, $tiempoAclimat, $hembrasSembradas, $machosSembrados, $litrosAgua, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
     {
         $presenciaLarv = $presenciaLarvasRaw === '1' ? 'true' : 'false';
         $presenciaPec = $presenciaPecesRaw === '1' ? 'true' : 'false';
@@ -494,14 +479,14 @@ class SeguimientoTerrenoController
             presencia_larvas_siembra, presencia_peces_siembra, obser_siembra, 
             id_estado, id_seguimiento_terreno, cod_seguimiento) 
            VALUES 
-           ($1, $2, $3, 
-            $4, $5, $6, 
-            $7, $8, $9, 
-            1, $10, $11)
+           (CURRENT_TIMESTAMP, $1, $2, 
+            $3, $4, $5, 
+            $6, $7, $8, 
+            1, $9, $10)
            RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [
-            $fechaHora,
+            
             $pecesEmpacados,
             $tiempoAclimat,
             $hembrasSembradas,
@@ -524,7 +509,7 @@ class SeguimientoTerrenoController
     }
 
     // ---- Seguimiento, misma lógica que FormularioSegTController::postInsert ----
-    private function guardarSeguimientoAct($obj, $id_seguimiento, $codigo, $fechaHora, $numeroVisitaRaw, $depositoVisRaw, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
+    private function guardarSeguimientoAct($obj, $id_seguimiento, $codigo,  $numeroVisitaRaw, $depositoVisRaw, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
     {
         $numeroVisita = (int) $numeroVisitaRaw;
         $depositoVis = $depositoVisRaw === '1' ? 'true' : 'false';
@@ -536,13 +521,13 @@ class SeguimientoTerrenoController
         presencia_larvas_seguimiento, presencia_peces_seguimiento, obser_seguimiento, 
         id_estado, id_seguimiento_terreno, cod_seguimiento) 
        VALUES 
-       ($1, $2, $3, 
-        $4, $5, $6, 
-        1, $7, $8)
+       (CURRENT_TIMESTAMP, $1, $2, 
+        $3, $4, $5, 
+        1, $6, $7)
        RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [
-            $fechaHora,
+            
             $numeroVisita,
             $depositoVis,
             $presenciaLarv,
@@ -562,7 +547,7 @@ class SeguimientoTerrenoController
     }
 
     // ---- Resiembra, misma lógica que FormularioResiController::postInsert ----
-    private function guardarResiembra($obj, $id_seguimiento, $codigo, $fechaHora, $canHembras, $canMachos, $canGuppies, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
+    private function guardarResiembra($obj, $id_seguimiento, $codigo, $canHembras, $canMachos, $canGuppies, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
     {
         $presenciaLarv = $presenciaLarvasRaw === '1' ? 'true' : 'false';
         $presenciaPec = $presenciaPecesRaw === '1' ? 'true' : 'false';
@@ -572,13 +557,13 @@ class SeguimientoTerrenoController
             presencia_larvas_resiembra, presencia_peces_resiembra, obser_resiembra, 
             id_estado, id_seguimiento_terreno, cod_seguimiento) 
            VALUES 
-           ($1, $2, $3, $4,
-            $5, $6, $7, 
-            1, $8, $9)
+           (CURRENT_TIMESTAMP, $1, $2, $3,
+            $4, $5, $6, 
+            1, $7, $8)
            RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [
-            $fechaHora,
+            
             $canHembras,
             $canMachos,
             $canGuppies,

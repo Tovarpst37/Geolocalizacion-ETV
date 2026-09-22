@@ -190,14 +190,6 @@ if (!function_exists('terreno_tipoActividad')) {
               </select>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label">Horario*</label>
-              <select class="form-select" id="horario" name="horario" required>
-                <option value="" selected disabled>Selecciona un horario</option>
-                <option value="06:00-12:00">6:00AM - 12:00PM</option>
-                <option value="12:00-17:00">12:00PM - 5:00PM</option>
-              </select>
-            </div>
           </div>
 
           <div class="form-section">
@@ -220,18 +212,7 @@ if (!function_exists('terreno_tipoActividad')) {
               </select>
             </div>
 
-            <div class="mb-4">
-              <label for="id_estado" class="form-label">Estado*</label>
-              <select class="form-select" id="id_estado" name="id_estado" required>
-                <option value="" selected disabled>Selecciona un estado</option>
-                <?php foreach ($estados as $est) { ?>
-                  <option value="<?php echo $est['id_estado']; ?>">
-                    <?php echo $est['nombre_estado']; ?>
-                  </option>
-                <?php }
-                ; ?>
-              </select>
-            </div>
+            
           </div>
 
           <div class="form-section">
@@ -265,13 +246,7 @@ if (!function_exists('terreno_tipoActividad')) {
                       </h6>
 
                       <?php if ($tipo === 'inspeccion'): ?>
-                        <div class="mb-3">
-                          <label for="fecha_horaInsp" class="form-label">Fecha y hora de inspección</label>
-                          <input type="datetime-local" class="form-control" id="fecha_horaInsp"
-                            name="fecha_horaInsp"
-                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
-                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;">
-                        </div>
+                        
 
                         <div class="mb-3">
                           <label class="form-label d-block">Depósitos permanentes de agua detectados</label>
@@ -320,13 +295,7 @@ if (!function_exists('terreno_tipoActividad')) {
                         </div>
 
                       <?php elseif ($tipo === 'siembra'): ?>
-                        <div class="mb-3">
-                          <label for="fecha_horaSiem" class="form-label">Fecha y hora de siembra</label>
-                          <input type="datetime-local" class="form-control" id="fecha_horaSiem"
-                            name="fecha_horaSiem"
-                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
-                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;">
-                        </div>
+                        
 
                         <div class="mb-3">
                           <label for="pecesEmpacados" class="form-label">Cantidad de peces empacados en bolsas
@@ -394,12 +363,7 @@ if (!function_exists('terreno_tipoActividad')) {
                         </div>
 
                       <?php elseif ($tipo === 'seguimiento_act'): ?>
-                        <div class="mb-3">
-                          <label for="fecha_horaSeg" class="form-label">Fecha y hora de seguimiento</label>
-                          <input type="datetime-local" class="form-control" id="fecha_horaSeg" name="fecha_horaSeg"
-                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
-                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;">
-                        </div>
+                        
 
                         <div class="mb-3">
                           <label for="numeroVisita" class="form-label">Número de visita de seguimiento</label>
@@ -458,13 +422,7 @@ if (!function_exists('terreno_tipoActividad')) {
                         </div>
 
                       <?php elseif ($tipo === 'resiembra'): ?>
-                        <div class="mb-3">
-                          <label for="fecha_horaResi" class="form-label">Fecha y hora de resiembra</label>
-                          <input type="datetime-local" class="form-control" id="fecha_horaResi"
-                            name="fecha_horaResi"
-                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
-                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;">
-                        </div>
+                        
 
                         <div class="mb-3">
                           <label for="canHembras" class="form-label">Cantidad de hembras sembradas</label>

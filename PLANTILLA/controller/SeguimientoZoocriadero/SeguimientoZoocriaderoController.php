@@ -304,10 +304,10 @@ class SeguimientoZoocriaderoController
         }
 
         $sql = "INSERT INTO seguimiento_zoocriadero (cod_seguimiento, fecha, id_tanque, id_usuario, id_estado, hora_inicio, hora_fin)
-                VALUES ('$codigo', CURRENT_TIMESTAMP, '$tanque', '$usuario', '$estado', null, null)
-                RETURNING id_seguimiento_zoo";
+        VALUES ($1, CURRENT_TIMESTAMP,$2,$3,$4,$5,$6)
+        RETURNING id_seguimiento_zoo";
 
-        $resultado = $obj->select($sql);
+        $resultado = $obj->select($sql,[$codigo,$tanque, $usuario, 5, null, null]);
 
         if ($resultado) {
             $id_seguimiento = $resultado[0]['id_seguimiento_zoo'];
@@ -805,13 +805,7 @@ class SeguimientoZoocriaderoController
             }
 
 
-            $sql2 = "UPDATE seguimiento_zoocriadero 
-                SET id_estado = 3 
-                WHERE fecha = CURRENT_DATE 
-                AND hora_fin < LOCALTIME 
-                AND id_estado = 4";
-
-            $ejecutar = $obj->update($sql2);
+           
 
             $seguimientos = $obj->select($sql);
 
