@@ -7,10 +7,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReporteActividadTerrenoController
 {
-    const ROL_ADMINISTRADOR = 1;
-    const ROL_COORDINADOR = 2;
+  
 
-    // Whitelist: nunca se interpola el valor del GET directo en el nombre de la columna SQL.
+
     private function tiposValidos(): array
     {
         return [
@@ -21,20 +20,8 @@ class ReporteActividadTerrenoController
         ];
     }
 
-    // RF061: acceso solo para Administrador y Coordinador de Control Biológico
-    private function verificarAcceso()
-    {
-        $rolPermitido = in_array($_SESSION['id_rol'] ?? null, [self::ROL_ADMINISTRADOR, self::ROL_COORDINADOR]);
-        if (empty($_SESSION['id_usuario']) || !$rolPermitido) {
-            include_once '../model/Errores/ErrorModal.php';
-            ErrorModal::verError(
-                ["No tienes permisos para acceder a este reporte."],
-                getUrl('Home', 'Home', 'getIndex')
-            );
-            return false;
-        }
-        return true;
-    }
+   
+  
 
     private function consultarActividades(ReporteActividadTerrenoModel $obj, string $col): array
     {
@@ -59,9 +46,7 @@ class ReporteActividadTerrenoController
 
     public function getReporteActividadTerreno()
     {
-        if (!$this->verificarAcceso()) {
-            return;
-        }
+    
 
         $obj = new ReporteActividadTerrenoModel();
         $tipos = $this->tiposValidos();
