@@ -201,19 +201,19 @@
                 <?php endif; ?>
 
                 <?php if (in_array('Actividades Terreno', $_SESSION['modulos'] ?? [])): ?>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="bx bx-clipboard"></i>
-                            <span class="text">Actividades</span>
-                            <i class="bx bx-chevron-down navCaret text"></i>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getRegistrar"); ?>"><span
-                                        class="sub-item">Registrar actividad</span> </a></li>
-                            <li><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar"); ?>"><span
-                                        class="sub-item">Consultar actividad</span> </a></li>
-                        </ul>
-                    </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bx bx-clipboard"></i>
+                        <span class="text">Actividades</span>
+                        <i class="bx bx-chevron-down navCaret text"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getRegistrar"); ?>"><span class="sub-item">Registrar actividad</span> <span class="badge-pending">Próximo</span></a></li>
+                        <li><a href="<?php echo getUrl("ActividadTerreno", "ActividadTerreno", "getConsultar"); ?>"><span class="sub-item">Consultar actividad</span> <span class="badge-pending">Próximo</span></a></li>
+                    </ul>
+                </li>
+
                 <?php endif; ?>
 
                 <?php if (in_array('Seguimientos Terreno', $_SESSION['modulos'] ?? [])): ?>
@@ -270,32 +270,31 @@
             <span class="menu-tag text">Reportes</span>
             <ul>
                 <?php if (in_array('Reportes', $_SESSION['modulos'] ?? [])): ?>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="bx bx-bar-chart-alt-2"></i>
-                            <span class="text">Reportes</span>
-                            <i class="bx bx-chevron-down navCaret text"></i>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="<?php echo getUrl("Reportes", "Reportes", "report"); ?>"><span
-                                        class="sub-item">Seguimiento de actividades</span> </a></li>
-                            <li><a
-                                    href="<?php echo getUrl("ReportePecesNacidosMuertos", "ReportePecesNacidosMuertos", "getReportePecesNacidosMuertos"); ?>"><span
-                                        class="sub-item">Peces nacidos/muertos por tanque</span> </a></li>
-                            <li><a
-                                    href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques"); ?>"><span
-                                        class="sub-item">Tanques por zoocriadero</span> </a></li>
-                            <li><a href=""><span class="sub-item">Sitios registrados</span> </a></li>
-                            <li><a href="#"><span class="sub-item">Actividades de terreno por tipo</span> </a></li>
-                            <li><a
-                                    href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span
-                                        class="sub-item">Actividades por auxiliar</span> </a></li>
-                            <li><a href="#"><span class="sub-item">Tipo de depósitos</span> </a></li>
 
-                        </ul>
-                    </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bx bx-bar-chart-alt-2"></i>
+                        <span class="text">Reportes</span>
+                        <i class="bx bx-chevron-down navCaret text"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="<?php echo getUrl("Reportes", "Reportes", "report"); ?>"><span class="sub-item">Seguimiento de actividades</span> </a></li>
+                        <li><a href="<?php echo getUrl("ReportePecesNacidosMuertos", "ReportePecesNacidosMuertos", "getReportePecesNacidosMuertos"); ?>"><span class="sub-item">Peces nacidos/muertos por tanque</span> </a></li>
+                        <li><a href="<?php echo getUrl("ReportesTanquesZoocriadero", "ReportesTanquesZoocriadero", "getReporteTanques"); ?>"><span class="sub-item">Tanques por zoocriadero</span> </a></li>
+                        <li><a href="<?php echo getUrl("ReporteSitios", "ReporteSitios", "getReporteSitios"); ?>"><span class="sub-item">Sitios registrados</span> </a></li>
+                        <li><a href="<?php echo getUrl('ReporteActividadTerreno', 'ReporteActividadTerreno', 'getReporteActividadTerreno'); ?>"><span class="sub-item">Actividades de terreno por tipo</span> </a></li>
+                        <li><a href="<?php echo getUrl("Reporteactividadesauxiliar", "Reporteactividadesauxiliar", "getReporteActividadesAuxiliar"); ?>"><span class="sub-item">Actividades por auxiliar</span> </a></li>
+                        <li><a href="<?php echo getUrl("ReportesTipoDeposito", "ReportesTipoDeposito", "getReporteTipoDeposito  "); ?>"><span class="sub-item">Tipo de depósitos</span> </a></li>
+                         <li><a href="<?php echo getUrl("Auditoria", "Auditoria", "getConsultar  "); ?>"><span class="sub-item">Auditoria</span> </a></li>
+                        
+                    </ul>
+                </li>
                 <?php endif; ?>
             </ul>
+
+            
+
+            
 
             <span class="menu-tag text">Configuracion</span>
             <ul>

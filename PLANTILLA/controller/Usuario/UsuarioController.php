@@ -197,7 +197,7 @@
             return;
          }
 
-         $nuevo_estado = ($id_estado_actual == 1) ? 0 : 1;
+         $nuevo_estado = ($id_estado_actual == 1) ? 2 : 1;
       
          $sql = "UPDATE usuarios SET id_estado = $nuevo_estado WHERE id_usuario = $id_usuario";
          $obj->update($sql);

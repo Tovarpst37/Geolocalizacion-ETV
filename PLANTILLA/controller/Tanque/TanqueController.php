@@ -31,7 +31,7 @@ class TanqueController
         $sql2 = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql2);
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado where tipo_estado = 'general'";
         $estados = $obj->select($sql3);
 
         $old = $_SESSION['old_input'] ?? [];
@@ -146,14 +146,10 @@ class TanqueController
         foreach ($ejecutar2 as $s) {
 
 
-            if ($s['id_estado'] == 2) {
-
-                echo '<script>alert("¡Este tanque ya esta inhabilitado!");</script>';
-                redirect(getUrl("Tanque", "Tanque", "getConsultar"));
-            } else if ($s['id_estado'] == 1) {
+           
                 $sql = "UPDATE tanque SET id_estado = 2 WHERE id_tanque = $1";
 
-                $ejecutar = $obj->delete($sql,[$id]);
+                $ejecutar = $obj->update($sql,[$id]);
                 if ($ejecutar) {
                     $_SESSION['mensaje_exito'] = "El Tanque se inhabilito correctamente.";
                     redirect(getUrl("Tanque", "Tanque", "getConsultar"));
@@ -162,7 +158,32 @@ class TanqueController
                 }
             }
         }
-    }
+    
+
+    public function postHabilitar()
+    {
+
+        $obj = new TanqueModel();
+        $id = $_GET['id'];
+
+        $sql2 = "SELECT id_estado from tanque WHERE id_tanque = $1";
+        $ejecutar2 = $obj->select($sql2,[$id]);
+        foreach ($ejecutar2 as $s) {
+
+
+            
+                $sql = "UPDATE tanque SET id_estado = 1 WHERE id_tanque = $1";
+
+                $ejecutar = $obj->update($sql,[$id]);
+                if ($ejecutar) {
+                    $_SESSION['mensaje_exito'] = "El Tanque se habilito correctamente.";
+                    redirect(getUrl("Tanque", "Tanque", "getConsultar"));
+                } else {
+                    echo "No se pudo inhabilitar el tanque";
+                }
+            }
+        }
+    
 
     public function getEdit()
     {
@@ -179,11 +200,13 @@ class TanqueController
         $sql2 = "SELECT * from zoocriadero";
         $zoocriaderos = $obj->select($sql2);
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado where tipo_estado = 'general'";
         $estados = $obj->select($sql3);
 
         include_once '../view/partials/Tanque/Editar.php';
     }
+
+    
 
 
     public function validarUpdate()

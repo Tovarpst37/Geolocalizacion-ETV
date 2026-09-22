@@ -13,7 +13,7 @@ class ZoocriaderoController
 
         $obj = new ZoocriaderoModel();
 
-        $sql3 = "SELECT * from estado";
+        $sql3 = "SELECT * from estado where tipo_estado = 'general'";
 
         $estados = $obj->select($sql3);
 
@@ -235,11 +235,7 @@ class ZoocriaderoController
         foreach ($ejecutar2 as $s) {
 
 
-            if ($s['id_estado'] == 2) {
-
-                echo '<script>alert("¡Este zoocriadero ya esta inhabilitado!");</script>';
-                redirect(getUrl("Zoocriadero", "Zoocriadero", "getConsultar"));
-            } else if ($s['id_estado'] == 1) {
+            
                 $sql = "UPDATE zoocriadero SET id_estado = 2 WHERE id_zoocriadero = $id";
 
                 $ejecutar = $obj->delete($sql);
@@ -251,7 +247,31 @@ class ZoocriaderoController
                 }
             }
         }
-    }
+
+        public function postHabilitar()
+    {
+
+        $obj = new ZoocriaderoModel();
+        $id = $_GET['id'];
+
+        $sql2 = "SELECT id_estado from zoocriadero WHERE id_zoocriadero = $id";
+        $ejecutar2 = $obj->select($sql2);
+        foreach ($ejecutar2 as $s) {
+
+
+            
+                $sql = "UPDATE zoocriadero SET id_estado = 1 WHERE id_zoocriadero = $id";
+
+                $ejecutar = $obj->delete($sql);
+                if ($ejecutar) {
+                    $_SESSION['mensaje_exito'] = "El Zoocriadero se Habilito correctamente.";
+                    redirect(getUrl("Zoocriadero", "Zoocriadero", "getConsultar"));
+                } else {
+                    echo "No se pudo inhabilitar el tanque";
+                }
+            }
+        }
+    
 
 
     public function getEditar()
@@ -288,7 +308,7 @@ class ZoocriaderoController
         $sql22 = "SELECT * FROM barrio";
         $barrios = $obj->select($sql22);
 
-        $sql32 = "SELECT * from estado";
+        $sql32 = "SELECT * from estado WHERE tipo_estado = 'general'";
         $estados = $obj->select($sql32);
 
 

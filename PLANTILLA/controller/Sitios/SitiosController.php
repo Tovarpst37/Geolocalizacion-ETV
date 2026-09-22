@@ -22,10 +22,7 @@ class SitiosController
         $validacion = $obj->select($sql2, [$id]);
         foreach ($validacion as $j) {
 
-            if ($j['id_estado'] == 2) {
-                echo '<script>alert("¡Este tanque ya esta inhabilitado!");</script>';
-                redirect(getUrl("Sitios", "Sitios", "getConsultar"));
-            }
+            
 
             $sql = "UPDATE sitio SET id_estado = 2 WHERE id_sitio = $1";
             $ejecutar = $obj->update($sql, [$id]);
@@ -35,6 +32,29 @@ class SitiosController
                 redirect(getUrl("Sitios", "Sitios", "getConsultar"));
             } else {
                 echo "No se hinabilito el Sitio";
+            }
+        }
+    }
+
+    public function posHabilitar()
+    {
+        $id = $_GET['id'] ?? null;
+        $obj = new SitiosModel();
+
+        $sql2 = "SELECT id_estado from sitio WHERE id_sitio = $1";
+        $validacion = $obj->select($sql2, [$id]);
+        foreach ($validacion as $j) {
+
+            
+
+            $sql = "UPDATE sitio SET id_estado = 1 WHERE id_sitio = $1";
+            $ejecutar = $obj->update($sql, [$id]);
+
+            if ($ejecutar) {
+                $_SESSION['mensaje_exito'] = "El sitio se habilito correctamente.";
+                redirect(getUrl("Sitios", "Sitios", "getConsultar"));
+            } else {
+                echo "No se habilito el Sitio";
             }
         }
     }
