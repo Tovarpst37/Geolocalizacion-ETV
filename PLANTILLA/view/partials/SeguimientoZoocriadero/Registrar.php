@@ -241,7 +241,7 @@ if (!function_exists('zoo_tipoActividad')) {
       <div class="form-section">
         <h5 class="section-title">
           <span class="section-icon"><i class="bx bx-info-circle"></i></span>
-          Información del seguimiento
+
         </h5>
 
         <div class="mb-3">
@@ -287,13 +287,35 @@ if (!function_exists('zoo_tipoActividad')) {
 
         </div>
 
-        <div class="form-section">
-          <h5 class="section-title">
-            <span class="section-icon"><i class="bx bx-list-check"></i></span>
-            Actividades a realizar
-          </h5>
+        <?php
+// [NUEVO] Orden fijo según el mapa de proceso del Zoocriadero (imagen de referencia)
+$orden_proceso = [
+  'alimentacion'      => 1,
+  'muertos_nacidos'   => 2, // Recolección de peces muertos y nacidos
+  'limpieza'          => 3,
+  'ajuste_nivel'      => 4,
+  'lavado'            => 5,
+];
 
-          <?php if (empty($actividades)): ?>
+usort($actividades, function ($a, $b) use ($orden_proceso) {
+  $tipoA = zoo_tipoActividad($a['nombre_actividad']);
+  $tipoB = zoo_tipoActividad($b['nombre_actividad']);
+
+  // Si el tipo no está en el mapa de proceso (actividad nueva/desconocida), se manda al final
+  $ordenA = $orden_proceso[$tipoA] ?? 999;
+  $ordenB = $orden_proceso[$tipoB] ?? 999;
+
+  return $ordenA <=> $ordenB;
+});
+?>
+
+<div class="form-section">
+  <h5 class="section-title">
+    <span class="section-icon"><i class="bx bx-list-check"></i></span>
+    Actividades a realizar
+  </h5>
+
+  <?php if (empty($actividades)): ?>
             <p class="text-muted">No hay actividades disponibles</p>
           <?php else: ?>
             <?php foreach ($actividades as $act):
@@ -320,7 +342,7 @@ if (!function_exists('zoo_tipoActividad')) {
                     <?php if ($tipo === 'alimentacion'): ?>
 
                       <div class="mb-3">
-                        <label for="formulariopez" class="form-label">Tipo de peces</label>
+                        <label for="tipo_pez" class="form-label">Tipo de peces</label>
                         <select name="tipo_pez" id="tipo_pez" class="form-control">
                           <?php
                           include_once '../model/Formularioz/tipoPez.php';
@@ -334,7 +356,7 @@ if (!function_exists('zoo_tipoActividad')) {
 
 
                       <div class="mb-3">
-                        <label for="formularioAli" class="form-label">Tipo de Alimentación</label>
+                        <label for="tipo_alimen" class="form-label">Tipo de Alimentación</label>
                         <select name="tipo_alimen" id="tipo_alimen" class="form-control">
                           <?php
                           include_once '../model/Formularioz/tipoAlimen.php';
@@ -351,8 +373,8 @@ if (!function_exists('zoo_tipoActividad')) {
 
 
                       <div class="mb-3">
-                        <label for="alimenObser" class="form-label">Observaciones</label>
-                        <input type="text" class="form-control" id="ob" name="ob" placeholder="Ingrese el codigo del seguimiento"
+                        <label for="ob" class="form-label">Observaciones</label>
+                        <input type="text" class="form-control" id="ob" name="ob" placeholder="Ingrese las observaciones"
                           required>
                       </div>
 
@@ -361,7 +383,7 @@ if (!function_exists('zoo_tipoActividad')) {
 
                     <?php elseif ($tipo === 'muertos_nacidos'): ?>
                       <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Cantidad de peces nacidos</label>
+                        <label for="canpez" class="form-label">Cantidad de peces nacidos</label>
                         <div class="input-group">
                           <input type="number" class="form-control" id="canpez" name="canpez" placeholder="Cantidad de peces"
                             min="0" max="100" required>
@@ -370,25 +392,25 @@ if (!function_exists('zoo_tipoActividad')) {
 
 
                       <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Cantidad de peces machos muertos</label>
+                        <label for="muerto_Macho" class="form-label">Cantidad de peces machos muertos</label>
                         <div class="input-group">
                           <input type="number" class="form-control" id="muerto_Macho" name="muerto_Macho"
-                            placeholder="Ingrese el codigo del seguimiento" min="0" max="100" required>
+                            placeholder="Cantidad de machos muertos" min="0" max="100" required>
                         </div>
                       </div>
 
                       <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Cantidad de peces hembra muertos</label>
+                        <label for="muerto_Hembra" class="form-label">Cantidad de peces hembra muertos</label>
                         <div class="input-group">
                           <input type="number" class="form-control" id="muerto_Hembra" name="muerto_Hembra"
-                            placeholder="Ingrese el codigo del seguimiento" min="0" max="100" required>
+                            placeholder="Cantidad de hembras muertas" min="0" max="100" required>
                         </div>
                       </div>
 
                       <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Observaciones</label>
+                        <label for="obM" class="form-label">Observaciones</label>
                         <input type="text" class="form-control" id="obM" name="obM"
-                          placeholder="Ingrese el codigo del seguimiento" required>
+                          placeholder="Ingrese las observaciones" required>
                       </div>
 
                     <?php elseif ($tipo === 'limpieza'): ?>
@@ -417,34 +439,35 @@ if (!function_exists('zoo_tipoActividad')) {
 
                     <?php elseif ($tipo === 'ajuste_nivel'): ?>
                       <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Nivel de agua adicionado</label>
+                        <label for="nv" class="form-label">Nivel de agua adicionado</label>
                         <div class="input-group">
-                          <input type="number" class="form-control" id="nv" name="nv" placeholder="Cantidad de peces" min="0"
+                          <input type="number" class="form-control" id="nv" name="nv" placeholder="Nivel de agua" min="0"
                             max="100" required>
                         </div>
                       </div>
 
                       <div class="mb-3">
-                        <label for="formulariocod" class="form-label">PH medido</label>
+                        <label for="ph" class="form-label">PH medido</label>
                         <div class="input-group">
                           <input type="number" class="form-control" id="ph" name="ph" placeholder="Ingrese el Ph del tanque"
-                            placeholder="Cantidad de peces" min="0" max="100" required>
+                            min="0" max="14" required>
                         </div>
                       </div>
 
                       <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Temperatura</label>
+                        <label for="tem" class="form-label">Temperatura</label>
                         <div class="input-group">
                           <input type="number" class="form-control" id="tem" name="tem" placeholder="Ingrese la temperatura"
-                            placeholder="Cantidad de peces" min="0" max="100" required>
+                            required>
                         </div>
                       </div>
 
 
                       <div class="mb-3">
-                        <label for="formulariocod" class="form-label">Observaciones</label>
-                        <input type="text" class="form-control" id="ob" name="ob" placeholder="Ingrese las observaciones"
-                          required>
+                        <!-- [CORREGIDO] id/name cambiados de "ob" a "obAj" para que coincida con $_POST['obAj'] en postRegistrar().
+                             Antes chocaba con el campo "ob" del bloque de Alimentación (mismo id/name duplicado en el DOM). -->
+                        <label for="obAj" class="form-label">Observaciones</label>
+                        <input type="text" class="form-control" id="obAj" name="obAj" placeholder="Ingrese las observaciones">
                       </div>
 
                     <?php elseif ($tipo === 'lavado'): ?>
