@@ -198,6 +198,58 @@
   border-color:#c3cbd9;
 }
 
+.address-example-box{
+  background:#f7f9fc;
+  border:1.5px dashed #c3cbd9;
+  border-radius:12px;
+  padding:1rem 1.25rem;
+  margin-bottom:1.5rem;
+}
+.address-example-box .example-title{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  margin-bottom:.5rem;
+  font-weight:700;
+  color:var(--ink);
+}
+.address-example-box .example-title i.bx{
+  color:#f5b301;
+  font-size:1.2rem;
+}
+.address-breakdown{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.4rem;
+  font-size:.85rem;
+  margin-top:.5rem;
+}
+.address-breakdown .chip{
+  padding:.2rem .55rem;
+  border-radius:8px;
+  font-weight:700;
+}
+.address-breakdown .chip-blue{ background:#e0e7ff; color:#3b5bdb; }
+.address-breakdown .chip-green{ background:#e6f4ea; color:#1e7e34; }
+.address-breakdown .chip-orange{ background:#fff1e0; color:#c2650a; }
+.address-breakdown .chip-purple{ background:#f2e6ff; color:#7b2fbd; }
+.address-breakdown .chip-label{ color:var(--muted); margin-right:.6rem; }
+
+.live-preview{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  background:var(--accent-soft);
+  border:1.5px solid #c7d2fe;
+  border-radius:12px;
+  padding:.75rem 1rem;
+  font-weight:600;
+  color:var(--accent-dark);
+  margin-top:1rem;
+}
+.live-preview i.bx{ font-size:1.2rem; }
+
 @media (max-width:767.98px){
   #createZoocriadero{
     padding:1.5rem 1.25rem 1.25rem;
@@ -255,6 +307,24 @@
           <span class="section-icon"><i class="bx bx-map-pin"></i></span>
           Direcci&oacute;n
         </h5>
+
+        <div class="address-example-box">
+          <div class="example-title">
+            <i class="bx bx-bulb"></i>
+            <span>&iquest;C&oacute;mo se arma una direcci&oacute;n?</span>
+          </div>
+          <p class="mb-0 text-muted" style="font-size:.9rem;">
+            Ejemplo: <strong>Calle 5A Sur # 20B-15</strong>
+          </p>
+          <div class="address-breakdown">
+            <span class="chip chip-blue">Calle 5</span><span class="chip-label">V&iacute;a donde queda el sitio</span>
+            <span class="chip chip-blue">A</span><span class="chip-label">Sufijo de esa v&iacute;a (si tiene letra)</span>
+            <span class="chip chip-blue">Sur</span><span class="chip-label">Prefijo de cruce (zona de la v&iacute;a que cruza)</span>
+            <span class="chip chip-blue">20</span><span class="chip-label">V&iacute;a generadora: la m&aacute;s cercana que cruza</span>
+            <span class="chip chip-blue">B</span><span class="chip-label">Sufijo de la v&iacute;a generadora (si tiene letra)</span>
+            <span class="chip chip-blue">-15</span><span class="chip-label">Placa: metros desde la esquina</span>
+          </div>
+        </div>
 
         <div class="row row-cols-2">
           <div class="col mb-3">
@@ -326,7 +396,11 @@
               <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
             <?php endforeach; ?>
           </select>
-          <div class="form-text mt-2" style="color: var(--muted); font-size: .85rem;">Ej: Avenida 6N # 28N-10 — los campos sin <span class="text-danger">*</span> son opcionales.</div>
+        </div>
+
+        <div class="live-preview" id="direccionPreview">
+          <i class="bx bx-map-pin"></i>
+          <span id="direccionPreviewTexto">La direcci&oacute;n aparecer&aacute; aqu&iacute; a medida que la completas...</span>
         </div>
       </div>
 
@@ -404,3 +478,45 @@
     </form>
   </div>
 </div>
+
+<script>
+  (function() {
+    const campos = ['via_principal', 'numero_via', 'sufijo_via', 'cruce_prefijo', 'via_generadora', 'sufijo_generadora', 'placa'];
+    const preview = document.getElementById('direccionPreviewTexto');
+    const textoOriginal = 'La dirección aparecerá aquí a medida que la completas...';
+
+    function textoDe(select) {
+      if (!select.value) return '';
+      const opt = select.options[select.selectedIndex];
+      return opt ? opt.textContent.replace(/\s*\(.*\)$/, '').trim() : '';
+    }
+
+    function actualizarPreview() {
+      const via = document.getElementById('via_principal');
+      const num = document.getElementById('numero_via');
+      const sufVia = document.getElementById('sufijo_via');
+      const prefCruce = document.getElementById('cruce_prefijo');
+      const viaGen = document.getElementById('via_generadora');
+      const sufGen = document.getElementById('sufijo_generadora');
+      const placa = document.getElementById('placa');
+
+      if (!via || !num || !viaGen || !placa) return;
+
+      if (!via.value || !num.value || !viaGen.value || !placa.value) {
+        preview.textContent = textoOriginal;
+        return;
+      }
+
+      const parteVia = `${textoDe(via)} ${num.value}${sufVia && sufVia.value ? sufVia.value : ''}`;
+      const parteCruce = `${prefCruce && prefCruce.value ? textoDe(prefCruce) + ' ' : ''}${viaGen.value}${sufGen && sufGen.value ? sufGen.value : ''}`;
+      const direccion = `${parteVia} # ${parteCruce}-${placa.value}`;
+
+      preview.textContent = direccion;
+    }
+
+    campos.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('change', actualizarPreview);
+    });
+  })();
+</script>
