@@ -325,17 +325,31 @@
             <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingresa el nombre del sitio" value="<?php echo $old['nombre'] ?? ''; ?>" required>
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label for="barrio" class="form-label"><i class="bx bx-buildings"></i>Barrio <span class="text-danger">*</span></label>
-            <select class="form-select" id="barrio" name="barrio" required>
-              <option value="" selected disabled>Selecciona un barrio</option>
-              <?php foreach ($barrios as $b): ?>
-                <option value="<?php echo $b['id_barrio']; ?>" <?php echo (($old['barrio'] ?? '') == $b['id_barrio']) ? 'selected' : ''; ?>><?php echo $b['nombre_barrio']; ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-        </div>
-      </div>
+        <div class="col-md-6 mb-3">
+  <label for="comuna" class="form-label"><i class="bx bx-map-alt"></i>Comuna <span class="text-danger">*</span></label>
+  <select class="form-select" id="comuna" name="comuna" required>
+    <option value="" selected disabled>Selecciona una comuna</option>
+    <?php foreach ($comunas as $c): ?>
+      <option value="<?php echo $c['id_comuna']; ?>" <?php echo (($old['comuna'] ?? '') == $c['id_comuna']) ? 'selected' : ''; ?>>
+        <?php echo $c['nombre_comuna']; ?>
+      </option>
+    <?php endforeach; ?>
+  </select>
+</div>
+
+<div class="col-md-6 mb-3">
+  <label for="barrio" class="form-label"><i class="bx bx-buildings"></i>Barrio <span class="text-danger">*</span></label>
+  <select class="form-select" id="barrio" name="barrio" required>
+    <option value="" selected disabled>Primero selecciona una comuna</option>
+    <?php foreach ($barrios as $b): ?>
+      <option value="<?php echo $b['id_barrio']; ?>"
+              data-comuna="<?php echo $b['id_comuna']; ?>"
+              <?php echo (($old['barrio'] ?? '') == $b['id_barrio']) ? 'selected' : ''; ?>>
+        <?php echo $b['nombre_barrio']; ?>
+      </option>
+    <?php endforeach; ?>
+  </select>
+</div>
 
       <!-- ============ Dirección ============ -->
       <div class="form-section">
@@ -523,6 +537,51 @@
     </form>
   </div>
 </div>
+<script>
+(function() {
+    const selComuna = document.getElementById('comuna');
+    const selBarrio = document.getElementById('barrio');
+    if (!selComuna || !selBarrio) return;
+
+    const todasLasOpciones = Array.from(selBarrio.querySelectorAll('option[data-comuna]'))
+        .map(opt => ({
+            value: opt.value,
+            text: opt.textContent.trim(),
+            comuna: opt.dataset.comuna
+        }));
+
+    const barrioPreseleccionado = '<?php echo $old['barrio'] ?? ''; ?>';
+
+    function cargarBarrios(preservarSeleccion = true) {
+        const idComuna = selComuna.value;
+        const valorActual = preservarSeleccion ? (selBarrio.value || barrioPreseleccionado) : '';
+
+        selBarrio.innerHTML = '';
+
+        if (!idComuna) {
+            selBarrio.innerHTML = '<option value="" selected disabled>Primero selecciona una comuna</option>';
+            return;
+        }
+
+        selBarrio.innerHTML = '<option value="" selected disabled>Selecciona un barrio</option>';
+
+        const filtrados = todasLasOpciones.filter(b => String(b.comuna) === String(idComuna));
+        filtrados.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b.value;
+            opt.textContent = b.text;
+            opt.dataset.comuna = b.comuna;
+            if (String(b.value) === String(valorActual)) opt.selected = true;
+            selBarrio.appendChild(opt);
+        });
+    }
+
+    selComuna.addEventListener('change', () => cargarBarrios(false));
+
+   
+    cargarBarrios(true);
+})();
+</script>
 
 <script>
   (function() {
