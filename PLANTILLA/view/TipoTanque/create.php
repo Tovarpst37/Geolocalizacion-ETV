@@ -196,8 +196,7 @@
 
       <div class="form-intro">
         <h4 class="mb-4">Datos del tipo de tanque</h4>
-        <p>Completa la informaci&oacute;n para crear un nuevo tipo de tanque.
-         Los campos con <span class="text-danger">*</span> son obligatorios.</p>
+        <p>Completa la informaci&oacute;n para crear un nuevo tipo de tanque. Los campos con <span class="text-danger">*</span> son obligatorios.</p>
       </div>
 
       <div class="form-section">
@@ -219,7 +218,7 @@
         </div>
 
         <div class="mb-1">
-          <label for="descripcion_tipo_tanque" class="form-label"><i class="bx bx-align-left"></i>Descripci&oacute;n<span class="text-danger">*</span></label>
+          <label for="descripcion_tipo_tanque" class="form-label"><i class="bx bx-align-left"></i>Descripci&oacute;n</label>
           <textarea
             class="form-control"
             id="descripcion_tipo_tanque"
