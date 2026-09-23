@@ -105,7 +105,7 @@ class ReportesController
         $totalEnProgreso = $conteoEstado[$enProceso] ?? 0;
         $totalPendientes = $conteoEstado[$pendiente] ?? 0;
 
-        // Pendiente por definir: todavia no hay logica para calcular las retrasadas
+        
 
 
         include_once '../view/reportes/reportes.php';
@@ -216,12 +216,12 @@ class ReportesController
             exit;
         }
  
-        // ---- Estados (los mismos de la pantalla) ----
+        // Estados los mismos de la pantalla
         $pendiente  = 'Pendiente';
         $enProceso  = 'En proceso';
         $hoy        = date('Y-m-d');
  
-        // ---- Colores del proyecto (los mismos del reporte de tanques) ----
+        // Colores del proyecto (los mismos del reporte de tanques
         $azulOscuro = '1B3B5F'; // banda superior
         $azulMedio  = '2F6690'; // franja secundaria
         $grisClaro  = 'F2F2F2'; // zebra
