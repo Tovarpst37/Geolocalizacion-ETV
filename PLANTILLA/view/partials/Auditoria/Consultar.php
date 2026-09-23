@@ -40,10 +40,11 @@ $filtroFecha = $filtroFecha ?? '';
                 <input type="date" name="fecha" value="<?= $filtroFecha ?>">
             </div>
             <div class="campo-filtro campo-botones">
-                <button type="submit" class="btn-aplicar">Filtrar</button>
+                <button type="submit" class="btn-aplicar" onclick="location.href='<?= getUrl('Auditoria', 'Auditoria', 'getConsultar') ?>'">Filtrar</button>
+
                 <?php if (!empty($registros)): ?>
                     <button type="button" class="btn-reportes"
-                        onclick="location.href='<?= getUrl('Auditoria', 'Auditoria', 'exportarAuditoriaExcel') ?>&usuario=<?= urlencode($filtroUsuario) ?>&modulo_filtro=<?= urlencode($filtroModulo) ?>&fecha=<?= urlencode($filtroFecha) ?>'">
+                        onclick="location.href='<?= getUrl('Auditoria', 'Auditoria', 'getConsultar') ?>&usuario=<?= urlencode($filtroUsuario) ?>&modulo_filtro=<?= urlencode($filtroModulo) ?>&fecha=<?= urlencode($filtroFecha) ?>'">
                         Exportar a Excel
                     </button>
                 <?php endif; ?>
@@ -259,7 +260,10 @@ $filtroFecha = $filtroFecha ?? '';
             display: none;
         }
 
-        table, tbody, tr, td {
+        table,
+        tbody,
+        tr,
+        td {
             display: block;
             width: 100%;
         }
