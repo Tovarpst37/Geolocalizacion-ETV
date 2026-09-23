@@ -3,7 +3,7 @@
 
     class AccesoModel extends MasterModel{
         public function buscarPorDocumento($documento) {
-            $sql = "SELECT * FROM usuarios WHERE documento = $1 LIMIT 1";
+            $sql = "SELECT u.*, r.nombre_rol FROM usuarios u INNER JOIN rol r ON u.id_rol = r.id_rol WHERE u.documento = $1 LIMIT 1";
             $result = pg_query_params($this->getConnect(), $sql, [$documento]);
 
             if ($result === false) {
@@ -12,7 +12,7 @@
             }
 
             $usuario = pg_fetch_assoc($result);
-
+            
             return $usuario ?: null;
         }
     }

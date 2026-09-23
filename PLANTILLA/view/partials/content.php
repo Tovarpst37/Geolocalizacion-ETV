@@ -73,7 +73,7 @@
 
 <h1 class="mb-3">
   <?php
-  echo "!Bienvenido {$_SESSION['primer_nombre']}!";
+  echo "!Bienvenido {$_SESSION['nombre_rol']} {$_SESSION['primer_nombre']}!";
   ?>
 </h1>
 <div class="contenedortext p-4 p-md-5 mb-4 rounded-5">

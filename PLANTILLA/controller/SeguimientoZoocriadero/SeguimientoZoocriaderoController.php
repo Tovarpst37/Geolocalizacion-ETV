@@ -5,12 +5,27 @@ include_once '../model/SeguimientoZoocriadero/SeguimientoZoocriaderoModel';
 
 class SeguimientoZoocriaderoController
 {
-    private const ID_ACTIVIDAD_ALIMENTACION = 1;
-    private const ID_ACTIVIDAD_PECES_MUERTOS_NACIDOS = 2;
 
-    private const ID_ACTIVIDAD_LIMPIEZA = 3;
-    private const ID_ACTIVIDAD_AJUSTES_NIVEL = 4;
-    private const ID_ACTIVIDAD_LAVADO = 5;
+
+    private const COD_ALIMENTACION = 'AZ-1';
+    private const COD_PECES_MUERTOS_NACIDOS = 'AZ-2';
+    private const COD_LIMPIEZA = 'AZ-3';
+    private const COD_AJUSTES_NIVEL = 'AZ-4';
+    private const COD_LAVADO = 'AZ-5';
+
+    private array $mapaActividades = [];
+
+    private function getMapaActividades($obj)
+    {
+        $sql = "SELECT id_actividad_zoo, cod_actividad FROM actividad_zoocriadero";
+        $rows = $obj->select($sql);
+
+        $mapa = [];
+        foreach ($rows as $row) {
+            $mapa[$row['cod_actividad']] = $row['id_actividad_zoo'];
+        }
+        return $mapa;
+    }
 
 
 
@@ -37,13 +52,7 @@ class SeguimientoZoocriaderoController
         } else {
             include_once '../view/partials/SeguimientoZoocriadero/Consultar.php';
         }
-
-
-
     }
-
-
-
 
 
     public function getRegistrar()
@@ -73,6 +82,10 @@ class SeguimientoZoocriaderoController
     public function postRegistrar()
     {
         $obj = new SeguimientoZoocriaderoModel();
+
+
+        $this->mapaActividades = $this->getMapaActividades($obj);
+        $mapaActividades = $this->mapaActividades;
 
         $codigo = mb_strtoupper($_POST['codigo']) ?? '';
         $zoo = $_POST['select_zoo'] ?? '';
@@ -106,7 +119,8 @@ class SeguimientoZoocriaderoController
         }
 
         // ---- ALIMENTACIÓN ----
-        $tieneAlimentacion = in_array(self::ID_ACTIVIDAD_ALIMENTACION, $actividades);
+        $tieneAlimentacion = isset($mapaActividades[self::COD_ALIMENTACION])
+            && in_array($mapaActividades[self::COD_ALIMENTACION], $actividades);
 
         $tipo_pez = $_POST['tipo_pez'] ?? '';
         $tipo_alimen = $_POST['tipo_alimen'] ?? '';
@@ -126,7 +140,8 @@ class SeguimientoZoocriaderoController
         }
 
         // ---- PECES MUERTOS Y NACIDOS ----
-        $tienePecesMuertosNacidos = in_array(self::ID_ACTIVIDAD_PECES_MUERTOS_NACIDOS, $actividades);
+        $tienePecesMuertosNacidos = isset($mapaActividades[self::COD_PECES_MUERTOS_NACIDOS])
+            && in_array($mapaActividades[self::COD_PECES_MUERTOS_NACIDOS], $actividades);
 
         $canpez = $_POST['canpez'] ?? '';
         $muerto_Macho = $_POST['muerto_Macho'] ?? '';
@@ -144,13 +159,15 @@ class SeguimientoZoocriaderoController
             if ($muerto_Hembra === '' || !is_numeric($muerto_Hembra) || $muerto_Hembra < 0) {
                 $errores[] = "La cantidad de hembras muertas debe ser un número mayor o igual a 0.";
             }
-
+            if (empty($obPeces))
+                $errores[] = "Las observaciones de peces muertos y nacidos son obligatorias.";
             if (strlen($obPeces) > 250)
                 $errores[] = "Las observaciones no pueden superar los 250 caracteres.";
         }
 
         // ---- LIMPIEZA ----
-        $tieneLimpieza = in_array(self::ID_ACTIVIDAD_LIMPIEZA, $actividades);
+        $tieneLimpieza = isset($mapaActividades[self::COD_LIMPIEZA])
+            && in_array($mapaActividades[self::COD_LIMPIEZA], $actividades);
 
 
         $obserLi = trim($_POST['obserLi'] ?? '');
@@ -173,7 +190,8 @@ class SeguimientoZoocriaderoController
         }
 
         // ---- AJUSTES DE NIVEL ----
-        $tieneAjuste = in_array(self::ID_ACTIVIDAD_AJUSTES_NIVEL, $actividades);
+        $tieneAjuste = isset($mapaActividades[self::COD_AJUSTES_NIVEL])
+            && in_array($mapaActividades[self::COD_AJUSTES_NIVEL], $actividades);
 
         $nivelAgua = $_POST['nv'] ?? '';
         $ph = $_POST['ph'] ?? '';
@@ -197,8 +215,9 @@ class SeguimientoZoocriaderoController
             }
         }
 
-        // ---- NUEVO: LAVADO ----
-        $tieneLavado = in_array(self::ID_ACTIVIDAD_LAVADO, $actividades);
+        // ---- LAVADO ----
+        $tieneLavado = isset($mapaActividades[self::COD_LAVADO])
+            && in_array($mapaActividades[self::COD_LAVADO], $actividades);
 
 
         $porcAgua = $_POST['porcAgua'] ?? '';
@@ -216,7 +235,9 @@ class SeguimientoZoocriaderoController
             if (empty($estadoTanque)) {
                 $errores[] = "Debe indicar el estado del tanque.";
             }
-
+            if (empty($obLa)) {
+                $errores[] = "Las observaciones de lavado son obligatorias.";
+            }
             if (strlen($obLa) > 250) {
                 $errores[] = "Las observaciones de lavado no pueden superar los 250 caracteres.";
             }
@@ -229,8 +250,8 @@ class SeguimientoZoocriaderoController
         }
 
         $sql = "INSERT INTO seguimiento_zoocriadero (cod_seguimiento, fecha, id_tanque, id_usuario, id_estado, hora_inicio, hora_fin)
-        VALUES ($1, CURRENT_TIMESTAMP,$2,$3,$4,$5,$6)
-        RETURNING id_seguimiento_zoo";
+    VALUES ($1, CURRENT_TIMESTAMP,$2,$3,$4,$5,$6)
+    RETURNING id_seguimiento_zoo";
 
         $resultado = $obj->select($sql, [$codigo, $tanque, $usuario, 5, null, null]);
 
@@ -239,7 +260,7 @@ class SeguimientoZoocriaderoController
 
             foreach ($actividades as $id_actividad) {
                 $sql2 = "INSERT INTO actividad_seg_zoo (id_seguimiento_zoo, id_actividad_zoo) 
-                        VALUES ('$id_seguimiento', '$id_actividad')";
+                    VALUES ('$id_seguimiento', '$id_actividad')";
                 $obj->insert($sql2);
             }
 
@@ -250,7 +271,7 @@ class SeguimientoZoocriaderoController
 
             // ---- Guardar Peces Muertos y Nacidos si aplica ----
             if ($tienePecesMuertosNacidos) {
-                $this->guardarPecesMuertosNacidos($obj, $id_seguimiento, $codigo, $canpez, $muerto_Macho, $muerto_Hembra, $obPeces);
+
             }
 
             // ---- Guardar Limpieza si aplica ----
@@ -263,36 +284,29 @@ class SeguimientoZoocriaderoController
                 $this->guardarAjusteNivel($obj, $id_seguimiento, $codigo, $nivelAgua, $ph, $temp, $obserAj);
             }
 
-            // ---- NUEVO: Guardar Lavado si aplica ----
+            // ---- Guardar Lavado si aplica ----
             if ($tieneLavado) {
-                $this->guardarLavado($obj, $id_seguimiento, $codigo, $estadoTanque, $porcAgua, $obLa);
             }
-            redirect(getUrl("SeguimientoZoocriadero", "SeguimientoZoocriadero", "getConsultar"));
         }
-
-
     }
-
-    // ---- Alimentación ----
+    // ---- Alimentación ----//
     public function guardarAlimentacion($obj, $id_seguimiento, $codigo, $tipo_pez, $tipo_alimen, $ob)
     {
-
-
         $sqlSub = "INSERT INTO sub_actividades 
-           (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
-            can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
-            estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
-            adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
-            estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
-            id_estado, id_seguimiento_zoo, cod_seguimiento) 
-           VALUES 
-           ($1, CURRENT_TIMESTAMP, $2, $3, 
-            NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, 
-            1, $4, $5)
-           RETURNING id_sub_actividad";
+       (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
+        can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
+        estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
+        adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
+        estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
+        id_estado, id_seguimiento_zoo, cod_seguimiento) 
+       VALUES 
+       ($1, CURRENT_TIMESTAMP, $2, $3, 
+        NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, 
+        1, $4, $5)
+       RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [$tipo_alimen, $tipo_pez, $ob, $id_seguimiento, $codigo]);
 
@@ -300,7 +314,7 @@ class SeguimientoZoocriaderoController
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
             $obj->insert(
                 "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
-                [self::ID_ACTIVIDAD_ALIMENTACION, $id_sub_actividad]
+                [$this->mapaActividades[self::COD_ALIMENTACION], $id_sub_actividad]
             );
         }
     }
@@ -313,20 +327,20 @@ class SeguimientoZoocriaderoController
         $muerto_Hembra = (int) $muerto_Hembra;
 
         $sqlSub = "INSERT INTO sub_actividades 
-           (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
-            can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
-            estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
-            adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
-            estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
-            id_estado, id_seguimiento_zoo, cod_seguimiento) 
-           VALUES 
-           (NULL, NULL, NULL, NULL, 
-            $1, $2, $3, $4, 
-            NULL, NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, 
-            1, $5, $6)
-           RETURNING id_sub_actividad";
+       (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
+        can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
+        estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
+        adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
+        estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
+        id_estado, id_seguimiento_zoo, cod_seguimiento) 
+       VALUES 
+       (NULL, NULL, NULL, NULL, 
+        $1, $2, $3, $4, 
+        NULL, NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, 
+        1, $5, $6)
+       RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [
             $muerto_Hembra,
@@ -341,7 +355,7 @@ class SeguimientoZoocriaderoController
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
             $obj->insert(
                 "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
-                [self::ID_ACTIVIDAD_PECES_MUERTOS_NACIDOS, $id_sub_actividad]
+                [$this->mapaActividades[self::COD_PECES_MUERTOS_NACIDOS], $id_sub_actividad]
             );
         }
     }
@@ -354,20 +368,20 @@ class SeguimientoZoocriaderoController
         $succionadorSql = $succionador ? 'true' : 'false';
 
         $sqlSub = "INSERT INTO sub_actividades 
-           (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
-            can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
-            estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
-            adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
-            estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
-            id_estado, id_seguimiento_zoo, cod_seguimiento) 
-           VALUES 
-           (NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, 
-            $1, $2, $3, CURRENT_TIMESTAMP, $4, 
-            NULL, NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, 
-            1, $5, $6)
-           RETURNING id_sub_actividad";
+       (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
+        can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
+        estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
+        adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
+        estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
+        id_estado, id_seguimiento_zoo, cod_seguimiento) 
+       VALUES 
+       (NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, 
+        $1, $2, $3, CURRENT_TIMESTAMP, $4, 
+        NULL, NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, 
+        1, $5, $6)
+       RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [$estregarParedesSql, $aspirarSql, $succionadorSql, $obserLi, $id_seguimiento, $codigo]);
 
@@ -375,7 +389,7 @@ class SeguimientoZoocriaderoController
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
             $obj->insert(
                 "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
-                [self::ID_ACTIVIDAD_LIMPIEZA, $id_sub_actividad]
+                [$this->mapaActividades[self::COD_LIMPIEZA], $id_sub_actividad]
             );
         }
     }
@@ -390,26 +404,25 @@ class SeguimientoZoocriaderoController
         $obserAj = !empty($obserAj) ? $obserAj : null;
 
         $sqlSub = "INSERT INTO sub_actividades 
-           (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
-            can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
-            estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
-            adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
-            estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
-            id_estado, id_seguimiento_zoo, cod_seguimiento) 
-           VALUES 
-           (NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, NULL, 
-            $1, $2, $3, CURRENT_TIMESTAMP, $4, 
-            NULL, NULL, NULL, NULL, 
-            1, $5, $6)
-           RETURNING id_sub_actividad";
+       (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
+        can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
+        estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
+        adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
+        estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
+        id_estado, id_seguimiento_zoo, cod_seguimiento) 
+       VALUES 
+       (NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, NULL, 
+        $1, $2, $3, CURRENT_TIMESTAMP, $4, 
+        NULL, NULL, NULL, NULL, 
+        1, $5, $6)
+       RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [
             $nivelAgua,
             $ph,
             $temp,
-
             $obserAj,
             $id_seguimiento,
             $codigo
@@ -419,29 +432,29 @@ class SeguimientoZoocriaderoController
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
             $obj->insert(
                 "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
-                [self::ID_ACTIVIDAD_AJUSTES_NIVEL, $id_sub_actividad]
+                [$this->mapaActividades[self::COD_AJUSTES_NIVEL], $id_sub_actividad]
             );
         }
     }
 
-    // ---- NUEVO: Lavado, misma lógica que FormularioLaController::postInsert ----
+    // ---- Lavado ----
     private function guardarLavado($obj, $id_seguimiento, $codigo, $estadoTanque, $porcAgua, $obLa)
     {
         $sqlSub = "INSERT INTO sub_actividades 
-           (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
-            can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
-            estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
-            adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
-            estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
-            id_estado, id_seguimiento_zoo, cod_seguimiento) 
-           VALUES 
-           (NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, NULL, 
-            NULL, NULL, NULL, NULL, NULL, 
-            $1, $2, CURRENT_TIMESTAMP, $3, 
-            1, $4, $5)
-           RETURNING id_sub_actividad";
+       (tipo_alimento, fecha_alimentacion, genero, obser_alimentacion, 
+        can_peces_mertos_hembra, can_peces_mertos_macho, can_peces_nacido, obser_canpeces, 
+        estregar_paredes, aspirar, succionador, fecha_limpieza, obser_limpieza, 
+        adicion_nivel_agua, medicion_ph, medicion_temperatura, fecha_ajuste, obser_ajuste, 
+        estado_tanque, agua_cambiada, fecha_lavado, obser_lavado, 
+        id_estado, id_seguimiento_zoo, cod_seguimiento) 
+       VALUES 
+       (NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, NULL, 
+        NULL, NULL, NULL, NULL, NULL, 
+        $1, $2, CURRENT_TIMESTAMP, $3, 
+        1, $4, $5)
+       RETURNING id_sub_actividad";
 
         $resSub = $obj->select($sqlSub, [$estadoTanque, $porcAgua, $obLa, $id_seguimiento, $codigo]);
 
@@ -449,11 +462,10 @@ class SeguimientoZoocriaderoController
             $id_sub_actividad = $resSub[0]['id_sub_actividad'];
             $obj->insert(
                 "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
-                [self::ID_ACTIVIDAD_LAVADO, $id_sub_actividad]
+                [$this->mapaActividades[self::COD_LAVADO], $id_sub_actividad]
             );
         }
     }
-
 
 
     /*
