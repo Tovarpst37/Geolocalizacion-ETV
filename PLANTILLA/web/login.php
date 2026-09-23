@@ -56,7 +56,7 @@ include_once '../view/partials/head.php';
                     
                     <div>
                         <button type="submit" class="button">
-                            INICIAR SESION
+                            Iniciar sesión
                         </button>
                     </div>
                 </form>
