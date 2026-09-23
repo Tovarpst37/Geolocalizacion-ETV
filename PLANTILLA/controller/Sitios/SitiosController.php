@@ -22,8 +22,6 @@ class SitiosController
         $validacion = $obj->select($sql2, [$id]);
         foreach ($validacion as $j) {
 
-            
-
             $sql = "UPDATE sitio SET id_estado = 2 WHERE id_sitio = $1";
             $ejecutar = $obj->update($sql, [$id]);
 
@@ -45,8 +43,6 @@ class SitiosController
         $validacion = $obj->select($sql2, [$id]);
         foreach ($validacion as $j) {
 
-            
-
             $sql = "UPDATE sitio SET id_estado = 1 WHERE id_sitio = $1";
             $ejecutar = $obj->update($sql, [$id]);
 
@@ -59,14 +55,16 @@ class SitiosController
         }
     }
 
-
-
-
     public function getCreate2()
     {
         $obj = new SitiosModel();
 
-        $sql2 = "SELECT * FROM barrio";
+        // ← NUEVO: comunas
+        $sql_comunas = "SELECT id_comuna, nombre_comuna FROM comuna WHERE id_estado = 1 ORDER BY id_comuna";
+        $comunas = $obj->select($sql_comunas);
+
+        // ← MODIFICADO: barrios con id_comuna
+        $sql2 = "SELECT id_barrio, nombre_barrio, id_comuna FROM barrio WHERE id_estado = 1 ORDER BY nombre_barrio";
         $barrios = $obj->select($sql2);
 
         // Solo Activo e Inactivo
@@ -84,7 +82,6 @@ class SitiosController
               FROM usuarios 
               WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
         $auxi = $obj->select($sql5);
-
 
         $sql6 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
         $tipos_deposito = $obj->select($sql6);
@@ -108,6 +105,7 @@ class SitiosController
         $via_generadora = $_POST['via_generadora'] ?? '';
         $placa = $_POST['placa'] ?? '';
         $barrio = $_POST['barrio'] ?? '';
+        $comuna = $_POST['comuna'] ?? '';   // ← NUEVO
         $estado = $_POST['estado'] ?? '';
         $id_coor = $_POST['id_coor'] ?? '';
         $usuarios_asignados = $_POST['usuarios_asignados'] ?? [];
@@ -116,10 +114,8 @@ class SitiosController
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
 
-
         $id_tipo_deposito = $_POST['id_tipo_deposito'] ?? '';
         $descripcion = trim($_POST['descripcion'] ?? '');
-
 
         $sql_validar = "SELECT id_sitio FROM sitio WHERE nombre_sitio = $1";
         $existe = $obj->select($sql_validar, [$nombre]);
@@ -142,6 +138,9 @@ class SitiosController
         if (empty($nombre)) {
             $errores[] = "El nombre es obligatorio.";
         }
+        if (empty($comuna)) {
+            $errores[] = "Debe seleccionar una comuna.";   // ← NUEVO
+        }
         if (empty($via_principal)) {
             $errores[] = "Debe seleccionar la vía principal.";
         }
@@ -163,7 +162,6 @@ class SitiosController
         if (empty($id_coor)) {
             $errores[] = "Debe seleccionar un coordinador.";
         }
-
         if (empty($id_tipo_deposito)) {
             $errores[] = "Debe seleccionar un tipo de depósito.";
         }
@@ -204,7 +202,12 @@ class SitiosController
 
         if (!empty($errores)) {
 
-            $sql2 = "SELECT * FROM barrio";
+            // ← NUEVO: comunas
+            $sql_comunas = "SELECT id_comuna, nombre_comuna FROM comuna WHERE id_estado = 1 ORDER BY id_comuna";
+            $comunas = $obj->select($sql_comunas);
+
+            // ← MODIFICADO: barrios con id_comuna
+            $sql2 = "SELECT id_barrio, nombre_barrio, id_comuna FROM barrio WHERE id_estado = 1 ORDER BY nombre_barrio";
             $barrios = $obj->select($sql2);
 
             $sql3 = "SELECT * from estado";
@@ -217,7 +220,6 @@ class SitiosController
             $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
                   FROM usuarios WHERE id_rol = 3 AND id_zoocriadero IS NULL AND id_sitio IS NULL";
             $auxi = $obj->select($sql5);
-
 
             $sql6 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
             $tipos_deposito = $obj->select($sql6);
@@ -232,11 +234,11 @@ class SitiosController
 
         if ($cont == 1) {
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
-            $this->postInsert($nombre, $direccion, (int) $barrio, (int) $estado, (int) $id_coor, $usuarios_asignados, (int) $id_tipo_deposito, $descripcion, $obj);
+            $this->postInsert($nombre,$direccion,(int) $barrio,(int) $estado,(int) $id_coor,$usuarios_asignados,(int) $id_tipo_deposito,$descripcion,(int) $comuna,$obj);
         }
     }
 
-    public function postInsert(string $nombre1, string $direccion1, int $barrio1, int $estado1, int $id_coor1, array $auxiliares1, int $id_tipo_deposito1, string $descripcion1, SitiosModel $obj)
+    public function postInsert(string $nombre1, string $direccion1, int $barrio1, int $estado1, int $id_coor1, array $auxiliares1, int $id_tipo_deposito1, string $descripcion1, int $comuna1, SitiosModel $obj)
     {
         $nombre = mb_strtoupper($nombre1);
         $direccion = $direccion1;
@@ -246,13 +248,14 @@ class SitiosController
         $auxiliares = $auxiliares1;
         $id_tipo_deposito = $id_tipo_deposito1;
         $descripcion = $descripcion1;
+        $comuna = $comuna1;   
 
-
-        $sql = "INSERT INTO sitio (nombre_sitio, direccion, id_barrio, id_estado, id_tipo_deposito, descripcion) 
-            VALUES ($1, $2, $3, $4, $5, $6)
+        
+        $sql = "INSERT INTO sitio (nombre_sitio, direccion, id_barrio, id_estado, id_tipo_deposito, descripcion, comuna) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id_sitio";
 
-        $resultado = $obj->select($sql, [$nombre, $direccion, $barrio, $estado, $id_tipo_deposito, $descripcion]);
+        $resultado = $obj->select($sql, [$nombre, $direccion, $barrio, $estado, $id_tipo_deposito, $descripcion, $comuna]);
         $id_sitio = $resultado[0]['id_sitio'] ?? null;
 
         if ($id_sitio) {
@@ -278,6 +281,7 @@ class SitiosController
     {
         include_once '../view/partials/Sitios/Consultar.php';
     }
+
     public function data()
     {
         $obj = new SitiosModel();
@@ -286,6 +290,7 @@ class SitiosController
         s.nombre_sitio,
         s.direccion,
         b.nombre_barrio AS barrio,
+        co.nombre_comuna AS comuna,   
         e.nombre_estado AS estado,
         coor.nombre_coor AS coordinador,
         aux.nombres_aux AS auxiliares,
@@ -294,6 +299,7 @@ class SitiosController
     FROM sitio s
     INNER JOIN barrio b ON s.id_barrio = b.id_barrio
     INNER JOIN estado e ON s.id_estado = e.id_estado
+    LEFT JOIN comuna co ON s.comuna = co.id_comuna   
     LEFT JOIN tipo_de_deposito td ON s.id_tipo_deposito = td.id_tipo_deposito
     LEFT JOIN (
         SELECT id_sitio, CONCAT(primer_nombre, ' ', primer_apellido) AS nombre_coor
@@ -327,19 +333,25 @@ class SitiosController
         include_once '../model/Direcciones/direcciones.php';
         $partes = parsearDireccion($datos[0]['direccion']);
 
-        $sql2 = "SELECT * FROM barrio";
-        $barrios = $obj->select($sql2);
+       
+        $sql_comunas = "SELECT id_comuna, nombre_comuna FROM comuna WHERE id_estado = 1 ORDER BY id_comuna";
+        $comunas = $obj->select($sql_comunas);
 
-        // Solo Activo e Inactivo
+        
+        $sql_barrios = "SELECT id_barrio, nombre_barrio, id_comuna FROM barrio WHERE id_estado = 1 ORDER BY nombre_barrio";
+        $barrios = $obj->select($sql_barrios);
+
+        
         $sql3 = "SELECT * FROM estado WHERE id_estado IN (1, 2) ORDER BY id_estado";
         $estados = $obj->select($sql3);
-        // Coordinador = id_rol 2
+
+        
         $sql4 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
               WHERE id_rol = 2 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
         $coord = $obj->select($sql4, [$id]);
 
-        // Auxiliar = id_rol 3
+        
         $sql5 = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido 
               FROM usuarios 
               WHERE id_rol = 3 AND ((id_zoocriadero IS NULL AND id_sitio IS NULL) OR id_sitio = $1)";
@@ -353,13 +365,11 @@ class SitiosController
         $auxi_result = $obj->select($sql7, [$id]);
         $auxi_actuales = array_column($auxi_result, 'id_usuario');
 
-
         $sql8 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
         $tipos_deposito = $obj->select($sql8);
 
         include_once '../view/partials/Sitios/Editar.php';
     }
-
 
     public function validarUpdate()
     {
@@ -372,6 +382,7 @@ class SitiosController
         $via_generadora = $_POST['via_generadora'] ?? '';
         $placa = $_POST['placa'] ?? '';
         $barrio = $_POST['barrio'] ?? '';
+        $comuna = $_POST['comuna'] ?? '';   
         $estado = $_POST['estado'] ?? '';
         $id_coor = $_POST['id_coor'] ?? '';
         $usuarios_asignados = $_POST['usuarios_asignados'] ?? [];
@@ -379,7 +390,6 @@ class SitiosController
         $sufijo_via = trim($_POST['sufijo_via'] ?? '');
         $cruce_prefijo = trim($_POST['cruce_prefijo'] ?? '');
         $sufijo_generadora = trim($_POST['sufijo_generadora'] ?? '');
-
 
         $id_tipo_deposito = $_POST['id_tipo_deposito'] ?? '';
         $descripcion = trim($_POST['descripcion'] ?? '');
@@ -397,6 +407,9 @@ class SitiosController
         }
         if (empty($nombre)) {
             $errores[] = "El nombre es obligatorio.";
+        }
+        if (empty($comuna)) {
+            $errores[] = "Debe seleccionar una comuna.";   
         }
         if (empty($via_principal)) {
             $errores[] = "Debe seleccionar la vía principal.";
@@ -416,8 +429,6 @@ class SitiosController
         if (empty($estado)) {
             $errores[] = "Debe seleccionar un estado.";
         }
-
-
         if (empty($id_tipo_deposito)) {
             $errores[] = "Debe seleccionar un tipo de depósito.";
         }
@@ -430,7 +441,7 @@ class SitiosController
             $errores[] = "El nombre solo puede contener letras y espacios.";
         }
 
-        // Coordinador = id_rol 2
+        
         if (!empty($id_coor)) {
             $sql_coor = "SELECT id_usuario FROM usuarios 
                      WHERE id_usuario = $1 
@@ -442,7 +453,7 @@ class SitiosController
             }
         }
 
-        // Auxiliar = id_rol 3
+       
         if (!empty($usuarios_asignados)) {
             $ids_aux = array_map('intval', $usuarios_asignados);
             $placeholders = implode(',', $this->inPlaceholders($ids_aux, 2));
@@ -463,10 +474,14 @@ class SitiosController
             include_once '../model/Direcciones/direcciones.php';
             $partes = parsearDireccion($datos[0]['direccion']);
 
-            $sql2 = "SELECT * FROM barrio";
-            $barrios = $obj->select($sql2);
+         
+            $sql_comunas = "SELECT id_comuna, nombre_comuna FROM comuna WHERE id_estado = 1 ORDER BY id_comuna";
+            $comunas = $obj->select($sql_comunas);
 
-            // Solo Activo e Inactivo
+            $sql_barrios = "SELECT id_barrio, nombre_barrio, id_comuna FROM barrio WHERE id_estado = 1 ORDER BY nombre_barrio";
+            $barrios = $obj->select($sql_barrios);
+
+            
             $sql3 = "SELECT * FROM estado WHERE id_estado IN (1, 2) ORDER BY id_estado";
             $estados = $obj->select($sql3);
 
@@ -486,7 +501,6 @@ class SitiosController
             $auxi_result = $obj->select($sql7, [$id]);
             $auxi_actuales = array_column($auxi_result, 'id_usuario');
 
-
             $sql8 = "SELECT id_tipo_deposito, nombre FROM tipo_de_deposito";
             $tipos_deposito = $obj->select($sql8);
 
@@ -501,28 +515,29 @@ class SitiosController
         if ($cont == 1) {
             $direccion = "$via_principal $numero_via$sufijo_via # $cruce_prefijo$via_generadora$sufijo_generadora-$placa";
             $id_coor_final = !empty($id_coor) ? (int) $id_coor : null;
-            $this->postUpdate((int) $id, $nombre, $direccion, (int) $barrio, (int) $estado, $id_coor_final, $usuarios_asignados, (int) $id_tipo_deposito, $descripcion, $obj);
+            $this->postUpdate((int) $id,$nombre,$direccion,(int) $barrio,(int) $estado,$id_coor_final,$usuarios_asignados,(int) $id_tipo_deposito,$descripcion,(int) $comuna,$obj);
         }
     }
 
-    public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado, ?int $id_coor, array $auxiliares, int $id_tipo_deposito, string $descripcion, SitiosModel $obj)
+    public function postUpdate(int $id, string $nombre, string $direccion, int $barrio, int $estado, ?int $id_coor, array $auxiliares, int $id_tipo_deposito, string $descripcion, int $comuna, SitiosModel $obj)
     {
 
         if (empty($id_coor)) {
             $estado = 2;
         }
 
-
+        
         $sql = "UPDATE sitio SET 
         nombre_sitio = $1,
         direccion = $2,
         id_barrio = $3,
         id_estado = $4,
         id_tipo_deposito = $5,
-        descripcion = $6
-    WHERE id_sitio = $7";
+        descripcion = $6,
+        comuna = $7
+    WHERE id_sitio = $8";
 
-        $ejecutar = $obj->update($sql, [$nombre, $direccion, $barrio, $estado, $id_tipo_deposito, $descripcion, $id]);
+        $ejecutar = $obj->update($sql, [$nombre, $direccion, $barrio, $estado, $id_tipo_deposito, $descripcion, $comuna, $id]);
 
         if ($ejecutar) {
 
@@ -560,6 +575,7 @@ class SitiosController
                 s.nombre_sitio,
                 s.direccion,
                 b.nombre_barrio AS barrio,
+                co.nombre_comuna AS comuna,   
                 e.nombre_estado AS estado,
                 coor.nombre_coor AS coordinador,
                 aux.nombres_aux AS auxiliares,
@@ -568,6 +584,7 @@ class SitiosController
             FROM sitio s
             INNER JOIN barrio b ON s.id_barrio = b.id_barrio
             INNER JOIN estado e ON s.id_estado = e.id_estado
+            LEFT JOIN comuna co ON s.comuna = co.id_comuna   
             LEFT JOIN tipo_de_deposito td ON s.id_tipo_deposito = td.id_tipo_deposito
             LEFT JOIN (
                 SELECT id_sitio, CONCAT(primer_nombre, ' ', primer_apellido) AS nombre_coor
