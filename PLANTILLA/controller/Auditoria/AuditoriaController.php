@@ -7,21 +7,19 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class AuditoriaController
 {
-
-
     private function construirFiltros(AuditoriaModel $obj)
     {
-        $filtroUsuario = $_GET['usuario'] ?? '';
-        $filtroModulo = $_GET['modulo_filtro'] ?? '';
-        $filtroFecha = $_GET['fecha'] ?? '';
+        $filtroUsuario = $_POST['usuario'] ?? '';
+        $filtroModulo  = $_POST['modulo_filtro'] ?? '';
+        $filtroFecha   = $_POST['fecha'] ?? '';
 
         $condiciones = [];
         $params = [];
         $i = 1;
 
         if (!empty($filtroUsuario)) {
-            $condiciones[] = "a.id_usuario = $" . $i++;
-            $params[] = (int) $filtroUsuario;
+            $condiciones[] = "u.documento = $" . $i++;
+            $params[] = $filtroUsuario; // quita el (int) si documento es varchar en tu BD
         }
         if (!empty($filtroModulo)) {
             $condiciones[] = "a.modulo = $" . $i++;
@@ -34,29 +32,27 @@ class AuditoriaController
 
         return [
             'filtroUsuario' => $filtroUsuario,
-            'filtroModulo' => $filtroModulo,
-            'filtroFecha' => $filtroFecha,
-            'condiciones' => $condiciones,
-            'params' => $params,
+            'filtroModulo'  => $filtroModulo,
+            'filtroFecha'   => $filtroFecha,
+            'condiciones'   => $condiciones,
+            'params'        => $params,
         ];
     }
 
     public function getConsultar()
     {
-     
-
         $obj = new AuditoriaModel();
-
         $f = $this->construirFiltros($obj);
+
         $filtroUsuario = $f['filtroUsuario'];
-        $filtroModulo = $f['filtroModulo'];
-        $filtroFecha = $f['filtroFecha'];
+        $filtroModulo  = $f['filtroModulo'];
+        $filtroFecha   = $f['filtroFecha'];
 
         $sql_usuarios = "SELECT id_usuario, primer_nombre, primer_apellido FROM usuarios ORDER BY primer_nombre";
-        $usuarios = $obj->select($sql_usuarios);
+        $usuarios = $obj->select($sql_usuarios) ?: [];
 
         $sql_modulos = "SELECT DISTINCT modulo FROM auditoria ORDER BY modulo";
-        $modulosDisponibles = $obj->select($sql_modulos);
+        $modulosDisponibles = $obj->select($sql_modulos) ?: [];
 
         $where = !empty($f['condiciones']) ? "WHERE " . implode(" AND ", $f['condiciones']) : "";
 
@@ -76,50 +72,49 @@ class AuditoriaController
                 ORDER BY a.fecha_hora DESC
                 LIMIT 300";
 
-        $registros = $obj->select($sql, $f['params']);
+        $registros = $obj->select($sql, $f['params']) ?: [];
 
         include_once '../view/partials/Auditoria/Consultar.php';
     }
 
-   public function exportarAuditoriaExcel()
-{
-    
-    require_once __DIR__ . '/../../../vendor/autoload.php';
+    public function exportarAuditoriaExcel()
+    {
+        require_once __DIR__ . '/../../../vendor/autoload.php';
 
-    $obj = new AuditoriaModel();
+        $obj = new AuditoriaModel();
 
-    $f = $this->construirFiltros($obj);
-    $filtroUsuario = $f['filtroUsuario'];
-    $filtroModulo  = $f['filtroModulo'];
-    $filtroFecha   = $f['filtroFecha'];
+        $f = $this->construirFiltros($obj);
+        $filtroUsuario = $f['filtroUsuario'];
+        $filtroModulo  = $f['filtroModulo'];
+        $filtroFecha   = $f['filtroFecha'];
 
-    $nombre_usuario_filtro = 'Todos los usuarios';
-    if (!empty($filtroUsuario)) {
-        $sql_u = "SELECT primer_nombre, primer_apellido FROM usuarios WHERE id_usuario = $1";
-        $u_result = $obj->select($sql_u, [(int) $filtroUsuario]);
-        if ($u_result) {
-            $nombre_usuario_filtro = trim($u_result[0]['primer_nombre'] . ' ' . $u_result[0]['primer_apellido']);
+        $nombre_usuario_filtro = 'Todos los usuarios';
+        if (!empty($filtroUsuario)) {
+            $sql_u = "SELECT primer_nombre, primer_apellido FROM usuarios WHERE documento = $1";
+            $u_result = $obj->select($sql_u, [$filtroUsuario]);
+            if ($u_result) {
+                $nombre_usuario_filtro = trim($u_result[0]['primer_nombre'] . ' ' . $u_result[0]['primer_apellido']);
+            }
         }
-    }
 
-    $where = !empty($f['condiciones']) ? "WHERE " . implode(" AND ", $f['condiciones']) : "";
+        $where = !empty($f['condiciones']) ? "WHERE " . implode(" AND ", $f['condiciones']) : "";
 
-    $sql = "SELECT
-                a.fecha_hora,
-                a.modulo,
-                a.accion,
-                a.tabla_afectada,
-                a.id_registro,
-                a.descripcion,
-                a.resultado,
-                TRIM(CONCAT(u.primer_nombre, ' ', u.primer_apellido)) AS nombre_usuario
-            FROM auditoria a
-            LEFT JOIN usuarios u ON a.id_usuario = u.id_usuario
-            $where
-            ORDER BY a.fecha_hora DESC
-            LIMIT 300";
+        $sql = "SELECT
+                    a.fecha_hora,
+                    a.modulo,
+                    a.accion,
+                    a.tabla_afectada,
+                    a.id_registro,
+                    a.descripcion,
+                    a.resultado,
+                    TRIM(CONCAT(u.primer_nombre, ' ', u.primer_apellido)) AS nombre_usuario
+                FROM auditoria a
+                LEFT JOIN usuarios u ON a.id_usuario = u.id_usuario
+                $where
+                ORDER BY a.fecha_hora DESC
+                LIMIT 300";
 
-    $registros = $obj->select($sql, $f['params']) ?: [];
+        $registros = $obj->select($sql, $f['params']) ?: [];
 
     // ---- Colores del proyecto (iguales que seguimiento) ----
     $azulOscuro = '1B3B5F';
