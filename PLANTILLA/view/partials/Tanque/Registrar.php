@@ -206,7 +206,7 @@
           </div>
 
           <div class="col-md-6 mb-3">
-            <label for="img" class="form-label"><i class="bx bx-image-add"></i>Imagen del tanque</label>
+            <label for="img" class="form-label"><i class="bx bx-image-add"></i>Porfavor ingresa una foto del tanque que vas a registrar</label>
             <input type="file" class="form-control" id="img" name="img" accept="image/*">
           </div>
         </div>
