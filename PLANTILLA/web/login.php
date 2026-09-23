@@ -8,12 +8,12 @@ include_once '../view/partials/head.php';
             <div class="container">
                 <form action="<?php echo getUrl("Acceso","Acceso","login",false,"ajax");?>" method="POST" id="loginForm" class="sign-in">
                     <img src="../web/assets/img/login/alcaldia.png" alt="" id="alcaldia">
-                    <h2>Iniciar sesion</h2>
+                    <h2>Iniciar sesión</h2>
                     <div class="container-input">
                         <ion-icon name="person-circle-outline"></ion-icon>
                             <input
                                 type="text"
-                                
+                                onpaste = "false return";
                                 inputmode="numeric"
                                 name="documento"
                                 id = "documento"
@@ -28,10 +28,10 @@ include_once '../view/partials/head.php';
                         <ion-icon name="key-outline"></ion-icon>
                             <input
                                 type="password"
-                                
+                                onpaste = "return false";
                                 id="password"
                                 name="password"
-                                placeholder="Contrasena"
+                                placeholder="Contraseña"
                                 required
                             >
                     </div>
@@ -47,10 +47,10 @@ include_once '../view/partials/head.php';
                     <div class="justify-content-between">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="cb1" >
-                            <label class="form-check-label" for="cb1">Ver contrasena</label>
+                            <label class="form-check-label" for="cb1">Ver Contraseña</label>
                         </div>
                         <a href="recuperarcontrasena.php" class="forget-link text-decoration-none small" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            ¿Olvidaste tu contrasena?
+                            ¿Olvidaste tu Contraseña?
                         </a>
                     </div>
                     

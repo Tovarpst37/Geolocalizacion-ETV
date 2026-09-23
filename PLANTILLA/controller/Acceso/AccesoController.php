@@ -18,7 +18,8 @@
             }
 
             $usuario = $obj->buscarPorDocumento($documento);
-
+            
+    
             if ($usuario === null || !Hash::validarHash($password, $usuario['contraseña'])) {
                 $_SESSION['error'] = "Usuario o contrasena incorrectos";
                 redirect("login.php");
@@ -36,6 +37,7 @@
             $_SESSION['documento']  = $usuario['documento'];
             $_SESSION['correo'] = $usuario['correo'];
             $_SESSION['id_rol'] = $usuario['id_rol'];
+            $_SESSION['nombre_rol'] = $usuario['nombre_rol'];
 
             $sql = "SELECT m.nombre_modulo, p.nombre_permiso
                     FROM rol_permiso rp
