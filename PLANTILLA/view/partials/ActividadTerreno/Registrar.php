@@ -195,16 +195,42 @@
           Informaci&oacute;n General
         </h5>
 
+        <?php
+        // Catálogo maestro: los 4 procesos del mapa de Trabajo de Terreno
+        $actividades_proceso_terreno = ["INSPECCION", "SIEMBRA", "SEGUIMIENTO", "RESIEMBRA"];
+
+        // Traer los nombres ya registrados en actividad_terreno
+        $sql3 = "SELECT nombre_actividad FROM actividad_terreno WHERE id_estado = 1 ORDER BY id_actividad_terreno";
+        $registradas = $obj->select($sql3);
+
+        // Normalizar a mayúsculas y sin espacios extra para comparar bien
+        $nombres_registrados = array_map(function($n) {
+            return trim(mb_strtoupper($n['nombre_actividad'], 'UTF-8'));
+        }, $registradas);
+
+        // Filtrar: dejar solo las que NO están registradas
+        $actividades_faltantes = array_diff($actividades_proceso_terreno, $nombres_registrados);
+        ?>
+
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label for="Codigo Actividad" class="form-label"><i class="bx bx-hash"></i>C&oacute;digo de la actividad <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="codigo_Actividad" name="codigo_Actividad" value="AT- <?php echo $id_seg[0]['max'] + 1; ?>" disabled>
+            <label for="codigo_Actividad" class="form-label"><i class="bx bx-hash"></i>C&oacute;digo de la actividad <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="codigo_Actividad" name="codigo_Actividad" value="AT-<?php echo $id_seg[0]['max'] + 1; ?>" disabled>
             <input type="hidden" name="codigo" value="AT-<?php echo $id_seg[0]['max'] + 1; ?>">
           </div>
 
           <div class="col-md-6 mb-3">
-            <label for="Nombre Actividad" class="form-label"><i class="bx bx-rename"></i>Nombre de la actividad <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="Nombre Actividad" name="nombre_actividad" placeholder="Ingrese una actividad nueva" required>
+            <label for="nombre_actividad" class="form-label"><i class="bx bx-rename"></i>Nombre de la actividad <span class="text-danger">*</span></label>
+            <select class="form-select" id="nombre_actividad" name="nombre_actividad" required>
+              <?php if (count($actividades_faltantes) > 0): ?>
+                <option value="" selected disabled>Seleccione una actividad</option>
+                <?php foreach ($actividades_faltantes as $nombre): ?>
+                  <option value="<?= htmlspecialchars($nombre) ?>"><?= htmlspecialchars(ucwords(strtolower($nombre))) ?></option>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <option value="" selected disabled>Todas las actividades ya están registradas</option>
+              <?php endif; ?>
+            </select>
           </div>
         </div>
       </div>

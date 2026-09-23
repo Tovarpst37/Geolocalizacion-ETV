@@ -284,6 +284,27 @@ if (!function_exists('terreno_tipoActividad')) {
         </div>
       </div>
 
+      <?php
+// Orden fijo según el mapa de proceso de Trabajo de Terreno
+$orden_proceso_terreno = [
+  'inspeccion'      => 1,
+  'siembra'         => 2,
+  'seguimiento_act' => 3,
+  'resiembra'       => 4,
+];
+
+usort($actividades, function ($a, $b) use ($orden_proceso_terreno) {
+  $tipoA = terreno_tipoActividad($a['nombre_actividad']);
+  $tipoB = terreno_tipoActividad($b['nombre_actividad']);
+
+  $ordenA = $orden_proceso_terreno[$tipoA] ?? 999;
+  $ordenB = $orden_proceso_terreno[$tipoB] ?? 999;
+
+  return $ordenA <=> $ordenB;
+});
+?>
+      
+
       <div class="form-section">
         <h5 class="section-title">
           <span class="section-icon"><i class="bx bx-list-check"></i></span>
