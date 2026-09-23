@@ -8,21 +8,25 @@ $filtroFecha = $filtroFecha ?? '';
 ?>
 <div class="caja">
     <h2 class="titulo-pagina">Auditoría del Sistema</h2>
-    <form method="GET">
+    <form action="<?php echo getUrl("Auditoria","Auditoria","getConsultar") ?>" method="POST">
         <input type="hidden" name="modulo" value="<?= $_GET['modulo'] ?? '' ?>">
         <input type="hidden" name="controlador" value="<?= $_GET['controlador'] ?? '' ?>">
         <input type="hidden" name="funcion" value="getConsultar">
         <div class="fila-filtros">
             <div class="campo-filtro">
                 <label>Usuario</label>
-                <select name="usuario">
-                    <option value="">Todos</option>
-                    <?php foreach ($usuarios as $u): ?>
-                        <option value="<?= $u['id_usuario'] ?>" <?= ($filtroUsuario == $u['id_usuario']) ? 'selected' : '' ?>>
-                            <?= $u['primer_nombre'] . ' ' . $u['primer_apellido'] ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <div class="container-input">
+                    <ion-icon name="person-circle-outline"></ion-icon>
+                        <input
+                            type="text"
+                            onpaste = "false return"
+                            inputmode="numeric"
+                            name="usuario"
+                            id = "documento"
+                            placeholder="Numero de identificacion"
+                            class = "campoInput"
+                        >
+                </div>
             </div>
             <div class="campo-filtro">
                 <label>Módulo</label>
@@ -40,11 +44,10 @@ $filtroFecha = $filtroFecha ?? '';
                 <input type="date" name="fecha" value="<?= $filtroFecha ?>">
             </div>
             <div class="campo-filtro campo-botones">
-                <button type="submit" class="btn-aplicar" onclick="location.href='<?= getUrl('Auditoria', 'Auditoria', 'getConsultar') ?>'">Filtrar</button>
+                <button type="submit" class="btn-aplicar">Filtrar</button>
 
                 <?php if (!empty($registros)): ?>
-                    <button type="button" class="btn-reportes"
-                        onclick="location.href='<?= getUrl('Auditoria', 'Auditoria', 'getConsultar') ?>&usuario=<?= urlencode($filtroUsuario) ?>&modulo_filtro=<?= urlencode($filtroModulo) ?>&fecha=<?= urlencode($filtroFecha) ?>'">
+                    <button type="button" class="btn-reportes" onclick="exportarExcel()">
                         Exportar a Excel
                     </button>
                 <?php endif; ?>
@@ -90,6 +93,19 @@ $filtroFecha = $filtroFecha ?? '';
         </div>
     <?php endif; ?>
 </div>
+<script>
+function exportarExcel() {
+    const form = document.querySelector('form');
+    const accionOriginal = form.action;
+    form.action = "<?php echo getUrl('Auditoria', 'Auditoria', 'exportarAuditoriaExcel') ?>";
+    form.target = '_blank'; // así no pierdes la tabla filtrada al descargar
+    form.submit();
+    form.action = accionOriginal;
+    form.target = '';
+}
+</script>
+<script src = "../web/js/expre/numeros.js"></script>
+<script src = "../web/js/document.js"></script>
 
 <style>
     * {
@@ -141,7 +157,14 @@ $filtroFecha = $filtroFecha ?? '';
         font-size: 14px;
         color: #1f2430;
     }
-
+    .campoInput{
+        padding: 8px 12px;
+        border: 1px solid #d7dbe3;
+        border-radius: 8px;
+        font-size: 14px;
+        background-color: #ffffff;
+        color: #1f2430;
+    }
     .fila-filtros select,
     .fila-filtros input[type="date"] {
         width: 100%;
