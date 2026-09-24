@@ -13,6 +13,12 @@ function validarFecha() {
 
     const edadActual = edad();
 
+    if(edadActual == -1){
+        fechaError.textContent = 'Fcha invalida';
+        fechaError.classList.remove('d-none');
+        return;
+    }
+
     if(edadActual < 18){
         fechaError.textContent = 'Eres menor de edad';
         fechaError.classList.remove('d-none');
@@ -34,6 +40,9 @@ function edad(valor) {
     const mesActual = hoy.getMonth() + 1; 
     const diaActual = hoy.getDate();
 
+    if(nacAnio > anioActual){
+        return -1;
+    }
     let edad = anioActual - nacAnio;
 
     if (mesActual < nacMes || (mesActual === nacMes && diaActual < nacDia)) {
