@@ -434,7 +434,7 @@ else:
           <input type="hidden" name="funcion" value="getBuscar">
 
           <i class="fa fa-search search-icon-left"></i>
-          <input type="text" name="busqueda" value="<?php echo isset($_GET['busqueda']) ? htmlspecialchars($_GET['busqueda']) : ''; ?>" placeholder="Buscar actividad..." class="form-control search-pill-input" />
+          <input type="text" name="busqueda" value="<?php echo isset($_GET['busqueda']) ? htmlspecialchars($_GET['busqueda']) : ''; ?>" placeholder="Buscar por nombre de actividad..." class="form-control search-pill-input" />
           
           <button type="submit" class="search-btn-right" aria-label="Buscar">
             <i class="fa fa-arrow-right"></i>

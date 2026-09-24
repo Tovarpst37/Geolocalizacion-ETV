@@ -218,14 +218,28 @@ class ZoocriaderoController
     if(!empty($busqueda)){
         $palabra = $_GET['busqueda'] ?? '';
         $obj = new ZoocriaderoModel();
-        $sql = "SELECT * from zoocriadero WHERE cod_zoocriadero ILIKE $1";
+        $sql = "SELECT 
+                    z.*,
+                    TRIM(CONCAT_WS(' ', u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido)) AS nombre,
+                    u.documento
+                FROM zoocriadero z
+                LEFT JOIN usuarios u 
+                    ON z.id_zoocriadero = u.id_zoocriadero 
+                AND u.id_rol = 2 WHERE cod_zoocriadero ILIKE $1";
         $zoocriaderos =  $obj->select($sql, ['%' . $busqueda . '%']);
 
 
         include_once "../view/partials/Zoocriadero/Busqueda.php";
     }else{
         $obj = new ZoocriaderoModel();
-        $sql = "SELECT * from zoocriadero";
+        $sql = "SELECT 
+                    z.*,
+                    TRIM(CONCAT_WS(' ', u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido)) AS nombre,
+                    u.documento
+                FROM zoocriadero z
+                LEFT JOIN usuarios u 
+                    ON z.id_zoocriadero = u.id_zoocriadero 
+                AND u.id_rol = 2";
         $zoocriaderos = $obj->select($sql);
 
         include_once '../view/partials/Zoocriadero/Consultar.php';

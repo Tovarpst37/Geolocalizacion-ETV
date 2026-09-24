@@ -43,7 +43,7 @@ if (count($resul) <= 0) {
                 <input type="hidden" name="controlador" value="Terreno">
                 <input type="hidden" name="funcion" value="getBuscar">
 
-                <input type="text" name="busqueda" placeholder="Search ..." class="form-control" />
+                <input type="text" name="busqueda" placeholder="Buscar por codigo..." class="form-control" />
 
                 <button type="submit" class="btn btn-outline-secondary">
                     <i class="fa fa-search"></i>
