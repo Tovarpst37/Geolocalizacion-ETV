@@ -108,34 +108,45 @@ class HistorialController
 
     // Consulta en la BD qué actividades están asignadas a este seguimiento
     private function getActividadesAsignadas($obj, $id_seguimiento_zoo)
-    {
-        $idSeg = (int) $id_seguimiento_zoo;
-        $config = $this->getConfigActividades();
-        $asignadas = [];
+{
+    $idSeg = (int) $id_seguimiento_zoo;
+    $config = $this->getConfigActividades();
+    $asignadas = [];
 
-        $sql = "SELECT a.nombre_actividad
-                FROM actividad_seg_zoo asz
-                INNER JOIN actividad_zoocriadero a ON a.id_actividad_zoo = asz.id_actividad_zoo
-                WHERE asz.id_seguimiento_zoo = $1";
+    $sql = "SELECT a.nombre_actividad
+            FROM actividad_seg_zoo asz
+            INNER JOIN actividad_zoocriadero a ON a.id_actividad_zoo = asz.id_actividad_zoo
+            WHERE asz.id_seguimiento_zoo = $1";
 
-        $rows = $obj->select($sql, [$idSeg]);
-        if (!is_array($rows)) {
-            $rows = [];
-        }
+    $rows = $obj->select($sql, [$idSeg]);
+    if (!is_array($rows)) {
+        $rows = [];
+    }
 
-        foreach ($config as $slug => $cfg) {
-            $asignadas[$slug] = false;
-            foreach ($rows as $r) {
-                $nombreBD = $r['nombre_actividad'] ?? '';
-                if ($this->normalizar($nombreBD) === $this->normalizar($cfg['nombre'])) {
+    foreach ($config as $slug => $cfg) {
+        $asignadas[$slug] = false;
+
+        foreach ($rows as $r) {
+            $nombreBD = $this->normalizar($r['nombre_actividad'] ?? '');
+
+            // Coincidencia exacta
+            if ($nombreBD === $this->normalizar($cfg['nombre'])) {
+                $asignadas[$slug] = true;
+                break;
+            }
+
+            // Coincidencia flexible para "peces muertos y nacidos"
+            if ($slug === 'peces') {
+                if (strpos($nombreBD, 'muert') !== false || strpos($nombreBD, 'nacid') !== false) {
                     $asignadas[$slug] = true;
                     break;
                 }
             }
         }
-
-        return $asignadas;
     }
+
+    return $asignadas;
+}
 
     private function esc($v)
     {
@@ -240,7 +251,10 @@ class HistorialController
         if ($lleno('obser_alimentacion') || $lleno('fecha_alimentacion') || $lleno('tipo_alimento') || $lleno('genero')) {
             return 'alimentacion';
         }
-        if ($lleno('obser_canpeces')) {
+        if ($lleno('obser_canpeces') 
+            || $lleno('can_peces_nacido') 
+            || $lleno('can_peces_mertos_macho') 
+            || $lleno('can_peces_mertos_hembra')) {
             return 'peces';
         }
         if ($lleno('obser_limpieza') || $lleno('fecha_limpieza')) {
