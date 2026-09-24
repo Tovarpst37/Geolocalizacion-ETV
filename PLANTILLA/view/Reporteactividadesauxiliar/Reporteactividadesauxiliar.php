@@ -22,15 +22,16 @@ include_once '../view/partials/function.php';
             <div class="campo-filtro">
                 <label>Auxiliar <span class="text-danger">*</span></label>
                 <div class="select-wrapper">
-                    <span class="icono-select">👤</span>
-                    <select name="auxiliar" required>
-                        <option value="" selected disabled>Selecciona un auxiliar</option>
-                        <?php foreach ($auxiliares as $aux): ?>
-                            <option value="<?= $aux['id_usuario'] ?>" <?= (($filtroAuxiliar ?? '') == $aux['id_usuario']) ? 'selected' : '' ?>>
-                                <?= trim($aux['primer_nombre'] . ' ' . $aux['segundo_nombre'] . ' ' . $aux['primer_apellido'] . ' ' . $aux['segundo_apellido']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                   <ion-icon name="person-circle-outline"></ion-icon>
+                        <input
+                            type="text"
+                            onpaste = "false return"
+                            inputmode="numeric"
+                            name="usuario"
+                            id = "documento"
+                            placeholder="Numero de identificacion"
+                            class = "campoInput">
+                       
                 </div>
             </div>
 
@@ -89,8 +90,18 @@ include_once '../view/partials/function.php';
         <?php endif; ?>
     </div>
 <?php endif; ?>
+<script src = "../web/js/expre/numeros.js"></script>
+<script src = "../web/js/document.js"></script>
 
 <style>
+    .campoInput{
+        padding: 8px 12px;
+        border: 1px solid #d7dbe3;
+        border-radius: 8px;
+        font-size: 14px;
+        background-color: #ffffff;
+        color: #1f2430;
+    }
     .caja {
         background-color: #ffffff;
         border-radius: 14px;
