@@ -668,40 +668,8 @@
       </div>
     <?php } ?>
   </div>
-  <!-- Modales fuera del contenedor -->
-  <?php foreach($zoocriaderos as $z){ 
-    $isActivo = ($z['id_estado'] == 1);
-  ?>
-    <?php if ($isActivo): ?>
-      <!-- Modal Inhabilitar -->
-      <div class="modal fade" id="modalInhabilitar<?php echo $z['id_zoocriadero']; ?>" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content modal-content-custom">
-            <div class="modal-header-custom">
-              <h5 class="modal-title-custom">Confirmar Acción</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body-custom text-start">
-              <div class="modal-icon-badge-danger">
-                <i class="bx bx-block"></i>
-              </div>
-              <h6 class="fw-bold text-dark mb-1">¿Inhabilitar zoocriadero?</h6>
-              <p class="text-secondary small mb-0">
-                Esta acción cambiará el estado de <strong><?php echo $z['cod_zoocriadero']; ?></strong> a inactivo.
-              </p>
-            </div>
-            <div class="modal-footer-custom">
-              <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancelar</button>
-              <a href="<?php echo getUrl('Zoocriadero','Zoocriadero','postDelete', array('id'=>$z['id_zoocriadero'])); ?>" class="btn-modal-confirm-danger">
-                Inhabilitar
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    <?php else: ?>
 
-        <!-- Modal Ver Más -->
+  <!-- Modal Ver Más -->
     <div class="modal fade" id="modalVerMas<?php echo $z['id_zoocriadero']; ?>" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content info-modal-content">
@@ -765,6 +733,41 @@
         </div>
       </div>
     </div>
+    
+  <!-- Modales fuera del contenedor -->
+  <?php foreach($zoocriaderos as $z){ 
+    $isActivo = ($z['id_estado'] == 1);
+  ?>
+    <?php if ($isActivo): ?>
+      <!-- Modal Inhabilitar -->
+      <div class="modal fade" id="modalInhabilitar<?php echo $z['id_zoocriadero']; ?>" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content modal-content-custom">
+            <div class="modal-header-custom">
+              <h5 class="modal-title-custom">Confirmar Acción</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body-custom text-start">
+              <div class="modal-icon-badge-danger">
+                <i class="bx bx-block"></i>
+              </div>
+              <h6 class="fw-bold text-dark mb-1">¿Inhabilitar zoocriadero?</h6>
+              <p class="text-secondary small mb-0">
+                Esta acción cambiará el estado de <strong><?php echo $z['cod_zoocriadero']; ?></strong> a inactivo.
+              </p>
+            </div>
+            <div class="modal-footer-custom">
+              <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancelar</button>
+              <a href="<?php echo getUrl('Zoocriadero','Zoocriadero','postDelete', array('id'=>$z['id_zoocriadero'])); ?>" class="btn-modal-confirm-danger">
+                Inhabilitar
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <?php else: ?>
+
+        
 
       <!-- Modal Habilitar -->
       <div class="modal fade" id="modalHabilitar<?php echo $z['id_zoocriadero']; ?>" tabindex="-1" aria-hidden="true">
