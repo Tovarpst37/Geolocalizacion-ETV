@@ -129,6 +129,20 @@
   transform: scale(1.04);
 }
 
+.tank-img-empty {
+  height: 11rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eef1f8;
+  border-radius: 12px;
+  color: #a3acba;
+}
+.tank-img-empty i {
+  font-size: 3.5rem;
+}
+
 /* Badge Flotante de Estado */
 .status-badge {
   position: absolute;
@@ -367,8 +381,6 @@
 }
 </style>
 
-<?php include_once '../view/partials/function.php'; ?>
-
 <?php if (!empty($_SESSION['mensaje_exito'])): ?>
   <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm mb-4" role="alert" style="border-left: 5px solid #198754 !important; background-color: #fff; border-radius: 12px;">
     <svg class="bi flex-shrink-0 me-2" width="24" height="24" style="color:#198754;" role="img" aria-label="Success:">
@@ -419,7 +431,7 @@
         <input type="hidden" name="funcion" value="getBuscar">
 
         <i class="bx bx-search search-icon"></i>
-        <input type="text" name="busqueda" placeholder="Buscar tanque..." class="form-control" />
+        <input type="text" name="busqueda" placeholder="Codigo del tanque..." class="form-control" />
         <button type="submit" class="btn-search">
           <i class="bx bx-right-arrow-alt fs-5"></i>
         </button>
@@ -441,6 +453,10 @@
     foreach ($array as $ob) {
       $estadoActivo = strtolower($ob->getEstado()) === 'activo';
       $badgeClass = $estadoActivo ? 'bg-success' : 'bg-danger';
+
+      // --- Validación de imagen: evita el ícono de "imagen rota" cuando no hay foto ---
+      $tieneImagen = !empty($ob->getImg());
+      $rutaImg = "/Geolocalizacion/Geolocalizacion-ETV/PLANTILLA/web/assets/img/" . $ob->getImg();
     ?>
 
       <div class="col">
@@ -450,7 +466,14 @@
             <span class="status-badge <?php echo $badgeClass; ?>">
               <i class="bx bxs-circle fs-6"></i> Tanque <?php echo $ob->getEstado(); ?>
             </span>
-            <img src="/Geolocalizacion/Geolocalizacion-ETV/PLANTILLA/web/assets/img/<?php echo $ob->getImg(); ?>" alt="Tanque">
+            <?php if ($tieneImagen): ?>
+  <img src="<?php echo $rutaImg; ?>" alt="Tanque"
+       onerror="this.parentElement.innerHTML = '<span class=\'status-badge <?php echo $badgeClass; ?>\'><i class=\'bx bxs-circle fs-6\'></i> Tanque <?php echo $ob->getEstado(); ?></span><div class=\'tank-img-empty\'><i class=\'bx bx-image-alt\'></i></div>';">
+<?php else: ?>
+  <div class="tank-img-empty">
+    <i class="bx bx-image-alt"></i>
+  </div>
+<?php endif; ?>
           </div>
 
           <!-- Cuerpo e Información -->
@@ -480,29 +503,22 @@
 
             <!-- Acciones -->
             <div class="tank-card-actions">
-
-              <?php if (condicion('EDITAR', 'Tanques')): ?>
-                <a href="<?php echo getUrl('Tanque', 'Tanque', 'getEdit', array('id' => $ob->getId())); ?>" class="btn btn-outline-primary">
-                  <i class="bx bx-edit-alt"></i> Editar
-                </a>
-              <?php endif; ?>
-
-              <?php if (condicion('ELIMINAR', 'Tanques')): ?>
-                <?php if ($estadoActivo): ?>
-                  <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModalInhabilitar<?php echo $ob->getId() ?>">
-                    <i class="bx bx-block"></i> Habilitado
-                  </button>
-                <?php else: ?>
+            <?php if (in_array('EDITAR', $_SESSION['permisos']['Tanques'] ?? [])): ?>
+              <a href="<?php echo getUrl('Tanque', 'Tanque', 'getEdit', array('id' => $ob->getId())); ?>" class="btn btn-outline-primary">
+                <i class="bx bx-edit-alt"></i> Editar
+              </a>
+              <?php if ($estadoActivo): ?>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModalInhabilitar<?php echo $ob->getId() ?>">
+                  <i class="bx bx-block"></i> Inhabilitar
+                </button>
+              <?php else: ?>
+                <?php if (in_array('ELIMINAR', $_SESSION['permisos']['Tanques'] ?? [])): ?>
                   <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $ob->getId() ?>">
-                    <i class="bx bx-check-circle"></i> Inhabilitado
+                    <i class="bx bx-check-circle"></i> Habilitar
                   </button>
                 <?php endif; ?>
-              <?php else: ?>
-                <span class="badge <?php echo $estadoActivo ? 'bg-success' : 'bg-danger'; ?>">
-                  <?php echo $estadoActivo ? 'Habilitado' : 'Inhabilitado'; ?>
-                </span>
               <?php endif; ?>
-
+            <?php endif;?>
             </div>
 
           </div>
