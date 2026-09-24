@@ -9,149 +9,133 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class ReporteactividadesauxiliarController
 {
 
-    public function getReporteActividadesAuxiliar()
-    {
+   public function getReporteActividadesAuxiliar()
+{
+    $obj = new ReporteactividadesauxiliarModel();
 
-        $obj = new ReporteactividadesauxiliarModel();
+    $generar = isset($_GET['generar']);
+    $filtroDocumento = trim($_GET['usuario'] ?? '');
+    $filtroFecha = $_GET['fecha'] ?? '';
+    $filtroAuxiliar = '';   // id_usuario resuelto (lo usa el botón de exportar)
 
-        $sql_aux = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido
-                    FROM usuarios
-                    WHERE id_rol = 3 AND id_estado = 1";
-        $auxiliares = $obj->select($sql_aux);
+    $actividades = [];
+    $mensajeVacio = null;
 
-        $generar = isset($_GET['generar']);
-        $filtroAuxiliar = $_GET['auxiliar'] ?? '';
-        $filtroFecha = $_GET['fecha'] ?? '';
+    if ($generar) {
+        include_once '../model/Errores/ErrorModal.php';
+        $urlVolver = getUrl('Reporteactividadesauxiliar', 'Reporteactividadesauxiliar', 'getReporteActividadesAuxiliar');
 
-        $actividades = [];
-        $mensajeVacio = null;
-
-        if ($generar) {
-
-            if (empty($filtroAuxiliar)) {
-                include_once '../model/Errores/ErrorModal.php';
-
-                ErrorModal::verError(
-                    ["Debe seleccionar un auxiliar para generar el reporte."],
-                    getUrl('Reporteactividadesauxiliar', 'Reporteactividadesauxiliar', 'getReporteActividadesAuxiliar')
-                );
-                return;
-            }
-
-            $params = [(int) $filtroAuxiliar];
-            $condFecha = '';
-            if (!empty($filtroFecha)) {
-                $condFecha = " AND {COL}::date = \$2";
-                $params[] = $filtroFecha;
-            }
-
-            $ramaActividad = function (string $tipo, string $col) use ($condFecha) {
-                $filtro = str_replace('{COL}', $col, $condFecha);
-                return "SELECT
-                            '$tipo' AS tipo_actividad,
-                            $col AS fecha,
-                            c.nombre_comuna AS comuna,
-                            b.nombre_barrio AS barrio,
-                            s.nombre_sitio AS sitio
-                        FROM sub_actividades_ter sat
-                        INNER JOIN seguimiento_terreno st ON sat.id_seguimiento_terreno = st.id_seguimiento_terreno
-                        INNER JOIN sitio s ON st.id_sitio = s.id_sitio
-                        INNER JOIN barrio b ON s.id_barrio = b.id_barrio
-                        INNER JOIN comuna c ON b.id_comuna = c.id_comuna
-                        WHERE $col IS NOT NULL
-                          AND st.id_usuario = \$1
-                          AND sat.id_estado = 1
-                          $filtro";
-            };
-
-            $sql = $ramaActividad('Inspección', 'sat.fecha_inspeccion')
-                . " UNION ALL " . $ramaActividad('Siembra', 'sat.fecha_siembra')
-                . " UNION ALL " . $ramaActividad('Seguimiento', 'sat.fecha_seguimiento')
-                . " UNION ALL " . $ramaActividad('Resiembra', 'sat.fecha_resiembra')
-                . " ORDER BY fecha";
-
-            $actividades = $obj->select($sql, $params);
-
-            $nombre_auxiliar_actual = null;
-            foreach ($auxiliares as $aux) {
-                if ($aux['id_usuario'] == $filtroAuxiliar) {
-                    $nombre_auxiliar_actual = trim($aux['primer_nombre'] . ' ' . $aux['segundo_nombre'] . ' ' . $aux['primer_apellido'] . ' ' . $aux['segundo_apellido']);
-                    break;
-                }
-            }
-            foreach ($actividades as &$act) {
-                $act['nombre_auxiliar'] = $nombre_auxiliar_actual;
-            }
-            unset($act);
-
-            if (empty($actividades)) {
-                $mensajeVacio = "El auxiliar seleccionado no registra actividades en la fecha consultada.";
-            }
-        }
-
-        include_once '../view/Reporteactividadesauxiliar/Reporteactividadesauxiliar.php';
-    }
-
-    public function exportarActividadesExcel()
-    {
-        $obj = new ReporteactividadesauxiliarModel();
-
-        $filtroAuxiliar = $_GET['auxiliar'] ?? '';
-        $filtroFecha = $_GET['fecha'] ?? '';
-
-        if (empty($filtroAuxiliar)) {
-            include_once '../model/Errores/ErrorModal.php';
-            ErrorModal::verError(
-                ["Debe seleccionar un auxiliar para generar el reporte."],
-                getUrl('Reporteactividadesauxiliar', 'Reporteactividadesauxiliar', 'getReporteActividadesAuxiliar')
-            );
+        if ($filtroDocumento === '') {
+            ErrorModal::verError(["Debe ingresar el número de documento del auxiliar."], $urlVolver);
             return;
         }
 
-        $sql_aux = "SELECT primer_nombre, segundo_nombre, primer_apellido, segundo_apellido
-                    FROM usuarios WHERE id_usuario = $1";
-        $aux_result = $obj->select($sql_aux, [(int) $filtroAuxiliar]);
-        $nombre_auxiliar = $aux_result
-            ? trim($aux_result[0]['primer_nombre'] . ' ' . $aux_result[0]['segundo_nombre'] . ' ' . $aux_result[0]['primer_apellido'] . ' ' . $aux_result[0]['segundo_apellido'])
-            : 'Auxiliar';
-
-        $params = [(int) $filtroAuxiliar];
-        $condFecha = '';
-        if (!empty($filtroFecha)) {
-            $condFecha = " AND {COL}::date = \$2";
-            $params[] = $filtroFecha;
+        if (!ctype_digit($filtroDocumento)) {
+            ErrorModal::verError(["El documento solo debe contener números."], $urlVolver);
+            return;
         }
 
-        $ramaActividad = function (string $tipo, string $col) use ($condFecha) {
-            $filtro = str_replace('{COL}', $col, $condFecha);
-            return "SELECT
-                        '$tipo' AS tipo_actividad,
-                        $col AS fecha,
-                        c.nombre_comuna AS comuna,
-                        b.nombre_barrio AS barrio,
-                        s.nombre_sitio AS sitio
-                    FROM sub_actividades_ter sat
-                    INNER JOIN seguimiento_terreno st ON sat.id_seguimiento_terreno = st.id_seguimiento_terreno
-                    INNER JOIN sitio s ON st.id_sitio = s.id_sitio
-                    INNER JOIN barrio b ON s.id_barrio = b.id_barrio
-                    INNER JOIN comuna c ON b.id_comuna = c.id_comuna
-                    WHERE $col IS NOT NULL
-                      AND st.id_usuario = \$1
-                      AND sat.id_estado = 1
-                      $filtro";
-        };
+        $auxiliar = $this->buscarAuxiliarPorDocumento($obj, $filtroDocumento);
 
-        $sql = $ramaActividad('Inspección', 'sat.fecha_inspeccion')
-            . " UNION ALL " . $ramaActividad('Siembra', 'sat.fecha_siembra')
-            . " UNION ALL " . $ramaActividad('Seguimiento', 'sat.fecha_seguimiento')
-            . " UNION ALL " . $ramaActividad('Resiembra', 'sat.fecha_resiembra')
-            . " ORDER BY fecha";
+        if (!$auxiliar) {
+            ErrorModal::verError(["No existe un auxiliar activo con el documento ingresado."], $urlVolver);
+            return;
+        }
 
-        $actividades = $obj->select($sql, $params);
+        $filtroAuxiliar = $auxiliar['id_usuario'];
+        $nombreAuxiliar = trim(
+            $auxiliar['primer_nombre'] . ' ' . $auxiliar['segundo_nombre'] . ' ' .
+            $auxiliar['primer_apellido'] . ' ' . $auxiliar['segundo_apellido']
+        );
+
+        $actividades = $this->obtenerActividades($obj, (int) $filtroAuxiliar, $filtroFecha);
         foreach ($actividades as &$act) {
-            $act['nombre_auxiliar'] = $nombre_auxiliar;
+            $act['nombre_auxiliar'] = $nombreAuxiliar;
         }
         unset($act);
+
+        if (empty($actividades)) {
+            $mensajeVacio = "El auxiliar seleccionado no registra actividades en la fecha consultada.";
+        }
+    }
+
+    include_once '../view/Reporteactividadesauxiliar/Reporteactividadesauxiliar.php';
+}
+
+private function buscarAuxiliarPorDocumento($obj, string $documento)
+{
+    $sql = "SELECT id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido
+            FROM usuarios
+            WHERE documento = $1 AND id_rol = 3 AND id_estado = 1
+            LIMIT 1";
+    $res = $obj->select($sql, [$documento]);
+    return $res ? $res[0] : null;
+}
+
+private function obtenerActividades($obj, int $idAuxiliar, string $fecha): array
+{
+    $params = [$idAuxiliar];
+    $condFecha = '';
+    if (!empty($fecha)) {
+        $condFecha = " AND {COL}::date = \$2";
+        $params[] = $fecha;
+    }
+
+    $ramaActividad = function (string $tipo, string $col) use ($condFecha) {
+        $filtro = str_replace('{COL}', $col, $condFecha);
+        return "SELECT
+                    '$tipo' AS tipo_actividad,
+                    $col AS fecha,
+                    c.nombre_comuna AS comuna,
+                    b.nombre_barrio AS barrio,
+                    s.nombre_sitio AS sitio
+                FROM sub_actividades_ter sat
+                INNER JOIN seguimiento_terreno st ON sat.id_seguimiento_terreno = st.id_seguimiento_terreno
+                INNER JOIN sitio s ON st.id_sitio = s.id_sitio
+                INNER JOIN barrio b ON s.id_barrio = b.id_barrio
+                INNER JOIN comuna c ON b.id_comuna = c.id_comuna
+                WHERE $col IS NOT NULL
+                  AND st.id_usuario = \$1
+                  AND sat.id_estado = 1
+                  $filtro";
+    };
+
+    $sql = $ramaActividad('Inspección', 'sat.fecha_inspeccion')
+        . " UNION ALL " . $ramaActividad('Siembra', 'sat.fecha_siembra')
+        . " UNION ALL " . $ramaActividad('Seguimiento', 'sat.fecha_seguimiento')
+        . " UNION ALL " . $ramaActividad('Resiembra', 'sat.fecha_resiembra')
+        . " ORDER BY fecha";
+
+    return $obj->select($sql, $params);
+}
+    public function exportarActividadesExcel()
+    {
+           $obj = new ReporteactividadesauxiliarModel();
+
+    $filtroAuxiliar = $_GET['auxiliar'] ?? '';
+    $filtroFecha = $_GET['fecha'] ?? '';
+
+    if (empty($filtroAuxiliar) || !ctype_digit((string) $filtroAuxiliar)) {
+        include_once '../model/Errores/ErrorModal.php';
+        ErrorModal::verError(
+            ["Debe generar primero el reporte de un auxiliar."],
+            getUrl('Reporteactividadesauxiliar', 'Reporteactividadesauxiliar', 'getReporteActividadesAuxiliar')
+        );
+        return;
+    }
+
+    $sql_aux = "SELECT primer_nombre, segundo_nombre, primer_apellido, segundo_apellido
+                FROM usuarios WHERE id_usuario = $1 AND id_rol = 3";
+    $aux_result = $obj->select($sql_aux, [(int) $filtroAuxiliar]);
+    $nombre_auxiliar = $aux_result
+        ? trim($aux_result[0]['primer_nombre'] . ' ' . $aux_result[0]['segundo_nombre'] . ' ' . $aux_result[0]['primer_apellido'] . ' ' . $aux_result[0]['segundo_apellido'])
+        : 'Auxiliar';
+
+    $actividades = $this->obtenerActividades($obj, (int) $filtroAuxiliar, $filtroFecha);
+    foreach ($actividades as &$act) {
+        $act['nombre_auxiliar'] = $nombre_auxiliar;
+    }
+    unset($act);
 
         // ---- Colores del proyecto (mismos que en el reporte de tanques) ----
         $azulOscuro = '1B3B5F';
