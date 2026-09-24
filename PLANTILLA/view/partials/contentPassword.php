@@ -11,7 +11,7 @@
             <i class="fa fa-circle text-secondary me-2" style="font-size: 0.55rem;"></i>Al menos un número.
         </li>
         <li id="req-simbolo">
-            <i class="fa fa-circle text-secondary me-2" style="font-size: 0.55rem;"></i>Al menos un símbolo especial (!,@,%,$,#,?).
+            <i class="fa fa-circle text-secondary me-2" style="font-size: 0.55rem;"></i>Al menos uno de estos símbolos especial (!,@,%,$,#,?).
         </li>
     </ul>
 </div>

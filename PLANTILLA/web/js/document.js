@@ -8,7 +8,7 @@ documento.addEventListener('keypress', (e) => {
 function validarDocumento() {
         const valor = documento.value.trim();
         if (valor.length < 8) {
-            documentoError.textContent = 'Dcumento minimo de 8 digitos';
+            documentoError.textContent = 'Documento minimo de 8 digitos';
             documentoError.classList.remove('d-none');
             return false;
     
