@@ -12,7 +12,7 @@ class FormularioZController
         $obj = new FormulariosModel();
 
         $sql10 = "SELECT cod_seguimiento FROM seguimiento_zoocriadero WHERE id_estado = 4";
-        $seguimientos = $obj->select($sql10); 
+        $seguimientos = $obj->select($sql10);
 
         $sql1 = "SELECT * FROM usuarios";
         $numDocumen = $obj->select($sql1);
@@ -25,27 +25,28 @@ class FormularioZController
 
 
         $documentoSesion = $_SESSION['documento'] ?? '';
-         if (!empty($_SESSION['mensaje_exito'])): ?>
-        <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm" role="alert" style="border-left: 5px solid #198754 !important; background-color: #fff;">
-            <svg class="bi flex-shrink-0 me-2" width="24" height="24" style="color:#198754;">
-            <use xlink:href="#check-circle-fill" />
-            </svg>
-            <div>
-            <?php echo $_SESSION['mensaje_exito']; ?>
+        if (!empty($_SESSION['mensaje_exito'])): ?>
+            <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm" role="alert"
+                style="border-left: 5px solid #198754 !important; background-color: #fff;">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" style="color:#198754;">
+                    <use xlink:href="#check-circle-fill" />
+                </svg>
+                <div>
+                    <?php echo $_SESSION['mensaje_exito']; ?>
+                </div>
             </div>
-        </div>
-        <?php unset($_SESSION['mensaje_exito']); ?>
+            <?php unset($_SESSION['mensaje_exito']); ?>
 
-        <script>
-            setTimeout(function() {
-            var alerta = document.getElementById('alertaExito');
-            if (alerta) {
-                alerta.style.transition = "opacity 0.5s ease";
-                alerta.style.opacity = "0";
-                setTimeout(function() { alerta.remove(); }, 500);
-            }
-            }, 5000);
-        </script>
+            <script>
+                setTimeout(function () {
+                    var alerta = document.getElementById('alertaExito');
+                    if (alerta) {
+                        alerta.style.transition = "opacity 0.5s ease";
+                        alerta.style.opacity = "0";
+                        setTimeout(function () { alerta.remove(); }, 500);
+                    }
+                }, 5000);
+            </script>
         <?php endif;
 
         include_once '../view/partials/Formularioz/registrar.php';
@@ -266,14 +267,16 @@ class FormularioZController
                     "INSERT INTO actividad_zoo_subactividades (id_actividad_zoo, id_sub_actividades) VALUES ($1, $2)",
                     [self::ID_ACTIVIDAD_ALIMENTACION, $id_sub_actividad]
                 );
-                
-               $_SESSION['mensaje_exito'] = "Formulario registrado con éxito.";
-                
+
+                $_SESSION['mensaje_exito'] = "Formulario registrado con éxito.";
+
                 redirect(getUrl("FormularioZ", "FormularioZ", "getRegistrar"));
             } else {
                 echo "Error al guardar el detalle en sub_actividades.";
             }
         }
     }
+
+    //Complando el modulo de formulario con seguimiento
 }
 ?>
