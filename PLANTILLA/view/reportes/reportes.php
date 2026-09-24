@@ -67,7 +67,7 @@ include_once '../view/partials/function.php';
                     <label for="zoo-fecha-inicio">Fecha Inicio</label>
                     <input type="date" id="zoo-fecha-inicio" name="fecha_inicio" value="<?= ($filtroFechaInicio) ?>">
                 </div>
-                
+            </div><!-- /zoo-campos -->
 
             <div class="zoo-acciones">
                 <button type="submit" class="zoo-btn zoo-btn-primario">
@@ -100,31 +100,10 @@ include_once '../view/partials/function.php';
     <!-- Resumen -->
     <section class="zoo-resumen" aria-label="Resumen de actividades">
         <div class="zoo-stats">
-            <div class="zoo-stat zoo-stat-total">
-                <span class="zoo-stat-numero"><?= $totalActividades ?></span>
-                <p class="zoo-stat-label">Actividades Totales</p>
-            </div>
             <div class="zoo-stat zoo-stat-verde">
-                <span class="zoo-stat-numero"><?= $totalCompletas ?></span>
-                <p class="zoo-stat-label">Actividades Completas</p>
-                <small><?= (int) round((float) $zooPorcentaje($totalCompletas)) ?>% del total</small>
+                <span class="zoo-stat-numero"><?= $totalActividades ?></span>
+                <p class="zoo-stat-label">Actividades Finalizadas</p>
             </div>
-            <div class="zoo-stat zoo-stat-naranja">
-                <span class="zoo-stat-numero"><?= $totalEnProgreso ?></span>
-                <p class="zoo-stat-label">En Progreso</p>
-                <small><?= (int) round((float) $zooPorcentaje($totalEnProgreso)) ?>% del total</small>
-            </div>
-            <div class="zoo-stat zoo-stat-rojo">
-                <span class="zoo-stat-numero"><?= $totalRetrasadas ?></span>
-                <p class="zoo-stat-label">Retrasadas</p>
-                <small><?= (int) round((float) $zooPorcentaje($totalRetrasadas)) ?>% del total</small>
-            </div>
-        </div>
-
-        <div class="zoo-barra" aria-hidden="true">
-            <span class="zoo-barra-seg zoo-seg-verde"   style="flex-basis: <?= $zooPorcentaje($totalCompletas) ?>%"></span>
-            <span class="zoo-barra-seg zoo-seg-naranja" style="flex-basis: <?= $zooPorcentaje($totalEnProgreso) ?>%"></span>
-            <span class="zoo-barra-seg zoo-seg-rojo"    style="flex-basis: <?= $zooPorcentaje($totalRetrasadas) ?>%"></span>
         </div>
     </section>
 
@@ -166,7 +145,7 @@ include_once '../view/partials/function.php';
                                 }
 
                                 $fecha       = date('d/m/Y', strtotime($s['fecha_registro']));
-                                $fechaInicio = $fecha . ($s['hora_inicio'] ? ' ' . substr($s['hora_inicio'], 0, 5) : '');
+                                $fechaInicio = date('Y-m-d H:i:s', strtotime($s['fecha_registro']));
                                 $fechaFin    = $s['hora_fin'] ? $fecha . ' ' . substr($s['hora_fin'], 0, 5) : '-';
                             ?>
                            <tr data-estado="<?= $claseBadge ?>">
@@ -248,7 +227,7 @@ include_once '../view/partials/function.php';
     /* ---------- Filtros ---------- */
     .zoo-campos {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 18px;
     }
 
@@ -676,4 +655,4 @@ include_once '../view/partials/function.php';
             transition: none !important;
         }
     }
-</style>    
+</style>
