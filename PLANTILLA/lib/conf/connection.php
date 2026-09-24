@@ -28,20 +28,22 @@ class Connection
         $this->port = $port;
     }
 
-    private function connect()
-    {
-        $this->link = pg_connect("host={$this->host} port={$this->port} dbname={$this->database} user={$this->user} password={$this->password}");
+  private function connect()
+{
+    $this->link = pg_connect("host={$this->host} port={$this->port} dbname={$this->database} user={$this->user} password={$this->password}");
 
-        if (!$this->link) {
-            $error = error_get_last();
-            die("Error de conexión: " . ($error['message'] ?? 'Error desconocido al conectar'));
-        }
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        $id_usuario_sesion = isset($_SESSION['id_usuario']) ? (string) $_SESSION['id_usuario'] : '';
-        pg_query_params($this->link, "SELECT set_config('myapp.id_usuario', $1, false)", [$id_usuario_sesion]);
+    if (!$this->link) {
+        $error = error_get_last();
+        die("Error de conexión: " . ($error['message'] ?? 'Error desconocido al conectar'));
     }
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    $id_usuario_sesion = isset($_SESSION['id_usuarioU']) ? (string) $_SESSION['id_usuarioU'] : '';
+    pg_query_params($this->link, "SELECT set_config('myapp.id_usuario', $1, false)", [$id_usuario_sesion]);
+}   
 
     protected function getConnect()
     {
@@ -53,4 +55,5 @@ class Connection
     {
         pg_close($this->link);
     }
+    
 }
