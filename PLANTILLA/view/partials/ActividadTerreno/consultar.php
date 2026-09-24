@@ -465,6 +465,7 @@
     color: #ffffff;
   }
 </style>
+<?php include_once '../view/partials/function.php'; ?>
 
 <div class="consult-container">
 
