@@ -607,7 +607,7 @@
 
         <div class="search-box">
           <i class="bx bx-search search-icon"></i>
-          <input type="text" name="busqueda" placeholder="Buscar zoocriadero..." class="form-control" value="<?php echo $palabra; ?>" />
+          <input type="text" name="busqueda" placeholder="Buscar por codigo..." class="form-control" value="<?php echo $palabra; ?>" />
           <button type="submit" class="btn-search" aria-label="Buscar">
             <i class="bx bx-right-arrow-alt fs-5"></i>
           </button>
