@@ -1,7 +1,7 @@
 <style>
     #logoP {
-        width: 40px;
-        height: 40px;
+        width: 100px;
+        height: 100px;
         object-fit: contain;
     }
 </style>
