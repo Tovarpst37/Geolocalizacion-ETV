@@ -27,9 +27,11 @@
       $sql = "SELECT EXISTS (SELECT 1 FROM usuarios WHERE documento = $1)";
       $existe = $obj->exists($sql, $documento);
 
+      
+
       if ($existe) {
          echo "<script>alert('ya existe un usuario con ese numero de documento')</script>";
-         return;
+         redirect(getUrl("Usuario", "Usuario", "getCreate"));
       }
 
       $primer_nombre        = $_POST['primer_nombre'];
@@ -44,6 +46,15 @@
       $rol                  = $_POST['rol'];
       $rh                   = $_POST['rh'];
       $id                   = $obj->autoincrement("usuarios", "id_usuario");
+
+
+      $sql = "SELECT EXISTS (SELECT 1 FROM usuarios WHERE correo = $1)";
+      $existe2 = $obj->exists($sql, $correo_electronico);
+
+      if ($existe2) {
+         echo "<script>alert('ya existe un usuario con ese correo')</script>";
+         redirect(getUrl("Usuario", "Usuario", "getCreate"));
+      }
 
       $sql = "INSERT INTO usuarios
          (id_usuario, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido,
