@@ -18,7 +18,7 @@ function validarPassword() {
             return true;
 
     }else{
-        passwordError.textContent = 'Formato de contrasena invalido';
+        passwordError.textContent = 'Formato de contraseña invalido';
         passwordError.classList.remove('d-none');
         return false;
     }
