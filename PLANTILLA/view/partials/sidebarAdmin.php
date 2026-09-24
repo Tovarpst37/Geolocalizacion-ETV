@@ -1,7 +1,7 @@
 <style>
     #logoP {
-        width: 40px;
-        height: 40px;
+        width: 100px;
+        height: 100px;
         object-fit: contain;
     }
 </style>
@@ -242,7 +242,7 @@ function tieneAlgunPermiso($modulo, array $permisos) {
                     <?php if(tieneAlgunPermiso('Seguimientos Terreno', ['VER','CREAR','EDITAR','ELIMINAR'])): ?>
                         <li class="nav-item">
                             <a href="#" class="nav-link" title="Seguimientos">
-                                <i class="bx bx-route"></i>
+                                <i class="bx bx-radar"></i> 
                                 <span class="text">Seguimientos</span>
                                 <i class="bx bx-chevron-down navCaret text"></i>
                             </a>
