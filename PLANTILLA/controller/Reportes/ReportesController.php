@@ -26,29 +26,23 @@ class ReportesController
 
         $limpiar = isset($_GET['limpiar']);
 
-
-        //verificar si los campos tienen informacion, si se ha selec
+        //verificar si los campos tienen informacion, si se ha seleccionado algo
         $inicio = isset($_GET['zoocriadero']) || isset($_GET['actividad']) ||
-            isset($_GET['fecha_inicio']) || isset($_GET['fecha_fin']);
-
+            isset($_GET['fecha_inicio']);
 
         // name de los input del formulario
         $filtroZoocriadero  = $_GET['zoocriadero'] ?? '';
         $filtroActividad    = $_GET['actividad'] ?? '';
         $filtroFechaInicio  = $_GET['fecha_inicio'] ?? '';
-        $filtroFechaFin     = $_GET['fecha_fin'] ?? '';
 
         // llama al metodo de validar fechas
-        $errores = $this->validarFiltros($filtroFechaInicio, $filtroFechaFin);
-
-
+        $errores = $this->validarFiltros($filtroFechaInicio);
 
         // Limpiar: resetea filtros y muestra todos
         if ($limpiar) {
             $filtroZoocriadero = '';
             $filtroActividad   = '';
             $filtroFechaInicio = '';
-            $filtroFechaFin    = '';
             $errores           = [];
         }
 
@@ -61,17 +55,16 @@ class ReportesController
                 $obj,
                 $filtroZoocriadero,
                 $filtroActividad,
-                $filtroFechaInicio,
-                $filtroFechaFin
+                $filtroFechaInicio
             );
 
             // Solo avisa “sin resultados” si el usuario aplicó filtros
             if (empty($seguimientos) && $inicio && !$limpiar) {
-                $errores[] = "No se encontraron registros con los filtros de busqueda seleccionados.";
+                $errores[] = $filtroFechaInicio !== ''
+                    ? "No se encontraron registros para la fecha $filtroFechaInicio."
+                    : "No se encontraron registros con los filtros de búsqueda seleccionados.";
             }
         }
-
-
 
         $mensajeError = !empty($errores) ? implode(' ', $errores) : null;
 
@@ -89,7 +82,6 @@ class ReportesController
         foreach ($seguimientos as $s) {
             $estado = $s['estado'];
 
-
             $retrasada = ($estado == $pendiente || $estado == $enProceso)
                 && $s['fecha_registro'] < $hoy;
 
@@ -100,38 +92,31 @@ class ReportesController
             }
         }
 
-
-
-
         // Fuera del foreach: asi siempre quedan definidos, aunque no haya filas
         $totalCompletas  = $conteoEstado[$finalizado] ?? 0;
         $totalEnProgreso = $conteoEstado[$enProceso] ?? 0;
         $totalPendientes = $conteoEstado[$pendiente] ?? 0;
 
-        // Pendiente por definir: todavia no hay logica para calcular las retrasadas
-
-
         include_once '../view/reportes/reportes.php';
     }
 
-
-    public function validarFiltros($fechaIni, $fechaFin)
+    public function validarFiltros($fechaRegistro)
     {
-
         $errores = [];
 
-        if ($fechaIni != '' && $fechaFin != '' && $fechaIni > $fechaFin) {
-            $errores[] = "La fecha de inicio no puede ser mayor que la fecha fin.";
+        if ($fechaRegistro !== '') {
+            $fecha = \DateTime::createFromFormat('Y-m-d', $fechaRegistro);
+
+            if (!$fecha || $fecha->format('Y-m-d') !== $fechaRegistro) {
+                $errores[] = "La fecha ingresada no es válida.";
+            }
         }
 
         return $errores;
     }
 
-
-    public function consultarSeguimiento($obj, $zoocriadero, $actividad, $fechaIni, $fechaFin)
+    public function consultarSeguimiento($obj, $zoocriadero, $actividad, $fechaIni)
     {
-
-
         $sql = "SELECT
             az.nombre_actividad AS actividad,
             z.cod_zoocriadero   AS zoocriadero,
@@ -150,25 +135,21 @@ class ReportesController
         INNER JOIN actividad_zoocriadero az ON az.id_actividad_zoo    = asz.id_actividad_zoo
         WHERE ($1::int  IS NULL OR z.id_zoocriadero    = $1)
           AND ($2::int  IS NULL OR az.id_actividad_zoo = $2)
-          AND ($3::date IS NULL OR s.fecha            >= $3)
-          AND ($4::date IS NULL OR s.fecha            <= $4)
+          AND ($3::date IS NULL OR s.fecha             = $3)
         ORDER BY s.fecha DESC, s.hora_inicio DESC";
 
         $param = [
             $zoocriadero !== '' ? (int) $zoocriadero : null,
             $actividad   !== '' ? (int) $actividad   : null,
             $fechaIni    !== '' ? $fechaIni          : null,
-            $fechaFin    !== '' ? $fechaFin          : null,
         ];
 
         return $obj->select($sql, $param) ?: [];
     }
 
-
     // Descarga el reporte en Excel con los mismos filtros de la pantalla
     public function exportarSeguimientosExcel()
     {
-
         // Se carga aqui para que la pantalla no dependa de Composer
         require_once __DIR__ . '/../../../vendor/autoload.php';
 
@@ -177,12 +158,10 @@ class ReportesController
         $filtroZoocriadero  = $_GET['zoocriadero'] ?? '';
         $filtroActividad    = $_GET['actividad'] ?? '';
         $filtroFechaInicio  = $_GET['fecha_inicio'] ?? '';
-        $filtroFechaFin     = $_GET['fecha_fin'] ?? '';
 
-        $errores = $this->validarFiltros($filtroFechaInicio, $filtroFechaFin);
+        $errores = $this->validarFiltros($filtroFechaInicio);
 
         if (!empty($errores)) {
-
             // Se vuelve a la pantalla del reporte, que muestra el mensaje de error
             $url = getUrl('Reportes', 'Reportes', 'report');
             $separador = (strpos($url, '?') === false) ? '?' : '&';
@@ -191,7 +170,6 @@ class ReportesController
                 'zoocriadero'  => $filtroZoocriadero,
                 'actividad'    => $filtroActividad,
                 'fecha_inicio' => $filtroFechaInicio,
-                'fecha_fin'    => $filtroFechaFin,
             ]));
             exit;
         }
@@ -200,12 +178,10 @@ class ReportesController
             $obj,
             $filtroZoocriadero,
             $filtroActividad,
-            $filtroFechaInicio,
-            $filtroFechaFin
+            $filtroFechaInicio
         );
 
         if (empty($seguimientos)) {
-
             // Se vuelve a la pantalla del reporte, que muestra el mensaje de error
             $url = getUrl('Reportes', 'Reportes', 'report');
             $separador = (strpos($url, '?') === false) ? '?' : '&';
@@ -214,17 +190,16 @@ class ReportesController
                 'zoocriadero'  => $filtroZoocriadero,
                 'actividad'    => $filtroActividad,
                 'fecha_inicio' => $filtroFechaInicio,
-                'fecha_fin'    => $filtroFechaFin,
             ]));
             exit;
         }
 
-        // ---- Estados (los mismos de la pantalla) ----
+        // Estados los mismos de la pantalla
         $pendiente  = 'Pendiente';
         $enProceso  = 'En proceso';
         $hoy        = date('Y-m-d');
 
-        // ---- Colores del proyecto (los mismos del reporte de tanques) ----
+        // Colores del proyecto (los mismos del reporte de tanques)
         $azulOscuro = '1B3B5F'; // banda superior
         $azulMedio  = '2F6690'; // franja secundaria
         $grisClaro  = 'F2F2F2'; // zebra
@@ -251,7 +226,7 @@ class ReportesController
         $sheet->getStyle('A1')->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_LEFT)
             ->setVertical(Alignment::VERTICAL_CENTER)
-            ->setIndent(9); // deja espacio a la izquierda para el logo
+            ->setIndent(9);
         $sheet->getStyle('A1:G1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($azulOscuro);
         $sheet->getRowDimension(1)->setRowHeight(46);
 
@@ -262,7 +237,7 @@ class ReportesController
         $sheet->getStyle('A2:G2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($azulMedio);
         $sheet->getRowDimension(2)->setRowHeight(18);
 
-        // ---- Logos (si la imagen no existe, se omite y el Excel se genera igual) ----
+        // ---- Logos ----
         $rutaImg = __DIR__ . '/../../web/assets/img/';
 
         if (file_exists($rutaImg . 'LogoProye.png')) {
@@ -289,7 +264,6 @@ class ReportesController
             $logoAlcaldia->setWorksheet($sheet);
         }
 
-        // fila espaciadora
         $sheet->getRowDimension(3)->setRowHeight(8);
 
         // ================== INFORMACIÓN GENERAL ==================
@@ -319,7 +293,6 @@ class ReportesController
         $sheet->getStyle("A$filaEncabezado:G$filaEncabezado")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getRowDimension($filaEncabezado)->setRowHeight(20);
 
-        // Colores del estado
         $coloresEstado = [
             'Finalizado' => 'ABEBC6',
             'En proceso' => 'FAD7A0',
@@ -330,8 +303,6 @@ class ReportesController
         $fila = $filaEncabezado + 1;
         $primeraFilaDatos = $fila;
         foreach ($seguimientos as $s) {
-
-            // Igual que en pantalla: pendiente o en proceso con fecha pasada = Retrasada
             $retrasada = ($s['estado'] == $pendiente || $s['estado'] == $enProceso)
                 && $s['fecha_registro'] < $hoy;
             $textoEstado = $retrasada ? 'Retrasada' : $s['estado'];
@@ -345,7 +316,6 @@ class ReportesController
             $sheet->setCellValue("F$fila", $s['responsable']);
             $sheet->setCellValue("G$fila", $textoEstado);
 
-            // zebra striping
             if ((($fila - $primeraFilaDatos) % 2) === 1) {
                 $sheet->getStyle("A$fila:G$fila")->getFill()
                     ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($grisClaro);
@@ -358,7 +328,6 @@ class ReportesController
             $sheet->getStyle("B$fila")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
             $sheet->getStyle("F$fila")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
-            // color según el estado
             $sheet->getStyle("G$fila")->getFill()
                 ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($coloresEstado[$textoEstado] ?? 'D5D8DC');
             $sheet->getStyle("G$fila")->getFont()->setBold(true);
@@ -366,7 +335,6 @@ class ReportesController
             $fila++;
         }
 
-        // ================== ANCHOS DE COLUMNA ==================
         $sheet->getColumnDimension('A')->setWidth(18);
         $sheet->getColumnDimension('B')->setWidth(34);
         $sheet->getColumnDimension('C')->setWidth(14);
@@ -377,7 +345,6 @@ class ReportesController
 
         $sheet->setShowGridlines(false);
 
-        // Descarga
         $nombreArchivo = 'reporte_seguimiento_' . date('Y-m-d') . '.xlsx';
 
         while (ob_get_level() > 0) {

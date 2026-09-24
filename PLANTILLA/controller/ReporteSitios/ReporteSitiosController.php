@@ -45,42 +45,42 @@ class ReporteSitiosController
         $filtroDeposito  = $_GET['tipo_deposito'] ?? '';
         $filtroHallazgo     = $_GET['hallazgo'] ?? '';
 
-      
+
         $errores = $this->validarFiltros($obj, $filtroComuna, $filtroBarrio, $filtroHallazgo);
 
 
-       if ($limpiar) {
-    $filtroComuna   = '';
-    $filtroBarrio   = '';
-    $filtroDeposito = '';
-    $filtroHallazgo = '';
-    $errores        = [];
-}
+        if ($limpiar) {
+            $filtroComuna   = '';
+            $filtroBarrio   = '';
+            $filtroDeposito = '';
+            $filtroHallazgo = '';
+            $errores        = [];
+        }
 
-if (!empty($errores)) {
-    // Si hay errores de validación no se consulta
-    $sitios = [];
-} else {
-    // Sin filtros = todos los sitios (así al entrar ya viene cargado)
-    $sitios = $this->consultarSitios(
-        $obj,
-        $filtroComuna,
-        $filtroBarrio,
-        $filtroDeposito,
-        $filtroHallazgo
-    );
+        if (!empty($errores)) {
+            // Si hay errores de validación no se consulta
+            $sitios = [];
+        } else {
+            // Sin filtros = todos los sitios (así al entrar ya viene cargado)
+            $sitios = $this->consultarSitios(
+                $obj,
+                $filtroComuna,
+                $filtroBarrio,
+                $filtroDeposito,
+                $filtroHallazgo
+            );
 
-    // Solo avisa “sin resultados” si el usuario aplicó filtros
-    if (empty($sitios) && $inicio && !$limpiar) {
-        $errores[] = "No se encontraron registros con los filtros de busqueda seleccionados.";
-    }
+            // Solo avisa “sin resultados” si el usuario aplicó filtros
+            if (empty($sitios) && $inicio && !$limpiar) {
+                $errores[] = "No se encontraron registros con los filtros de busqueda seleccionados.";
+            }
         }
 
 
 
         $mensajeError = !empty($errores) ? implode(' ', $errores) : null;
 
-        // conteo 
+        // conteo
         $totalConLarvas  = 0;
         $totalSinLarvas  = 0;
         $totalSinRegistros = 0;
@@ -98,7 +98,8 @@ if (!empty($errores)) {
             // el sitio solo esta una sola vez, aunque se encuentren varios depositos
             $vistos[$s['id_sitio']] = true;
 
-            if ($s['tipo_deposito'] !== null) {
+            // ← CAMBIO: el SQL devuelve 'Sin depósito' cuando no hay tipo, así que no se cuenta
+            if (!empty($s['tipo_deposito']) && $s['tipo_deposito'] !== 'Sin depósito') {
                 $totalDepositos++;
             }
 
@@ -149,7 +150,7 @@ if (!empty($errores)) {
     public function consultarSitios($obj, $comuna, $barrio, $deposito, $hallazgo)
     {
 
-        //opciones validas 
+        //opciones validas
         $campoHallazgo = [
             'inspeccion'  => 'presencia_larvas_inspeccion',
             'siembra'     => 'presencia_larvas_siembra',
@@ -158,16 +159,18 @@ if (!empty($errores)) {
         ];
 
         $condicionHallazgo = '';
-        if ($hallazgo === 'Todas') {
+        if ($hallazgo === 'todas') {
 
 
             $condicionHallazgo = "AND (sat.presencia_larvas_inspeccion OR sat.presencia_larvas_siembra
         OR sat.presencia_larvas_seguimiento OR sat.presencia_larvas_resiembra)";
-        
+
         } elseif (isset($campoHallazgo[$hallazgo])) {
             $condicionHallazgo = "AND sat." . $campoHallazgo[$hallazgo] . " = true";
         }
 
+        // ← CAMBIO: el tipo de depósito sale de sitio_deposito si existe;
+        //   si no, se usa el id_tipo_deposito guardado directo en la tabla sitio
         $sql = "SELECT
                     s.id_sitio,
                     sd.id_sitio_deposito,
@@ -175,17 +178,18 @@ if (!empty($errores)) {
                     s.direccion,
                     b.nombre_barrio,
                     c.nombre_comuna,
-                    td.nombre AS tipo_deposito,
+                    COALESCE(td.nombre, 'Sin depósito') AS tipo_deposito,
                     COALESCE(bool_or(
                         sat.presencia_larvas_inspeccion OR sat.presencia_larvas_siembra
                         OR sat.presencia_larvas_seguimiento OR sat.presencia_larvas_resiembra
                     ), false)::int AS con_larvas,
                     COUNT(sat.id_sub_actividad) AS num_registros
                 FROM sitio s
-                INNER JOIN barrio b ON s.id_barrio = b.id_barrio
-                INNER JOIN comuna c ON b.id_comuna = c.id_comuna
+                LEFT JOIN barrio b ON s.id_barrio = b.id_barrio
+                LEFT JOIN comuna c ON b.id_comuna = c.id_comuna
                 LEFT JOIN sitio_deposito sd ON sd.id_sitio = s.id_sitio
-                LEFT JOIN tipo_de_deposito td ON sd.id_tipo_deposito = td.id_tipo_deposito
+                LEFT JOIN tipo_de_deposito td
+                       ON td.id_tipo_deposito = COALESCE(sd.id_tipo_deposito, s.id_tipo_deposito)
                 LEFT JOIN seguimiento_terreno st ON st.id_sitio = s.id_sitio
                 LEFT JOIN sub_actividades_ter sat ON sat.id_seguimiento_terreno = st.id_seguimiento_terreno
                 WHERE ($1::int IS NULL OR c.id_comuna = $1)
