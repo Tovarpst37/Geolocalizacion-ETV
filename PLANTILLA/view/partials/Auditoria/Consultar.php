@@ -24,9 +24,8 @@ $filtroFecha = $filtroFecha ?? '';
                             name="usuario"
                             id = "documento"
                             placeholder="Numero de identificacion"
-                            class = "campoInput"
-                        >
-                </div>
+                            class = "campoInput">
+                        </div>
             </div>
             <div class="campo-filtro">
                 <label>Módulo</label>

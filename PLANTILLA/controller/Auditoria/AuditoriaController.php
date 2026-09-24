@@ -6,6 +6,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class AuditoriaController
+//auditoria
 {
     private function construirFiltros(AuditoriaModel $obj)
     {
