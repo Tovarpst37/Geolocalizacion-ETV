@@ -52,7 +52,7 @@
             foreach ($filas as $fila) {
                 $permisosPorModulo[$fila['nombre_modulo']][] = $fila['nombre_permiso'];
             }
-
+            
             $modulosPermitidos = [];
             foreach ($permisosPorModulo as $modulo => $acciones) {
                 if (in_array('VER', $acciones)) {

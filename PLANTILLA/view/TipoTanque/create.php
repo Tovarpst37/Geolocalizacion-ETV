@@ -213,6 +213,7 @@
             id="nombre_tipo_tanque"
             name="nombre_tipo_tanque"
             placeholder="Ej: Tanque de reproducci&oacute;n"
+            required
           >
           <small id="nombreTipoTanqueError" class="text-danger d-none mb-3 d-block"></small>
         </div>

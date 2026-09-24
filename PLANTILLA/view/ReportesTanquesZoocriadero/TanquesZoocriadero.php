@@ -6,6 +6,7 @@ $tanques = $tanques ?? [];
 $totalTanques = $totalTanques ?? 0;
 $encargado = $encargado ?? null;
 $mensajeVacio = $mensajeVacio ?? null;
+include_once '../view/partials/function.php';
 ?>
 <div class="caja">
     <h2 class="titulo-pagina">Reporte de Tanques según Zoocriadero</h2>
@@ -33,7 +34,7 @@ $mensajeVacio = $mensajeVacio ?? null;
 
             <div class="botones-accion">
                 <button type="submit" class="btn-aplicar">Generar Reporte</button>
-                <?php if ($generar && !empty($tanques)): ?>
+                <?php if ($generar && !empty($tanques) && condicion('EXPORTAR', 'Reportes')): ?>
                     <button type="button" class="btn-reportes"
                         onclick="location.href='<?= getUrl('ReportesTanquesZoocriadero', 'ReportesTanquesZoocriadero', 'exportarTanquesExcel') ?>&zoocriadero=<?= urlencode($filtroZoocriadero) ?>'">
                         Exportar a Excel

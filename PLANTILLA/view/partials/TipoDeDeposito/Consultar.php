@@ -252,6 +252,8 @@
   }
 </style>
 
+<?php include_once '../view/partials/function.php'; ?>
+
 <div class="consult-container">
 
   <!-- Mensaje de éxito -->
@@ -319,9 +321,11 @@
 
           <!-- Botones de Acción -->
           <div class="item-actions-wrapper">
+            <?php if(condicion('EDITAR', 'Tipo de depósito')):?>
             <a href="<?= getUrl("TipoDeDeposito", "TipoDeDeposito", "getEditar", array('id' => $t['id_tipo_deposito'])) ?>" class="btn-action-edit">
               <i class="bx bx-edit-alt"></i> Editar
             </a>
+            <?php endif;?>
           </div>
 
         </div>
