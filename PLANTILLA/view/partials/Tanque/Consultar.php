@@ -431,7 +431,7 @@
         <input type="hidden" name="funcion" value="getBuscar">
 
         <i class="bx bx-search search-icon"></i>
-        <input type="text" name="busqueda" placeholder="Buscar tanque..." class="form-control" />
+        <input type="text" name="busqueda" placeholder="Codigo del tanque..." class="form-control" />
         <button type="submit" class="btn-search">
           <i class="bx bx-right-arrow-alt fs-5"></i>
         </button>
