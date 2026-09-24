@@ -569,19 +569,25 @@
 
           <!-- Botones de Acción -->
           <div class="act-actions-group mt-3">
-            <a href="<?= getUrl('ActividadTerreno', 'ActividadTerreno', 'getEditar', array('id' => $o->getId())); ?>" class="btn-outline-edit">
-              <i class="bx bx-edit-alt"></i> Editar
-            </a>
 
-            <?php if ($estadoA): ?>
-              <button type="button" class="btn-outline-disable" data-bs-toggle="modal" data-bs-target="#exampleModal<?= $o->getId() ?>">
-                <i class="bx bx-block"></i> Inhabilitar
-              </button>
-            <?php else: ?>
-              <button type="button" class="btn-outline-enable" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?= $o->getId() ?>">
-                <i class="bx bx-check-circle"></i> Habilitar
-              </button>
+            <?php if (condicion('EDITAR', 'Actividades Terreno')): ?>
+              <a href="<?= getUrl('ActividadTerreno', 'ActividadTerreno', 'getEditar', array('id' => $o->getId())); ?>" class="btn-outline-edit">
+                <i class="bx bx-edit-alt"></i> Editar
+              </a>
             <?php endif; ?>
+
+            <?php if (condicion('ELIMINAR', 'Actividades Terreno')): ?>
+              <?php if ($estadoA): ?>
+                <button type="button" class="btn-outline-disable" data-bs-toggle="modal" data-bs-target="#exampleModal<?= $o->getId() ?>">
+                  <i class="bx bx-block"></i> Inhabilitar
+                </button>
+              <?php else: ?>
+                <button type="button" class="btn-outline-enable" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?= $o->getId() ?>">
+                  <i class="bx bx-check-circle"></i> Habilitar
+                </button>
+              <?php endif; ?>
+            <?php endif; ?>
+
           </div>
         </div>
       <?php } ?>

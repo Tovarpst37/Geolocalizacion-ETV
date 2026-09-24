@@ -6,6 +6,7 @@ $filtroAuxiliar = $filtroAuxiliar ?? '';
 $filtroFecha = $filtroFecha ?? '';
 $actividades = $actividades ?? [];
 $mensajeVacio = $mensajeVacio ?? null;
+include_once '../view/partials/function.php';
 ?>
 <div class="caja">
     <h2 class="titulo-pagina">Reporte de Actividades por Auxiliar</h2>
@@ -43,7 +44,7 @@ $mensajeVacio = $mensajeVacio ?? null;
 
             <div class="botones-accion">
                 <button type="submit" class="btn-aplicar">Generar Reporte</button>
-                <?php if ($generar && !empty($actividades)): ?>
+                <?php if ($generar && !empty($actividades) && condicion('EXPORTAR', 'Reportes')): ?>
                     <button type="button" class="btn-reportes"
                         onclick="location.href='<?= getUrl('Reporteactividadesauxiliar', 'Reporteactividadesauxiliar', 'exportarActividadesExcel') ?>&auxiliar=<?= urlencode($filtroAuxiliar) ?>&fecha=<?= urlencode($filtroFecha) ?>'">
                         Exportar a Excel

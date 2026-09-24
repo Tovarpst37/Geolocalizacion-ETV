@@ -155,6 +155,25 @@
 .btn-outline-green:hover {
   background-color: #f0fdf4;
 }
+
+.btn-outline-red {
+  background-color: #ffffff;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: .43rem .9rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  transition: all .15s ease;
+  cursor: pointer;
+}
+.btn-outline-red:hover {
+  background-color: #fef2f2;
+}
 </style>
 
 <div class="tanque-page container-fluid px-2 px-md-3">
@@ -195,9 +214,29 @@
             <i class="bx bx-edit-alt"></i> Editar
           </button>
 
-          <button type="button" class="btn-outline-green">
-            <i class="bx bx-check-circle"></i> Habilitar
-          </button>
+          <?php if ((int)$tanque['estado'] === 1): ?>
+            <button
+              type="button"
+              class="btn-outline-green"
+              data-bs-toggle="modal"
+              data-bs-target="#modalDeshabilitarTanque"
+              data-id="<?php echo $tanque['id_tipo_tanque']; ?>"
+              data-nombre="<?php echo htmlspecialchars($tanque['nombre_tipo_tanque'], ENT_QUOTES); ?>"
+            >
+              <i class="bx bx-check-circle"></i> Deshabilitar
+            </button>
+          <?php else: ?>
+            <button
+              type="button"
+              class="btn-outline-red"
+              data-bs-toggle="modal"
+              data-bs-target="#modalHabilitarTanque"
+              data-id="<?php echo $tanque['id_tipo_tanque']; ?>"
+              data-nombre="<?php echo htmlspecialchars($tanque['nombre_tipo_tanque'], ENT_QUOTES); ?>"
+            >
+              <i class="bx bx-x-circle"></i> Habilitar
+            </button>
+          <?php endif; ?>
         </div>
 
       </div>
@@ -207,5 +246,6 @@
 </div>
 
 <?php include_once '../view/TipoTanque/edit.php'; ?>
+<?php include_once '../view/TipoTanque/estado.php'; ?>
 <script src="js/expre/letras.js"></script>
 <script src="js/soloLetras.js"></script>

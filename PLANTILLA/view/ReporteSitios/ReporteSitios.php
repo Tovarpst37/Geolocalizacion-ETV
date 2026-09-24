@@ -26,7 +26,7 @@ $opcionesHallazgo = [
     'seguimiento' => 'Seguimiento',
     'resiembra'   => 'Resiembra',
 ];
-
+include_once '../view/partials/function.php';
 ?>
 
 <div class="caja">
@@ -93,8 +93,10 @@ $opcionesHallazgo = [
                         <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
                         <button type="button" class="btn-limpiar"
                                 onclick="location.href='<?= $urlLimpiar ?>'">Limpiar Filtros</button>
+                    <?php if(condicion('EXPORTAR', 'Reportes')):?>
                         <button type="button" class="btn-reportes" <?= empty($sitios) ? 'disabled' : '' ?>
                                 onclick="location.href='<?= $urlExcel ?>'">Generar Reportes</button>
+                    <?php endif;?>
                     </div>
                 </div>
             </form>

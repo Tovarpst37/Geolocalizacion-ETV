@@ -130,6 +130,7 @@
   color: #ffffff;
 }
 </style>
+<?php include_once '../view/partials/function.php'; ?>
 
 <div class="roles-page container-fluid px-2 px-md-3">
 
@@ -154,7 +155,7 @@
         </div>
 
         <div class="roles-actions-wrap">
-          <?php if (in_array('EDITAR', $_SESSION['permisos']['Roles'] ?? [])): ?>
+          <?php if (condicion('EDITAR','Roles')): ?>
             <a href="<?php echo getUrl("Roles","Roles","getEdit") . "&id_rol=" . $rol['id_rol']; ?>"
                class="btn btn-blue">
               <i class="bx bx-edit-alt"></i> Editar

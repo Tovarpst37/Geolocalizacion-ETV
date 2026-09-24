@@ -113,7 +113,6 @@
                             <td class="py-3">
                                 <?php if (isset($mapa[$modu['id_modulo']][$acc['id_permiso']])): ?>
                                     <input type="checkbox"
-                                        class="form-check-input"
                                         name="permisos[]"
                                         value="<?php echo $mapa[$modu['id_modulo']][$acc['id_permiso']]; ?>">
                                 <?php else: ?>

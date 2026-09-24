@@ -194,6 +194,7 @@
               id="edit_nombre_tipo_tanque"
               name="nombre_tipo_tanque"
               placeholder="Ej: Tanque de reproducci&oacute;n"
+              required
             >
           </div>
 

@@ -367,6 +367,8 @@
 }
 </style>
 
+<?php include_once '../view/partials/function.php'; ?>
+
 <?php if (!empty($_SESSION['mensaje_exito'])): ?>
   <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm mb-4" role="alert" style="border-left: 5px solid #198754 !important; background-color: #fff; border-radius: 12px;">
     <svg class="bi flex-shrink-0 me-2" width="24" height="24" style="color:#198754;" role="img" aria-label="Success:">
@@ -478,22 +480,29 @@
 
             <!-- Acciones -->
             <div class="tank-card-actions">
-            <?php if (in_array('EDITAR', $_SESSION['permisos']['Tanques'] ?? [])): ?>
-              <a href="<?php echo getUrl('Tanque', 'Tanque', 'getEdit', array('id' => $ob->getId())); ?>" class="btn btn-outline-primary">
-                <i class="bx bx-edit-alt"></i> Editar
-              </a>
-              <?php if ($estadoActivo): ?>
-                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModalInhabilitar<?php echo $ob->getId() ?>">
-                  <i class="bx bx-block"></i> Inhabilitar
-                </button>
-              <?php else: ?>
-                <?php if (in_array('ELIMINAR', $_SESSION['permisos']['Tanques'] ?? [])): ?>
+
+              <?php if (condicion('EDITAR', 'Tanques')): ?>
+                <a href="<?php echo getUrl('Tanque', 'Tanque', 'getEdit', array('id' => $ob->getId())); ?>" class="btn btn-outline-primary">
+                  <i class="bx bx-edit-alt"></i> Editar
+                </a>
+              <?php endif; ?>
+
+              <?php if (condicion('ELIMINAR', 'Tanques')): ?>
+                <?php if ($estadoActivo): ?>
+                  <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModalInhabilitar<?php echo $ob->getId() ?>">
+                    <i class="bx bx-block"></i> Habilitado
+                  </button>
+                <?php else: ?>
                   <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $ob->getId() ?>">
-                    <i class="bx bx-check-circle"></i> Habilitar
+                    <i class="bx bx-check-circle"></i> Inhabilitado
                   </button>
                 <?php endif; ?>
+              <?php else: ?>
+                <span class="badge <?php echo $estadoActivo ? 'bg-success' : 'bg-danger'; ?>">
+                  <?php echo $estadoActivo ? 'Habilitado' : 'Inhabilitado'; ?>
+                </span>
               <?php endif; ?>
-            <?php endif;?>
+
             </div>
 
           </div>

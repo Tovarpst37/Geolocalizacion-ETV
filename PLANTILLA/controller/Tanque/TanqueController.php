@@ -22,7 +22,7 @@ class TanqueController
     {
         $obj = new TanqueModel();
 
-        $sql = "SELECT * from tipo_tanque";
+        $sql = "SELECT * from tipo_tanque where estado = 1";
         $tiposTanque = $obj->select($sql);
 
         $sql4 = "SELECT MAX(id_tanque) FROM tanque";
