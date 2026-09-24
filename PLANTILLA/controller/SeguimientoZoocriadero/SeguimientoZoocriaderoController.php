@@ -138,8 +138,7 @@ private function getMapaActividades($obj)
             $errores[] = "Debe seleccionar el tipo de pez.";
         if (empty($tipo_alimen))
             $errores[] = "Debe seleccionar el tipo de alimentación.";
-        if (empty($obAlimen))
-            $errores[] = "Las observaciones de alimentación son obligatorias.";
+
         if (strlen($obAlimen) > 250)
             $errores[] = "Las observaciones de alimentación no pueden superar los 250 caracteres.";
     }
@@ -164,8 +163,7 @@ private function getMapaActividades($obj)
         if ($muerto_Hembra === '' || !is_numeric($muerto_Hembra) || $muerto_Hembra < 0) {
             $errores[] = "La cantidad de hembras muertas debe ser un número mayor o igual a 0.";
         }
-        if (empty($obPeces))
-            $errores[] = "Las observaciones de peces muertos y nacidos son obligatorias.";
+        
         if (strlen($obPeces) > 250)
             $errores[] = "Las observaciones no pueden superar los 250 caracteres.";
     }
@@ -186,9 +184,7 @@ private function getMapaActividades($obj)
         if (!$estregarParedes && !$aspirar && !$succionador) {
             $errores[] = "Debe seleccionar al menos un tipo de limpieza.";
         }
-        if (empty($obserLi)) {
-            $errores[] = "Las observaciones de limpieza son obligatorias.";
-        }
+      
         if (strlen($obserLi) > 250) {
             $errores[] = "Las observaciones de limpieza no pueden superar los 250 caracteres.";
         }
@@ -240,9 +236,7 @@ private function getMapaActividades($obj)
         if (empty($estadoTanque)) {
             $errores[] = "Debe indicar el estado del tanque.";
         }
-        if (empty($obLa)) {
-            $errores[] = "Las observaciones de lavado son obligatorias.";
-        }
+       
         if (strlen($obLa) > 250) {
             $errores[] = "Las observaciones de lavado no pueden superar los 250 caracteres.";
         }
