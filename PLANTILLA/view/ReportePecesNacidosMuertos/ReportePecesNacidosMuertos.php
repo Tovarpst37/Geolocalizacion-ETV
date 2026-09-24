@@ -5,6 +5,7 @@ $generar = $generar ?? false;
 $filtroZoocriadero = $filtroZoocriadero ?? '';
 $datos = $datos ?? [];
 $mensajeVacio = $mensajeVacio ?? null;
+include_once '../view/partials/function.php';
 ?>
 <div class="caja">
     <h2 class="titulo-pagina">Reporte de Peces Nacidos y Muertos por Tanque</h2>
@@ -34,7 +35,7 @@ $mensajeVacio = $mensajeVacio ?? null;
 
             <div class="botones-accion">
                 <button type="submit" class="btn-aplicar">Generar Reporte</button>
-                <?php if ($generar && !empty($datos)): ?>
+                <?php if ($generar && !empty($datos) && condicion('EXPORTAR', 'Reportes')): ?>
                     <button type="button" class="btn-reportes"
                         onclick="location.href='<?= getUrl('ReportePecesNacidosMuertos', 'ReportePecesNacidosMuertos', 'exportarPecesExcel') ?>&zoocriadero=<?= urlencode($filtroZoocriadero) ?>'">
                         Exportar a Excel

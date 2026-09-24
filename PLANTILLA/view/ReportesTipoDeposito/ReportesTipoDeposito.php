@@ -4,6 +4,7 @@ $generar = $generar ?? false;
 $filtroTipoDeposito = $filtroTipoDeposito ?? '';
 $datosReporte = $datosReporte ?? [];
 $mensajeVacio = $mensajeVacio ?? null;
+include_once '../view/partials/function.php';
 ?>
 <div class="caja">
     <h2 class="titulo-pagina">Reporte de sitios por tipo de depósito</h2>
@@ -32,7 +33,7 @@ $mensajeVacio = $mensajeVacio ?? null;
 
             <div class="botones-accion">
                 <button type="submit" class="btn-aplicar">Generar Reporte</button>
-                <?php if ($generar && !empty($datosReporte)): ?>
+                <?php if ($generar && !empty($datosReporte) && condicion('EXPORTAR', 'Reportes')): ?>
                     <button type="button" class="btn-reportes"
                         onclick="location.href='<?= getUrl('ReportesTipoDeposito', 'ReportesTipoDeposito', 'exportarTipoDepositoExcel') ?>&tipo_deposito=<?= urlencode($filtroTipoDeposito) ?>'">
                         Exportar a Excel

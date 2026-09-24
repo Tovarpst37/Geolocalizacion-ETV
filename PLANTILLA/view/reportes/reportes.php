@@ -21,7 +21,7 @@ $zooTotal = (int) $totalActividades;
 $zooPorcentaje = function ($n) use ($zooTotal) {
     return $zooTotal > 0 ? number_format(min(100, ((int) $n / $zooTotal) * 100), 1, '.', '') : '0.0';
 };
-
+include_once '../view/partials/function.php';
 ?>
 
 <div class="zoo-wrap">
@@ -83,11 +83,13 @@ $zooPorcentaje = function ($n) use ($zooTotal) {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     Limpiar Filtros
                 </button>
-                <button type="button" class="zoo-btn zoo-btn-contorno zoo-btn-derecha" <?= empty($seguimientos) ? 'disabled' : '' ?>
-                        onclick="location.href='<?= $urlExcel ?>'">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-                    Generar Excel
-                </button>
+                <?php if(condicion('EXPORTAR', 'Reportes')):?>
+                    <button type="button" class="zoo-btn zoo-btn-contorno zoo-btn-derecha" <?= empty($seguimientos) ? 'disabled' : '' ?>
+                            onclick="location.href='<?= $urlExcel ?>'">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+                        Generar Excel
+                    </button>
+                <?php endif;?>
             </div>
         </form>
     </section>

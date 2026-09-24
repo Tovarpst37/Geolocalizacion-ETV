@@ -418,7 +418,7 @@
   color: #ffffff;
 }
 </style>
-
+<?php include_once '../view/partials/function.php'; ?>
 <?php if (!empty($_SESSION['mensaje_exito'])): ?>
     <div id="alertaExito" class="alert d-flex align-items-center border-0 shadow-sm" role="alert" style="border-left: 5px solid #198754 !important; background-color: #fff;">
         <svg class="bi flex-shrink-0 me-2" width="24" height="24" style="color:#198754;" role="img" aria-label="Success:">
@@ -523,19 +523,25 @@ if (count($resul) <= 0) {
                     </span>
 
                     <div class="btn-group-custom">
-                        <a href="<?php echo getUrl('Sitios', 'Sitios', 'getEdit', array('id' => $i->getId())); ?>" class="btn btn-blue">
-                            <i class="bx bx-edit-alt"></i> Editar
-                        </a>
 
-                        <?php if ($isActivo): ?>
-                            <button type="button" class="btn btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $i->getId(); ?>">
-                                <i class="bx bx-block"></i> Inhabilitar
-                            </button>
-                        <?php else: ?>
-                            <button type="button" class="btn btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalHabilitar<?php echo $i->getId(); ?>">
-                                <i class="bx bx-check-circle"></i> Habilitar
-                            </button>
+                        <?php if (condicion('EDITAR', 'Sitios')): ?>
+                            <a href="<?php echo getUrl('Sitios', 'Sitios', 'getEdit', array('id' => $i->getId())); ?>" class="btn btn-blue">
+                                <i class="bx bx-edit-alt"></i> Editar
+                            </a>
                         <?php endif; ?>
+
+                        <?php if (condicion('ELIMINAR', 'Sitios')): ?>
+                            <?php if ($isActivo): ?>
+                                <button type="button" class="btn btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $i->getId(); ?>">
+                                    <i class="bx bx-block"></i> Inhabilitar
+                                </button>
+                            <?php else: ?>
+                                <button type="button" class="btn btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalHabilitar<?php echo $i->getId(); ?>">
+                                    <i class="bx bx-check-circle"></i> Habilitar
+                                </button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+
                     </div>
                 </div>
 

@@ -418,7 +418,7 @@ else:
       color: #ffffff;
     }
   </style>
-
+  <?php include_once '../view/partials/function.php'; ?>
   <div class="container-fluid px-2 px-md-3 py-2">
     
     <!-- Encabezado superior -->
@@ -490,23 +490,25 @@ else:
               </div>
 
               <div class="card-footer-activity">
-                <?php if(in_array('EDITAR', $_SESSION['permisos']['Actividades Zoocriadero'] ?? [])):?>
+
+                <?php if (condicion('EDITAR', 'Actividades Zoocriadero')): ?>
                   <a href="<?php echo getUrl('ActividadZoocriadero', 'ActividadZoocriadero', 'getEditar', array('id' => $o->getId())); ?>" class="btn-outline-custom-blue">
                     <i class="bx bx-edit-alt"></i> Editar
                   </a>
+                <?php endif; ?>
 
+                <?php if (condicion('ELIMINAR', 'Actividades Zoocriadero')): ?>
                   <?php if ($estadoA): ?>
                     <button type="button" class="btn-outline-custom-red" data-bs-toggle="modal" data-bs-target="#exampleModal<?php echo $o->getId(); ?>">
                       <i class="bx bx-block"></i> Inhabilitar
                     </button>
                   <?php else: ?>
-                    <?php if(in_array('ELIMINAR', $_SESSION['permisos']['Actividades Zoocriadero'] ?? [])):?>
-                      <button type="button" class="btn-outline-custom-green" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $o->getId(); ?>">
-                        <i class="bx bx-check-circle"></i> Habilitar
-                      </button>
-                    <?php endif; ?>
+                    <button type="button" class="btn-outline-custom-green" data-bs-toggle="modal" data-bs-target="#exampleModalHabilitar<?php echo $o->getId(); ?>">
+                      <i class="bx bx-check-circle"></i> Habilitar
+                    </button>
                   <?php endif; ?>
-                <?php endif;?>
+                <?php endif; ?>
+
               </div>
 
             </div>
