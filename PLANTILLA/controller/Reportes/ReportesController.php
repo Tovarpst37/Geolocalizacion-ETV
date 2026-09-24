@@ -135,7 +135,8 @@ class ReportesController
         INNER JOIN actividad_zoocriadero az ON az.id_actividad_zoo    = asz.id_actividad_zoo
         WHERE ($1::int  IS NULL OR z.id_zoocriadero    = $1)
           AND ($2::int  IS NULL OR az.id_actividad_zoo = $2)
-          AND ($3::date IS NULL OR s.fecha             = $3)
+          AND ($3::date IS NULL OR s.fecha::date       = $3::date)
+          AND e.nombre_estado = 'Finalizado'
         ORDER BY s.fecha DESC, s.hora_inicio DESC";
 
         $param = [
@@ -311,7 +312,7 @@ class ReportesController
             $sheet->setCellValue("B$fila", $s['actividad']);
             $sheet->setCellValue("C$fila", $s['tanque']);
             $fecha = date('d/m/Y', strtotime($s['fecha_registro']));
-            $sheet->setCellValue("D$fila", $fecha . ($s['hora_inicio'] ? ' ' . substr($s['hora_inicio'], 0, 5) : ''));
+            $sheet->setCellValue("D$fila", date('Y-m-d H:i:s', strtotime($s['fecha_registro'])));
             $sheet->setCellValue("E$fila", $s['hora_fin'] ? $fecha . ' ' . substr($s['hora_fin'], 0, 5) : '-');
             $sheet->setCellValue("F$fila", $s['responsable']);
             $sheet->setCellValue("G$fila", $textoEstado);
