@@ -282,7 +282,9 @@
       flex-direction: column-reverse;
       align-items: stretch;
     }
-    .btn-modal-cancel, .btn-modal-save {
+
+    .btn-modal-cancel,
+    .btn-modal-save {
       width: 100%;
     }
   }
@@ -291,7 +293,7 @@
 <!-- Contenedor con fondo opaco y efecto desenfocado (Blur) -->
 <div class="modal-backdrop-custom">
   <div class="modal-edit-custom">
-    
+
     <?php foreach ($datos as $d) { ?>
       <form action="<?php echo getUrl("Sitios", "Sitios", "validarUpdate") ?>" method="post" class="m-0 d-flex flex-column h-100 overflow-hidden">
 
@@ -459,8 +461,21 @@
           </div>
 
           <!-- Barrio y Estado -->
+          <!-- Comuna, Barrio y Estado -->
           <div class="row g-3 mb-3">
-            <div class="col-md-6">
+            <div class="col-md-4">
+              <label for="comuna" class="form-label-custom">
+                <i class="bx bx-map-alt"></i> Comuna <span class="text-danger">*</span>
+              </label>
+              <select class="form-select form-select-custom" id="comuna" name="comuna" required>
+                <option value="" selected disabled>Selecciona comuna</option>
+                <?php foreach ($comunas as $c) {
+                  $selected = (isset($d['comuna']) && $d['comuna'] == $c['id_comuna']) ? "selected" : "";
+                  echo "<option value='" . $c['id_comuna'] . "' $selected>" . $c['nombre_comuna'] . "</option>";
+                } ?>
+              </select>
+            </div>
+            <div class="col-md-4">
               <label for="barrio" class="form-label-custom">
                 <i class="bx bx-map"></i> Barrio <span class="text-danger">*</span>
               </label>
@@ -468,11 +483,11 @@
                 <option value="" selected disabled>Barrio *</option>
                 <?php foreach ($barrios as $b) {
                   $selected = ($d['id_barrio'] == $b['id_barrio']) ? "selected" : "";
-                  echo "<option value='" . $b['id_barrio'] . "' $selected>" . $b['nombre_barrio'] . "</option>";
+                  echo "<option value='" . $b['id_barrio'] . "' data-comuna='" . $b['id_comuna'] . "' $selected>" . $b['nombre_barrio'] . "</option>";
                 } ?>
               </select>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label for="estado" class="form-label-custom">
                 <i class="bx bx-toggle-right"></i> Estado <span class="text-danger">*</span>
               </label>
@@ -529,6 +544,50 @@
 
   </div>
 </div>
+<script>
+  (function() {
+    const selComuna = document.getElementById('comuna');
+    const selBarrio = document.getElementById('barrio');
+    if (!selComuna || !selBarrio) return;
+
+    const todasLasOpciones = Array.from(selBarrio.querySelectorAll('option[data-comuna]'))
+      .map(opt => ({
+        value: opt.value,
+        text: opt.textContent.trim(),
+        comuna: opt.dataset.comuna,
+        selected: opt.selected
+      }));
+
+    const barrioPreseleccionado = selBarrio.value;
+
+    function cargarBarrios(preservar = true) {
+      const idComuna = selComuna.value;
+      const valorActual = preservar ? (selBarrio.value || barrioPreseleccionado) : '';
+
+      selBarrio.innerHTML = '';
+
+      if (!idComuna) {
+        selBarrio.innerHTML = '<option value="" selected disabled>Primero selecciona una comuna</option>';
+        return;
+      }
+
+      selBarrio.innerHTML = '<option value="" disabled>Barrio *</option>';
+
+      const filtrados = todasLasOpciones.filter(b => String(b.comuna) === String(idComuna));
+      filtrados.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.value;
+        opt.textContent = b.text;
+        opt.dataset.comuna = b.comuna;
+        if (String(b.value) === String(valorActual)) opt.selected = true;
+        selBarrio.appendChild(opt);
+      });
+    }
+
+    selComuna.addEventListener('change', () => cargarBarrios(false));
+    cargarBarrios(true);
+  })();
+</script>
 
 <script>
   (function() {

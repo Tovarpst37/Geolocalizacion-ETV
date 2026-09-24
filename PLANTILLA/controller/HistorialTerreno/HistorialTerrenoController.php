@@ -401,6 +401,36 @@ class HistorialTerrenoController
                           WHERE id_seguimiento_terreno = $idSeg");
         }
     }
+    public function getVer()
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+        $obj = new FormulariosModel();
+
+        $sqlSeg = "SELECT s.id_seguimiento_terreno, s.cod_seguimiento, s.fecha, s.id_estado,
+                      e.nombre_estado, u.documento, si.nombre_sitio
+               FROM seguimiento_terreno s
+               LEFT JOIN estado e ON s.id_estado = e.id_estado
+               LEFT JOIN usuarios u ON s.id_usuario = u.id_usuario
+               LEFT JOIN sitio si ON s.id_sitio = si.id_sitio
+               WHERE s.id_seguimiento_terreno = $id";
+        $segResult = $obj->select($sqlSeg);
+        $seguimiento = !empty($segResult) ? $segResult[0] : null;
+
+        if (!$seguimiento) {
+            include_once '../model/Errores/ErrorModal.php';
+            ErrorModal::verError(
+                ["Lo siento, el seguimiento solicitado no existe."],
+                getUrl('SeguimientoTerreno', 'SeguimientoTerreno', 'getConsultar')
+            );
+            return;
+        }
+
+        $config = $this->getConfigActividades();
+        $grupos = $this->getSubActividadesPorTipo($obj, $id);
+        $actividadesAsignadas = $this->getActividadesAsignadas($obj, $id);
+
+        include_once '../view/partials/HistorialTerreno/Ver.php';
+    }
 
     public function postUpdate()
     {

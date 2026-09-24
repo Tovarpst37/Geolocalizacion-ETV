@@ -1,6 +1,79 @@
+<style>
+.dash-home .contenedortext {
+    overflow: hidden;
+    position: relative;
+}
+
+.dash-home .contenedortext .fa-map-marked-alt {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,.15));
+}
+
+.dash-home .card-stats {
+    border: 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,.07);
+    transition: transform .15s ease, box-shadow .15s ease;
+    overflow: hidden;
+}
+
+.dash-home .card-stats:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0,0,0,.10);
+}
+
+.dash-home .card-stats .card-body {
+    padding: 1.25rem;
+}
+
+.dash-home .card-stats .row {
+    flex-wrap: nowrap;
+}
+
+.dash-home .col-icon {
+    flex: 0 0 auto;
+}
+
+.dash-home .icon-big {
+    width: clamp(42px, 8vw, 56px);
+    height: clamp(42px, 8vw, 56px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    flex-shrink: 0;
+}
+
+.dash-home .icon-big i {
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+}
+
+.dash-home .col-stats {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.dash-home .card-category {
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #6c757d;
+    margin-bottom: .15rem;
+    white-space: normal;
+    line-height: 1.25;
+}
+
+.dash-home .card-title {
+    font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+</style>
+
+<div class="dash-home">
+
 <h1 class="mb-3">
   <?php
-  //echo "!Bienvenido {$_SESSION['primer_nombre']}!";
+  echo "!Bienvenido {$_SESSION['nombre_rol']} {$_SESSION['primer_nombre']}!";
   ?>
 </h1>
 <div class="contenedortext p-4 p-md-5 mb-4 rounded-5">
@@ -26,7 +99,7 @@
   </div>
 </div>
 
-<div class="row">
+<div class="row g-3">
   <div class="col-sm-6 col-md-3 d-flex">
     <div class="card card-stats card-round h-100 w-100">
       <div class="card-body">
@@ -103,4 +176,6 @@
       </div>
     </div>
   </div>
+</div>
+
 </div>

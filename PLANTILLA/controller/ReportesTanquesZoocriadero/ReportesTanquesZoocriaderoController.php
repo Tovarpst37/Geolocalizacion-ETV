@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../../vendor/autoload.php';
-include_once '../model/reportesTanquesZoocriadero/ReportesModel.php'; 
+include_once '../model/reportesTanquesZoocriadero/ReportesModel.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -143,7 +143,7 @@ class ReportesTanquesZoocriaderoController
         $logoAlcaldia->setPath($rutaImg . 'logo_alcaldia.png');
         $logoAlcaldia->setHeight(26);
         $logoAlcaldia->setCoordinates('D1');
-        $logoAlcaldia->setOffsetX(70);
+        $logoAlcaldia->setOffsetX(100);
         $logoAlcaldia->setOffsetY(10);
         $logoAlcaldia->setWorksheet($sheet);
 
@@ -219,9 +219,9 @@ class ReportesTanquesZoocriaderoController
         // se vea más grande que antes; C y D se mantienen como en el original
         // para no perder el ancho total del banner.
         $sheet->getColumnDimension('A')->setWidth(28);
-        $sheet->getColumnDimension('B')->setWidth(46);
+        $sheet->getColumnDimension('B')->setWidth(30);
         $sheet->getColumnDimension('C')->setWidth(20);
-        $sheet->getColumnDimension('D')->setWidth(20);
+        $sheet->getColumnDimension('D')->setWidth(35);
 
         $sheet->setShowGridlines(false);
 
