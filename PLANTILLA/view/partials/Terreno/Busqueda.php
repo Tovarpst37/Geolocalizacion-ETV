@@ -7,7 +7,7 @@
     <input type="hidden" name="controlador" value="Terreno">
     <input type="hidden" name="funcion" value="getBuscar">
     
-    <input type="text" name="busqueda" placeholder="Search ..." class="form-control" value="<?php echo $palabra; ?>"/>
+    <input type="text" name="busqueda" placeholder="Buscar por codigo..." class="form-control" value="<?php echo $palabra; ?>"/>
     
     <button type="submit" class="btn btn-outline-secondary">
         <i class="fa fa-search"></i>
