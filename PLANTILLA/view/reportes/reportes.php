@@ -10,8 +10,8 @@ $urlExcel = getUrl('Reportes', 'Reportes', 'exportarSeguimientosExcel');
 $urlExcel .= (strpos($urlExcel, '?') === false ? '?' : '&') . http_build_query([
     'zoocriadero'  => $filtroZoocriadero,
     'actividad'    => $filtroActividad,
-    'fecha_inicio' => $filtroFechaInicio,
-    'fecha_fin'    => $filtroFechaFin,
+    'fecha_inicio' => $filtroFechaInicio
+    
 ]);
 
 $urlLimpiar = $urlReporte . (strpos($urlReporte, '?') === false ? '?' : '&') . 'limpiar=1';
@@ -67,11 +67,7 @@ include_once '../view/partials/function.php';
                     <label for="zoo-fecha-inicio">Fecha Inicio</label>
                     <input type="date" id="zoo-fecha-inicio" name="fecha_inicio" value="<?= ($filtroFechaInicio) ?>">
                 </div>
-                <div class="zoo-campo">
-                    <label for="zoo-fecha-fin">Fecha Fin</label>
-                    <input type="date" id="zoo-fecha-fin" name="fecha_fin" value="<?= ($filtroFechaFin) ?>">
-                </div>
-            </div>
+                
 
             <div class="zoo-acciones">
                 <button type="submit" class="zoo-btn zoo-btn-primario">
@@ -144,7 +140,7 @@ include_once '../view/partials/function.php';
                             <th>Actividad</th>
                             <th>Zoocriadero</th>
                             <th>Fecha Inicio</th>
-                            <th>Fecha Fin</th>
+                            
                             <th>Responsable</th>
                             <th>Estado</th>
                         </tr>
@@ -173,14 +169,13 @@ include_once '../view/partials/function.php';
                                 $fechaInicio = $fecha . ($s['hora_inicio'] ? ' ' . substr($s['hora_inicio'], 0, 5) : '');
                                 $fechaFin    = $s['hora_fin'] ? $fecha . ' ' . substr($s['hora_fin'], 0, 5) : '-';
                             ?>
-                            <tr data-estado="<?= $claseBadge ?>">
-                                <td data-label="Actividad" class="zoo-td-actividad"><?= $s['actividad'] ?? '' ?></td>
-                                <td data-label="Zoocriadero"><?= $s['zoocriadero'] ?? '' ?></td>
-                                <td data-label="Fecha Inicio" class="zoo-td-fecha"><?= $fechaInicio ?></td>
-                                <td data-label="Fecha Fin" class="zoo-td-fecha"><?= $fechaFin ?></td>
-                                <td data-label="Responsable"><?= $s['responsable'] ?? '' ?></td>
-                                <td data-label="Estado"><span class="badge <?= $claseBadge ?>"><?= $textoEstado ?? '' ?></span></td>
-                            </tr>
+                           <tr data-estado="<?= $claseBadge ?>">
+    <td data-label="Actividad" class="zoo-td-actividad"><?= $s['actividad'] ?? '' ?></td>
+    <td data-label="Zoocriadero"><?= $s['zoocriadero'] ?? '' ?></td>
+    <td data-label="Fecha Inicio" class="zoo-td-fecha"><?= $fechaInicio ?></td>
+    <td data-label="Responsable"><?= $s['responsable'] ?? '' ?></td>
+    <td data-label="Estado"><span class="badge <?= $claseBadge ?>"><?= $textoEstado ?? '' ?></span></td>
+</tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
