@@ -470,7 +470,7 @@ if (count($resul) <= 0) {
 
                 <div class="search-box">
                     <i class="bx bx-search search-icon"></i>
-                    <input type="text" name="busqueda" placeholder="Buscar sitio..." class="form-control" />
+                    <input type="text" name="busqueda" placeholder="Buscar por codigo..." class="form-control" />
                     <button type="submit" class="btn-search" aria-label="Buscar">
                         <i class="bx bx-right-arrow-alt fs-5"></i>
                     </button>
