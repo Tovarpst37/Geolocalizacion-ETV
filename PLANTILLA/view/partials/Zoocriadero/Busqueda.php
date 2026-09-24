@@ -411,8 +411,162 @@
   border-color: #15803d;
   color: #ffffff;
 }
-</style>
 
+/* ============ Modal "Ver más" — Información del Zoocriadero ============ */
+.info-modal-content {
+  border: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+}
+.info-modal-header {
+  background: linear-gradient(135deg, var(--blue-primary), var(--blue-hover));
+  padding: 1.5rem 1.5rem 1.35rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.info-modal-avatar {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+.info-modal-title-group {
+  flex: 1;
+  min-width: 0;
+}
+.info-modal-title {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+  line-height: 1.3;
+}
+.info-modal-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: .85rem;
+  font-weight: 500;
+  display: block;
+}
+.status-pill-modal {
+  padding: .35rem .8rem;
+  border-radius: 20px;
+  font-size: .75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  flex-shrink: 0;
+}
+.status-pill-modal.inactive {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.info-modal-header .btn-close {
+  filter: invert(1) brightness(2);
+  opacity: .85;
+  flex-shrink: 0;
+}
+.info-modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+.info-modal-body {
+  padding: 1.5rem 1.75rem;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.info-section {
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px dashed var(--line);
+}
+.info-section:last-child {
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.info-section-title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--blue-primary);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 1.1rem;
+}
+.info-section-title i {
+  font-size: 1rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.1rem 1.5rem;
+}
+@media (min-width: 576px) {
+  .info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.info-field.full {
+  grid-column: 1 / -1;
+}
+.info-label {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  display: block;
+  margin-bottom: .3rem;
+}
+.info-value {
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  word-break: break-word;
+}
+
+.info-map-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  color: var(--blue-primary);
+  font-size: .85rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: .65rem;
+}
+.info-map-link:hover {
+  text-decoration: underline;
+  color: var(--blue-hover);
+}
+
+.info-modal-footer {
+  padding: 1rem 1.75rem 1.5rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+</style>
+<?php include_once '../view/partials/function.php';?>
 <div class="zoo-page container-fluid px-2 px-md-3">
 
   <?php if (!empty($_SESSION['mensaje_exito'])): ?>
@@ -453,7 +607,7 @@
 
         <div class="search-box">
           <i class="bx bx-search search-icon"></i>
-          <input type="text" name="busqueda" placeholder="Buscar zoocriadero..." class="form-control" value="<?php echo $palabra; ?>" />
+          <input type="text" name="busqueda" placeholder="Buscar por codigo..." class="form-control" value="<?php echo $palabra; ?>" />
           <button type="submit" class="btn-search" aria-label="Buscar">
             <i class="bx bx-right-arrow-alt fs-5"></i>
           </button>
@@ -489,18 +643,26 @@
           </span>
 
           <div class="btn-group-custom">
-            <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-blue">
-              <i class="bx bx-edit-alt"></i> Editar
-            </a>
+            <?php if (condicion('EDITAR', 'Zoocriadero')): ?>
+              <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-blue">
+                <i class="bx bx-edit-alt"></i> Editar
+              </a>
+            <?php endif; ?>
 
-            <?php if ($isActivo): ?>
-              <button type="button" class="btn btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $z['id_zoocriadero']; ?>">
-                <i class="bx bx-block"></i> Inhabilitar
-              </button>
-            <?php else: ?>
-              <button type="button" class="btn btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalHabilitar<?php echo $z['id_zoocriadero']; ?>">
-                <i class="bx bx-check-circle"></i> Habilitar
-              </button>
+            <button type="button" class="btn btn-gray-soft" data-bs-toggle="modal" data-bs-target="#modalVerMas<?php echo $z['id_zoocriadero']; ?>">
+              <i class="bx bx-show"></i> Ver más
+            </button>
+
+            <?php if (condicion('ELIMINAR', 'Zoocriadero')): ?>
+              <?php if ($isActivo): ?>
+                <button type="button" class="btn btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $z['id_zoocriadero']; ?>">
+                  <i class="bx bx-block"></i> Inhabilitar
+                </button>
+              <?php else: ?>
+                <button type="button" class="btn btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalHabilitar<?php echo $z['id_zoocriadero']; ?>">
+                  <i class="bx bx-check-circle"></i> Habilitar
+                </button>
+              <?php endif; ?>
             <?php endif; ?>
           </div>
         </div>
@@ -508,6 +670,70 @@
       </div>
     <?php } ?>
   </div>
+       <!-- Modal Ver Más -->
+    <div class="modal fade" id="modalVerMas<?php echo $z['id_zoocriadero']; ?>" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content info-modal-content">
+
+          <div class="info-modal-header">
+            <div class="info-modal-avatar">
+              <i class="bx bxs-leaf"></i>
+            </div>
+            <div class="info-modal-title-group">
+              <h5 class="info-modal-title">Información del Zoocriadero</h5>
+              <span class="info-modal-subtitle"><?php echo $z['cod_zoocriadero']; ?></span>
+            </div>
+            <span class="status-pill-modal <?php echo $isActivo ? '' : 'inactive'; ?>">
+              <i class="bx bxs-circle fs-6"></i>
+              <?php echo $isActivo ? 'Activo' : 'Inactivo'; ?>
+            </span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body info-modal-body">
+
+            <div class="info-section">
+              <h6 class="info-section-title"><i class="bx bx-info-circle"></i> Información General</h6>
+              <div class="info-grid">
+                <div class="info-field">
+                  <span class="info-label">Código</span>
+                  <span class="info-value"><?php echo $z['cod_zoocriadero']; ?></span>
+                </div>
+                <div class="info-field">
+                  <span class="info-label">Estado</span>
+                  <span class="info-value"><?php echo $isActivo ? 'Activo' : 'Inactivo'; ?></span>
+                </div>
+                <div class="info-field full">
+                  <span class="info-label">Dirección</span>
+                  <span class="info-value"><?php echo $z['direcciom']; ?></span>
+                  
+                </div>
+              </div>
+            </div>
+
+            <div class="info-section">
+              <h6 class="info-section-title"><i class="bx bx-user"></i> Coordinador Responsable</h6>
+              <div class="info-grid">
+                <div class="info-field">
+                  <span class="info-label">Persona a cargo</span>
+                  <span class="info-value"><?php echo $z['nombre'] ?? 'No registrado'; ?></span>
+                </div>
+                <div class="info-field">
+                  <span class="info-label">Documento</span>
+                  <span class="info-value"><?php echo $z['documento'] ?? 'No registrado'; ?></span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer info-modal-footer">
+            <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
   <!-- Modales fuera del contenedor -->
   <?php foreach($zoocriaderos as $z){ 

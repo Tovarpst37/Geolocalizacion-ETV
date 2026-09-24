@@ -253,7 +253,7 @@
 
       <div class="search-box-wrapper">
         <i class="bx bx-search search-icon"></i>
-        <input type="text" name="busqueda" placeholder="Buscar tipo de depósito..." class="search-input" value="<?= htmlspecialchars($palabra ?? '') ?>">
+        <input type="text" name="busqueda" placeholder="Buscar por nombre de deposito..." class="search-input" value="<?= htmlspecialchars($palabra ?? '') ?>">
         <button type="submit" class="search-btn" title="Buscar">
           <i class="bx bx-right-arrow-alt fs-5"></i>
         </button>

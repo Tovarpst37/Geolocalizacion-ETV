@@ -597,6 +597,80 @@ usort($actividades, function ($a, $b) use ($orden_proceso_terreno) {
       });
   });
 
+  (function () {
+  const pecesEmpacados = document.querySelector('#pecesEmpacados');
+  if (!pecesEmpacados) return;
+
+  const camposDependientes = [
+    '#tiempoAclimat',
+    '#hembrasSembradas',
+    '#machosSembrados',
+    '#litrosAgua',
+    'input[name="presenciaLarvasSiem"]',
+    'input[name="presenciaPecesSiem"]',
+    '#obserSiem'
+  ];
+
+  function bloquearCamposDependientes(bloquear) {
+    camposDependientes.forEach(selector => {
+      document.querySelectorAll(selector).forEach(campo => {
+        campo.disabled = bloquear;
+      });
+    });
+  }
+
+  function actualizarDependientes() {
+    const tieneValor = pecesEmpacados.value && Number(pecesEmpacados.value) > 0;
+    bloquearCamposDependientes(!tieneValor);
+  }
+
+
+  actualizarDependientes();
+
+
+  pecesEmpacados.addEventListener('input', function () {
+    actualizarDependientes();
+    validarTotalPeces();
+  });
+
+  // Validación: hembras + machos no debe superar pecesEmpacados
+  const hembras = document.querySelector('#hembrasSembradas');
+  const machos = document.querySelector('#machosSembrados');
+
+  function validarTotalPeces() {
+    if (!hembras || !machos) return;
+
+    const totalEmpacados = Number(pecesEmpacados.value) || 0;
+    const totalHembras = Number(hembras.value) || 0;
+    const totalMachos = Number(machos.value) || 0;
+    const suma = totalHembras + totalMachos;
+
+    if (suma > totalEmpacados) {
+      hembras.setCustomValidity('La suma de hembras y machos no puede superar los peces empacados (' + totalEmpacados + ').');
+      machos.setCustomValidity('La suma de hembras y machos no puede superar los peces empacados (' + totalEmpacados + ').');
+    } else {
+      hembras.setCustomValidity('');
+      machos.setCustomValidity('');
+    }
+
+    hembras.reportValidity();
+    machos.reportValidity();
+  }
+
+  if (hembras) hembras.addEventListener('input', validarTotalPeces);
+  if (machos) machos.addEventListener('input', validarTotalPeces);
+
+  // ===== CLAVE: volver a aplicar el bloqueo cuando se abre el panel de Siembra =====
+  // Escuchamos el change de todos los checkboxes de actividad
+  document.querySelectorAll('.activity-checkbox').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      // Esperamos un momento para que setPanel termine de habilitar los campos
+      setTimeout(actualizarDependientes, 10);
+    });
+  });
+
+})();
+
  (function () {
   const checks = document.querySelectorAll('.activity-checkbox');
 
@@ -657,63 +731,5 @@ usort($actividades, function ($a, $b) use ($orden_proceso_terreno) {
   checks.forEach(cb => setPanel(cb, cb.checked, false));
 })();
 
-(function () {
-  const pecesEmpacados = document.querySelector('#pecesEmpacados');
-  if (!pecesEmpacados) return;
 
-  // Campos que dependen de haber llenado primero "pecesEmpacados"
-  const camposDependientes = [
-    '#tiempoAclimat',
-    '#hembrasSembradas',
-    '#machosSembrados',
-    '#litrosAgua',
-    'input[name="presenciaLarvasSiem"]',
-    'input[name="presenciaPecesSiem"]',
-    '#obserSiem'
-  ];
-
-  function bloquearCamposDependientes(bloquear) {
-    camposDependientes.forEach(selector => {
-      document.querySelectorAll(selector).forEach(campo => {
-        campo.disabled = bloquear;
-      });
-    });
-  }
-
-  // Al cargar, si ya no hay valor, bloquea los demás campos
-  bloquearCamposDependientes(!pecesEmpacados.value || pecesEmpacados.value <= 0);
-
-  // Cada vez que cambia "pecesEmpacados", habilita/bloquea el resto
-  pecesEmpacados.addEventListener('input', function () {
-    const tieneValor = this.value && Number(this.value) > 0;
-    bloquearCamposDependientes(!tieneValor);
-    validarTotalPeces();
-  });
-
-  // Validación: hembras + machos no debe superar pecesEmpacados
-  const hembras = document.querySelector('#hembrasSembradas');
-  const machos = document.querySelector('#machosSembrados');
-
-  function validarTotalPeces() {
-    const totalEmpacados = Number(pecesEmpacados.value) || 0;
-    const totalHembras = Number(hembras.value) || 0;
-    const totalMachos = Number(machos.value) || 0;
-    const suma = totalHembras + totalMachos;
-
-    if (suma > totalEmpacados) {
-      hembras.setCustomValidity('La suma de hembras y machos no puede superar los peces empacados (' + totalEmpacados + ').');
-      machos.setCustomValidity('La suma de hembras y machos no puede superar los peces empacados (' + totalEmpacados + ').');
-    } else {
-      hembras.setCustomValidity('');
-      machos.setCustomValidity('');
-    }
-
-    hembras.reportValidity();
-    machos.reportValidity();
-  }
-
-  if (hembras) hembras.addEventListener('input', validarTotalPeces);
-  if (machos) machos.addEventListener('input', validarTotalPeces);
-
-})();
 </script>

@@ -483,14 +483,22 @@ usort($actividades, function ($a, $b) use ($orden_proceso) {
 
                       <div class="mb-3">
                         <label for="estadoTanque" class="form-label">Estado del tanque</label>
-                        <input type="text" class="form-control" id="estadoTanque" name="estadoTanque"
-                          placeholder="Ingrese el estado del tanque" required>
+                        
+                          
+                          <select name="estadoTanque" id="estadoTanque" class="form-control" required>
+                            <option value="" selected disabled>Selecciona el estado del tanque</option>
+                            <option value="Buen estado">Buen estado</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Mal estado">Mal estado</option>
+                            <option value="Sucio / Requiere limpieza">Sucio / Requiere limpieza</option>
+                            <option value="En mantenimiento">En mantenimiento</option>
+                          </select>
                       </div>
 
                       <div class="mb-3">
                         <label for="obLa" class="form-label">Observaciones</label>
                         <input type="text" class="form-control" id="obLa" name="obLa" placeholder="Ingrese las observaciones"
-                          required>
+                          >
                       </div>
                     <?php endif; ?>
 

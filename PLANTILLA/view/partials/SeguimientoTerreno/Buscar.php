@@ -408,8 +408,13 @@ $nombresEstado = [
         </div>
       <?php endforeach; ?>
     <?php else: ?>
-      <div class="alert alert-warning text-center">No hay registros de seguimiento disponibles.</div>
-    <?php endif; ?>
+      <div class="w-100 text-center empty-state">
+    <div class="empty-state-icon">
+      <i class="bx bx-search-alt"></i>
+    </div>
+    <h5 class="fw-bold text-dark mb-1">Sin resultados</h5>
+    <p class="text-muted mb-0">No se encontraron tanques que coincidan con "<strong><?php echo htmlspecialchars($palabra); ?></strong>".</p>
+  </div>    <?php endif; ?>
   </div>
 
 </div>

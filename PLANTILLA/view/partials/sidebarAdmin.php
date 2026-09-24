@@ -122,8 +122,12 @@ function tieneAlgunPermiso($modulo, array $permisos) {
                                 <i class="bx bx-chevron-down navCaret text"></i>
                             </a>
                             <ul class="submenu">
-                                <li><a href="<?php echo getUrl("TipoTanque", "TipoTanque", "getCreate"); ?>"><span class="sub-item">Registrar Tipo Tanque</span></a></li>
-                                <li><a href="<?php echo getUrl("TipoTanque", "TipoTanque", "getList"); ?>"><span class="sub-item">Consultar Tipo Tanque</span></a></li>
+                                <?php if(tienePermiso('TipoTanque', 'CREAR')): ?>
+                                    <li><a href="<?php echo getUrl("TipoTanque", "TipoTanque", "getCreate"); ?>"><span class="sub-item">Registrar Tipo Tanque</span></a></li>
+                                <?php endif; ?>
+                                <?php if(tieneAlgunPermiso('TipoTanque', ['VER','EDITAR','ELIMINAR'])): ?>
+                                    <li><a href="<?php echo getUrl("TipoTanque", "TipoTanque", "getList"); ?>"><span class="sub-item">Consultar Tipo Tanque</span></a></li>
+                                <?php endif; ?>
                                 <?php if(tienePermiso('Tanques', 'CREAR')): ?>
                                     <li><a href="<?php echo getUrl("Tanque", "Tanque", "getRegistrar"); ?>"><span class="sub-item">Registrar Tanque</span></a></li>
                                 <?php endif; ?>

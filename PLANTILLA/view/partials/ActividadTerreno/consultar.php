@@ -465,6 +465,7 @@
     color: #ffffff;
   }
 </style>
+<?php include_once '../view/partials/function.php'; ?>
 
 <div class="consult-container">
 
@@ -522,7 +523,7 @@
 
         <div class="search-box-wrapper">
           <i class="bx bx-search search-icon"></i>
-          <input type="text" name="busqueda" placeholder="Buscar actividad..." class="search-input" value="<?= htmlspecialchars($_GET['busqueda'] ?? '') ?>">
+          <input type="text" name="busqueda" placeholder="Buscar por nombre de actividad..." class="search-input" value="<?= htmlspecialchars($_GET['busqueda'] ?? '') ?>">
           <button type="submit" class="search-btn" title="Buscar">
             <i class="bx bx-right-arrow-alt fs-5"></i>
           </button>
