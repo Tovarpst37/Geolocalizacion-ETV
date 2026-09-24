@@ -9,11 +9,24 @@ include_once '../model/SeguimientoTerreno/SeguimientoTerrenoModel.php';
 class SeguimientoTerrenoController
 {
 
-    private const ID_ACTIVIDAD_INSPECCION = 1;
-    private const ID_ACTIVIDAD_SIEMBRA = 2;
-    private const ID_ACTIVIDAD_SEGUIMIENTO = 3;
-    private const ID_ACTIVIDAD_RESIEMBRA = 4;
+    private const COD_INSPECCION = 'AT-1';
+private const COD_SIEMBRA = 'AT-2';
+private const COD_SEGUIMIENTO = 'AT-3';
+private const COD_RESIEMBRA = 'AT-4';
 
+private array $mapaActividadesTerreno = []; 
+
+    private function getMapaActividadesTerreno($obj)
+{
+    $sql = "SELECT id_actividad_terreno, cod_actividad_terreno FROM actividad_terreno";
+    $rows = $obj->select($sql);
+
+    $mapa = [];
+    foreach ($rows as $row) {
+        $mapa[$row['cod_actividad_terreno']] = $row['id_actividad_terreno'];
+    }
+    return $mapa;
+}
 
 
 
@@ -44,6 +57,10 @@ class SeguimientoTerrenoController
     }
 
 
+
+    
+
+
     public function getRegistrar()
     {
 
@@ -56,17 +73,42 @@ class SeguimientoTerrenoController
 
         
 
-        $sql3 = "SELECT * from actividad_terreno WHERE id_estado = 1";
-        $actividades = $obj->select($sql3);
+       
+// Catálogo maestro: código => nombre (los 4 procesos del mapa de Trabajo de Terreno)
+$actividades_proceso_terreno = [
+    "AT-1" => "INSPECCION",
+    "AT-2" => "SIEMBRA",
+    "AT-3" => "SEGUIMIENTO",
+    "AT-4" => "RESIEMBRA"
+];
+
+$sql = "SELECT id_actividad_terreno, nombre_actividad, id_estado, cod_actividad_terreno 
+        FROM actividad_terreno 
+        WHERE id_estado = 1 
+        ORDER BY id_actividad_terreno";
+$actividades = $obj->select($sql);
+
+
+$codigos_registrados = array_column($actividades, 'cod_actividad_terreno');
+
+
+$actividades_faltantes = array_diff_key($actividades_proceso_terreno, array_flip($codigos_registrados));
+
+
+
 
         include_once '../view/partials/SeguimientoTerreno/Registrar.php';
 
     }
 
 
-    public function postRegistrar()
+  public function postRegistrar()
 {
     $obj = new SeguimientoTerrenoModel(); // ajusta el nombre real de tu modelo
+
+    // Mapa cod_actividad => id_actividad_terreno (no depende del orden ni del valor numérico del id)
+    $this->mapaActividadesTerreno = $this->getMapaActividadesTerreno($obj);
+    $mapaActividadesTerreno = $this->mapaActividadesTerreno;
 
     $codigo   = mb_strtoupper($_POST['codigo'] ?? '');
     $sitio    = $_POST['select_ter'] ?? '';
@@ -97,7 +139,8 @@ class SeguimientoTerrenoController
     }
 
     // ---- INSPECCIÓN: validar solo si viene marcada esa actividad ----
-    $tieneInspeccion = in_array(self::ID_ACTIVIDAD_INSPECCION, $actividades);
+    $tieneInspeccion = isset($mapaActividadesTerreno[self::COD_INSPECCION])
+        && in_array($mapaActividadesTerreno[self::COD_INSPECCION], $actividades);
 
     $depositoDetRaw  = $_POST['depositoDetectado'] ?? '';
     $phMedido        = $_POST['phMedido'] ?? '';
@@ -121,14 +164,14 @@ class SeguimientoTerrenoController
         if ($presenciaLarvRaw !== '0' && $presenciaLarvRaw !== '1') {
             $errores[] = "Debe indicar si hay presencia de larvas de zancudos.";
         }
-        // Validar solo longitud si el usuario ingresó algún texto
         if (!empty($obserInsp) && strlen($obserInsp) > 250) {
             $errores[] = "Las observaciones de inspección no pueden superar los 250 caracteres.";
         }
     }
 
     // ---- SIEMBRA: validar solo si viene marcada esa actividad ----
-    $tieneSiembra = in_array(self::ID_ACTIVIDAD_SIEMBRA, $actividades);
+    $tieneSiembra = isset($mapaActividadesTerreno[self::COD_SIEMBRA])
+        && in_array($mapaActividadesTerreno[self::COD_SIEMBRA], $actividades);
 
     $pecesEmpacados         = $_POST['pecesEmpacados'] ?? '';
     $tiempoAclimat          = $_POST['tiempoAclimat'] ?? null;
@@ -159,14 +202,14 @@ class SeguimientoTerrenoController
         if ($presenciaPecesSiemRaw !== '0' && $presenciaPecesSiemRaw !== '1') {
             $errores[] = "Debe indicar si hay presencia de peces en la siembra.";
         }
-        // Validar solo longitud si el usuario ingresó algún texto
         if (!empty($obserSiem) && strlen($obserSiem) > 250) {
             $errores[] = "Las observaciones de siembra no pueden superar los 250 caracteres.";
         }
     }
 
     // ---- SEGUIMIENTO: validar solo si viene marcada esa actividad ----
-    $tieneSeguimientoAct = in_array(self::ID_ACTIVIDAD_SEGUIMIENTO, $actividades);
+    $tieneSeguimientoAct = isset($mapaActividadesTerreno[self::COD_SEGUIMIENTO])
+        && in_array($mapaActividadesTerreno[self::COD_SEGUIMIENTO], $actividades);
 
     $numeroVisitaRaw       = $_POST['numeroVisita'] ?? '';
     $depositoVisRaw        = $_POST['depositoVisitado'] ?? '';
@@ -188,14 +231,14 @@ class SeguimientoTerrenoController
         if ($presenciaPecesSegRaw !== '0' && $presenciaPecesSegRaw !== '1') {
             $errores[] = "Debe indicar si hay presencia de peces en el seguimiento.";
         }
-        // Validar solo longitud si el usuario ingresó algún texto
         if (!empty($obserSeg) && strlen($obserSeg) > 250) {
             $errores[] = "Las observaciones de seguimiento no pueden superar los 250 caracteres.";
         }
     }
 
     // ---- RESIEMBRA: validar solo si viene marcada esa actividad ----
-    $tieneResiembra = in_array(self::ID_ACTIVIDAD_RESIEMBRA, $actividades);
+    $tieneResiembra = isset($mapaActividadesTerreno[self::COD_RESIEMBRA])
+        && in_array($mapaActividadesTerreno[self::COD_RESIEMBRA], $actividades);
 
     $canHembrasResi         = $_POST['canHembras'] ?? '';
     $canMachosResi          = $_POST['canMachos'] ?? '';
@@ -221,7 +264,6 @@ class SeguimientoTerrenoController
         if ($presenciaPecesResiRaw !== '0' && $presenciaPecesResiRaw !== '1') {
             $errores[] = "Debe indicar si hay presencia de peces en la resiembra.";
         }
-        // Validar solo longitud si el usuario ingresó algún texto
         if (!empty($obserResi) && strlen($obserResi) > 250) {
             $errores[] = "Las observaciones de resiembra no pueden superar los 250 caracteres.";
         }
@@ -319,156 +361,152 @@ class SeguimientoTerrenoController
 }
 
     // ---- Inspección, misma lógica que FormularioInspController::postInsert ----
-    private function guardarInspeccion($obj, $id_seguimiento, $codigo, $depositoDetRaw, $phMedido, $temperatura, $presenciaLarvRaw, $obser)
-    {
-        $depositoDet = $depositoDetRaw === '1' ? 'true' : 'false';
-        $presenciaLarv = $presenciaLarvRaw === '1' ? 'true' : 'false';
+private function guardarInspeccion($obj, $id_seguimiento, $codigo, $depositoDetRaw, $phMedido, $temperatura, $presenciaLarvRaw, $obser)
+{
+    $depositoDet = $depositoDetRaw === '1' ? 'true' : 'false';
+    $presenciaLarv = $presenciaLarvRaw === '1' ? 'true' : 'false';
 
-        $sqlSub = "INSERT INTO sub_actividades_ter
-           (fecha_inspeccion, deposito_agua_detectado, ph_medido, temperatura, 
-            presencia_larvas_inspeccion, obser_inspeccion, 
-            id_estado, id_seguimiento_terreno, cod_seguimiento) 
-           VALUES 
-           (CURRENT_TIMESTAMP, $1, $2, $3, 
-            $4, $5, 
-            1, $6, $7)
-           RETURNING id_sub_actividad";
+    $sqlSub = "INSERT INTO sub_actividades_ter
+       (fecha_inspeccion, deposito_agua_detectado, ph_medido, temperatura, 
+        presencia_larvas_inspeccion, obser_inspeccion, 
+        id_estado, id_seguimiento_terreno, cod_seguimiento) 
+       VALUES 
+       (CURRENT_TIMESTAMP, $1, $2, $3, 
+        $4, $5, 
+        1, $6, $7)
+       RETURNING id_sub_actividad";
 
-        $resSub = $obj->select($sqlSub, [
-            
-            $depositoDet,
-            $phMedido,
-            $temperatura,
-            $presenciaLarv,
-            $obser,
-            $id_seguimiento,
-            $codigo
-        ]);
+    $resSub = $obj->select($sqlSub, [
+        $depositoDet,
+        $phMedido,
+        $temperatura,
+        $presenciaLarv,
+        $obser,
+        $id_seguimiento,
+        $codigo
+    ]);
 
-        if (!empty($resSub)) {
-            $id_sub_actividad = $resSub[0]['id_sub_actividad'];
-            $obj->insert(
-                "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
-                [self::ID_ACTIVIDAD_INSPECCION, $id_sub_actividad]
-            );
-        }
+    if (!empty($resSub)) {
+        $id_sub_actividad = $resSub[0]['id_sub_actividad'];
+        $obj->insert(
+            "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
+            [$this->mapaActividadesTerreno[self::COD_INSPECCION], $id_sub_actividad]
+        );
     }
+}
 
-    // ---- Siembra, misma lógica que FormularioSiemController::postInsert ----
-    private function guardarSiembra($obj, $id_seguimiento, $codigo,  $pecesEmpacados, $tiempoAclimat, $hembrasSembradas, $machosSembrados, $litrosAgua, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
-    {
-        $presenciaLarv = $presenciaLarvasRaw === '1' ? 'true' : 'false';
-        $presenciaPec = $presenciaPecesRaw === '1' ? 'true' : 'false';
+// ---- Siembra, misma lógica que FormularioSiemController::postInsert ----
+private function guardarSiembra($obj, $id_seguimiento, $codigo,  $pecesEmpacados, $tiempoAclimat, $hembrasSembradas, $machosSembrados, $litrosAgua, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
+{
+    $presenciaLarv = $presenciaLarvasRaw === '1' ? 'true' : 'false';
+    $presenciaPec = $presenciaPecesRaw === '1' ? 'true' : 'false';
 
-        $sqlSub = "INSERT INTO sub_actividades_ter
-           (fecha_siembra, can_peces_empacados, tiempo_aclimatacion, 
-            can_hembras_sembradas, can_machos_sembrados, litros_utilizados, 
-            presencia_larvas_siembra, presencia_peces_siembra, obser_siembra, 
-            id_estado, id_seguimiento_terreno, cod_seguimiento) 
-           VALUES 
-           (CURRENT_TIMESTAMP, $1, $2, 
-            $3, $4, $5, 
-            $6, $7, $8, 
-            1, $9, $10)
-           RETURNING id_sub_actividad";
-
-        $resSub = $obj->select($sqlSub, [
-            
-            $pecesEmpacados,
-            $tiempoAclimat,
-            $hembrasSembradas,
-            $machosSembrados,
-            $litrosAgua,
-            $presenciaLarv,
-            $presenciaPec,
-            $obser,
-            $id_seguimiento,
-            $codigo
-        ]);
-
-        if (!empty($resSub)) {
-            $id_sub_actividad = $resSub[0]['id_sub_actividad'];
-            $obj->insert(
-                "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
-                [self::ID_ACTIVIDAD_SIEMBRA, $id_sub_actividad]
-            );
-        }
-    }
-
-    // ---- Seguimiento, misma lógica que FormularioSegTController::postInsert ----
-    private function guardarSeguimientoAct($obj, $id_seguimiento, $codigo,  $numeroVisitaRaw, $depositoVisRaw, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
-    {
-        $numeroVisita = (int) $numeroVisitaRaw;
-        $depositoVis = $depositoVisRaw === '1' ? 'true' : 'false';
-        $presenciaLarv = $presenciaLarvasRaw === '1' ? 'true' : 'false';
-        $presenciaPec = $presenciaPecesRaw === '1' ? 'true' : 'false';
-
-        $sqlSub = "INSERT INTO sub_actividades_ter
-       (fecha_seguimiento, numero_visita, deposito_agua_visitado, 
-        presencia_larvas_seguimiento, presencia_peces_seguimiento, obser_seguimiento, 
+    $sqlSub = "INSERT INTO sub_actividades_ter
+       (fecha_siembra, can_peces_empacados, tiempo_aclimatacion, 
+        can_hembras_sembradas, can_machos_sembrados, litros_utilizados, 
+        presencia_larvas_siembra, presencia_peces_siembra, obser_siembra, 
         id_estado, id_seguimiento_terreno, cod_seguimiento) 
        VALUES 
        (CURRENT_TIMESTAMP, $1, $2, 
         $3, $4, $5, 
-        1, $6, $7)
+        $6, $7, $8, 
+        1, $9, $10)
        RETURNING id_sub_actividad";
 
-        $resSub = $obj->select($sqlSub, [
-            
-            $numeroVisita,
-            $depositoVis,
-            $presenciaLarv,
-            $presenciaPec,
-            $obser,
-            $id_seguimiento,
-            $codigo
-        ]);
+    $resSub = $obj->select($sqlSub, [
+        $pecesEmpacados,
+        $tiempoAclimat,
+        $hembrasSembradas,
+        $machosSembrados,
+        $litrosAgua,
+        $presenciaLarv,
+        $presenciaPec,
+        $obser,
+        $id_seguimiento,
+        $codigo
+    ]);
 
-        if (!empty($resSub)) {
-            $id_sub_actividad = $resSub[0]['id_sub_actividad'];
-            $obj->insert(
-                "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
-                [self::ID_ACTIVIDAD_SEGUIMIENTO, $id_sub_actividad]
-            );
-        }
+    if (!empty($resSub)) {
+        $id_sub_actividad = $resSub[0]['id_sub_actividad'];
+        $obj->insert(
+            "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
+            [$this->mapaActividadesTerreno[self::COD_SIEMBRA], $id_sub_actividad]
+        );
     }
+}
 
-    // ---- Resiembra, misma lógica que FormularioResiController::postInsert ----
-    private function guardarResiembra($obj, $id_seguimiento, $codigo, $canHembras, $canMachos, $canGuppies, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
-    {
-        $presenciaLarv = $presenciaLarvasRaw === '1' ? 'true' : 'false';
-        $presenciaPec = $presenciaPecesRaw === '1' ? 'true' : 'false';
+// ---- Seguimiento, misma lógica que FormularioSegTController::postInsert ----
+private function guardarSeguimientoAct($obj, $id_seguimiento, $codigo,  $numeroVisitaRaw, $depositoVisRaw, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
+{
+    $numeroVisita = (int) $numeroVisitaRaw;
+    $depositoVis = $depositoVisRaw === '1' ? 'true' : 'false';
+    $presenciaLarv = $presenciaLarvasRaw === '1' ? 'true' : 'false';
+    $presenciaPec = $presenciaPecesRaw === '1' ? 'true' : 'false';
 
-        $sqlSub = "INSERT INTO sub_actividades_ter
-           (fecha_resiembra, can_hembras_sembradas, can_machos_sembrados, can_peces_guppies_sembrados,
-            presencia_larvas_resiembra, presencia_peces_resiembra, obser_resiembra, 
-            id_estado, id_seguimiento_terreno, cod_seguimiento) 
-           VALUES 
-           (CURRENT_TIMESTAMP, $1, $2, $3,
-            $4, $5, $6, 
-            1, $7, $8)
-           RETURNING id_sub_actividad";
+    $sqlSub = "INSERT INTO sub_actividades_ter
+   (fecha_seguimiento, numero_visita, deposito_agua_visitado, 
+    presencia_larvas_seguimiento, presencia_peces_seguimiento, obser_seguimiento, 
+    id_estado, id_seguimiento_terreno, cod_seguimiento) 
+   VALUES 
+   (CURRENT_TIMESTAMP, $1, $2, 
+    $3, $4, $5, 
+    1, $6, $7)
+   RETURNING id_sub_actividad";
 
-        $resSub = $obj->select($sqlSub, [
-            
-            $canHembras,
-            $canMachos,
-            $canGuppies,
-            $presenciaLarv,
-            $presenciaPec,
-            $obser,
-            $id_seguimiento,
-            $codigo
-        ]);
+    $resSub = $obj->select($sqlSub, [
+        $numeroVisita,
+        $depositoVis,
+        $presenciaLarv,
+        $presenciaPec,
+        $obser,
+        $id_seguimiento,
+        $codigo
+    ]);
 
-        if (!empty($resSub)) {
-            $id_sub_actividad = $resSub[0]['id_sub_actividad'];
-            $obj->insert(
-                "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
-                [self::ID_ACTIVIDAD_RESIEMBRA, $id_sub_actividad]
-            );
-        }
+    if (!empty($resSub)) {
+        $id_sub_actividad = $resSub[0]['id_sub_actividad'];
+        $obj->insert(
+            "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
+            [$this->mapaActividadesTerreno[self::COD_SEGUIMIENTO], $id_sub_actividad]
+        );
     }
+}
+
+// ---- Resiembra, misma lógica que FormularioResiController::postInsert ----
+private function guardarResiembra($obj, $id_seguimiento, $codigo, $canHembras, $canMachos, $canGuppies, $presenciaLarvasRaw, $presenciaPecesRaw, $obser)
+{
+    $presenciaLarv = $presenciaLarvasRaw === '1' ? 'true' : 'false';
+    $presenciaPec = $presenciaPecesRaw === '1' ? 'true' : 'false';
+
+    $sqlSub = "INSERT INTO sub_actividades_ter
+       (fecha_resiembra, can_hembras_sembradas, can_machos_sembrados, can_peces_guppies_sembrados,
+        presencia_larvas_resiembra, presencia_peces_resiembra, obser_resiembra, 
+        id_estado, id_seguimiento_terreno, cod_seguimiento) 
+       VALUES 
+       (CURRENT_TIMESTAMP, $1, $2, $3,
+        $4, $5, $6, 
+        1, $7, $8)
+       RETURNING id_sub_actividad";
+
+    $resSub = $obj->select($sqlSub, [
+        $canHembras,
+        $canMachos,
+        $canGuppies,
+        $presenciaLarv,
+        $presenciaPec,
+        $obser,
+        $id_seguimiento,
+        $codigo
+    ]);
+
+    if (!empty($resSub)) {
+        $id_sub_actividad = $resSub[0]['id_sub_actividad'];
+        $obj->insert(
+            "INSERT INTO actividad_ter_subactividades (id_actividad_terreno, id_sub_actividades) VALUES ($1, $2)",
+            [$this->mapaActividadesTerreno[self::COD_RESIEMBRA], $id_sub_actividad]
+        );
+    }
+}
 
     
 

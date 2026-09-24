@@ -188,8 +188,17 @@ class ZoocriaderoController
     {
 
         $obj = new ZoocriaderoModel();
-        $sql = "SELECT * from zoocriadero";
+        $sql = "SELECT 
+                    z.*,
+                    TRIM(CONCAT_WS(' ', u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido)) AS nombre,
+                    u.documento
+                FROM zoocriadero z
+                LEFT JOIN usuarios u 
+                    ON z.id_zoocriadero = u.id_zoocriadero 
+                AND u.id_rol = 2";
         $zoocriaderos = $obj->select($sql);
+
+       
 
         if(count($zoocriaderos) <= 0){
 

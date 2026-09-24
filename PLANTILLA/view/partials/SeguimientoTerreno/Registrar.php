@@ -284,6 +284,27 @@ if (!function_exists('terreno_tipoActividad')) {
         </div>
       </div>
 
+      <?php
+// Orden fijo según el mapa de proceso de Trabajo de Terreno
+$orden_proceso_terreno = [
+  'inspeccion'      => 1,
+  'siembra'         => 2,
+  'seguimiento_act' => 3,
+  'resiembra'       => 4,
+];
+
+usort($actividades, function ($a, $b) use ($orden_proceso_terreno) {
+  $tipoA = terreno_tipoActividad($a['nombre_actividad']);
+  $tipoB = terreno_tipoActividad($b['nombre_actividad']);
+
+  $ordenA = $orden_proceso_terreno[$tipoA] ?? 999;
+  $ordenB = $orden_proceso_terreno[$tipoB] ?? 999;
+
+  return $ordenA <=> $ordenB;
+});
+?>
+      
+
       <div class="form-section">
         <h5 class="section-title">
           <span class="section-icon"><i class="bx bx-list-check"></i></span>
@@ -634,5 +655,65 @@ if (!function_exists('terreno_tipoActividad')) {
 
   // Estado inicial
   checks.forEach(cb => setPanel(cb, cb.checked, false));
+})();
+
+(function () {
+  const pecesEmpacados = document.querySelector('#pecesEmpacados');
+  if (!pecesEmpacados) return;
+
+  // Campos que dependen de haber llenado primero "pecesEmpacados"
+  const camposDependientes = [
+    '#tiempoAclimat',
+    '#hembrasSembradas',
+    '#machosSembrados',
+    '#litrosAgua',
+    'input[name="presenciaLarvasSiem"]',
+    'input[name="presenciaPecesSiem"]',
+    '#obserSiem'
+  ];
+
+  function bloquearCamposDependientes(bloquear) {
+    camposDependientes.forEach(selector => {
+      document.querySelectorAll(selector).forEach(campo => {
+        campo.disabled = bloquear;
+      });
+    });
+  }
+
+  // Al cargar, si ya no hay valor, bloquea los demás campos
+  bloquearCamposDependientes(!pecesEmpacados.value || pecesEmpacados.value <= 0);
+
+  // Cada vez que cambia "pecesEmpacados", habilita/bloquea el resto
+  pecesEmpacados.addEventListener('input', function () {
+    const tieneValor = this.value && Number(this.value) > 0;
+    bloquearCamposDependientes(!tieneValor);
+    validarTotalPeces();
+  });
+
+  // Validación: hembras + machos no debe superar pecesEmpacados
+  const hembras = document.querySelector('#hembrasSembradas');
+  const machos = document.querySelector('#machosSembrados');
+
+  function validarTotalPeces() {
+    const totalEmpacados = Number(pecesEmpacados.value) || 0;
+    const totalHembras = Number(hembras.value) || 0;
+    const totalMachos = Number(machos.value) || 0;
+    const suma = totalHembras + totalMachos;
+
+    if (suma > totalEmpacados) {
+      hembras.setCustomValidity('La suma de hembras y machos no puede superar los peces empacados (' + totalEmpacados + ').');
+      machos.setCustomValidity('La suma de hembras y machos no puede superar los peces empacados (' + totalEmpacados + ').');
+    } else {
+      hembras.setCustomValidity('');
+      machos.setCustomValidity('');
+    }
+
+    hembras.reportValidity();
+    machos.reportValidity();
+  }
+
+  if (hembras) hembras.addEventListener('input', validarTotalPeces);
+  if (machos) machos.addEventListener('input', validarTotalPeces);
+
 })();
 </script>

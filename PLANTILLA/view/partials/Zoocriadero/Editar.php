@@ -333,6 +333,7 @@
           </div>
 
           <!-- Nueva Dirección -->
+           
           <div class="mb-3">
             <label class="form-label-custom">Nueva dirección</label>
             <div class="address-section">
@@ -346,7 +347,10 @@
                       <option value="<?php echo $v; ?>" <?php echo ($partes['via_principal'] == $v) ? 'selected' : ''; ?>><?php echo $v; ?></option>
                     <?php endforeach; ?>
                   </select>
+                  
                 </div>
+             
+      
 
                 <div class="col-md-3">
                   <select class="form-select" id="numero_via" name="numero_via" required>
@@ -411,13 +415,10 @@
 
               <div class="row g-2">
                 <div class="col-12">
-                  <select class="form-select" id="barrio" name="barrio" required>
-                    <option value="" selected disabled>Barrio *</option>
-                    <?php foreach ($barrios as $b) {
-                      $selected = ($d['id_barrio'] == $b['id_barrio']) ? "selected" : "";
-                      echo "<option value='" . $b['id_barrio'] . "' $selected>" . $b['nombre_barrio'] . "</option>";
-                    } ?>
-                  </select>
+                     <div class="live-preview" id="direccionPreview">
+          <i class="bx bx-map-pin"></i>
+          <span id="direccionPreviewTexto">La direcci&oacute;n aparecer&aacute; aqu&iacute; a medida que la completas...</span>
+        </div>
                 </div>
               </div>
             </div>
@@ -441,6 +442,47 @@
     </select>
   </div>
 </div>
+<script>
+  (function() {
+    const campos = ['via_principal', 'numero_via', 'sufijo_via', 'cruce_prefijo', 'via_generadora', 'sufijo_generadora', 'placa'];
+    const preview = document.getElementById('direccionPreviewTexto');
+    const textoOriginal = 'La dirección aparecerá aquí a medida que la completas...';
+
+    function textoDe(select) {
+      if (!select.value) return '';
+      const opt = select.options[select.selectedIndex];
+      return opt ? opt.textContent.replace(/\s*\(.*\)$/, '').trim() : '';
+    }
+
+    function actualizarPreview() {
+      const via = document.getElementById('via_principal');
+      const num = document.getElementById('numero_via');
+      const sufVia = document.getElementById('sufijo_via');
+      const prefCruce = document.getElementById('cruce_prefijo');
+      const viaGen = document.getElementById('via_generadora');
+      const sufGen = document.getElementById('sufijo_generadora');
+      const placa = document.getElementById('placa');
+
+      if (!via || !num || !viaGen || !placa) return;
+
+      if (!via.value || !num.value || !viaGen.value || !placa.value) {
+        preview.textContent = textoOriginal;
+        return;
+      }
+
+      const parteVia = `${textoDe(via)} ${num.value}${sufVia && sufVia.value ? sufVia.value : ''}`;
+      const parteCruce = `${prefCruce && prefCruce.value ? textoDe(prefCruce) + ' ' : ''}${viaGen.value}${sufGen && sufGen.value ? sufGen.value : ''}`;
+      const direccion = `${parteVia} # ${parteCruce}-${placa.value}`;
+
+      preview.textContent = direccion;
+    }
+
+    campos.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('change', actualizarPreview);
+    });
+  })();
+</script>
 
         <?php } ?>
       </div>

@@ -203,9 +203,18 @@
           </div>
 
           <div class="col-md-6 mb-3">
-            <label for="Nombre Actividad" class="form-label"><i class="bx bx-rename"></i>Nombre de la actividad <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="Nombre Actividad" name="nombre_actividad" placeholder="Ingrese una actividad nueva" required>
-          </div>
+          <label for="nombre_actividad" class="form-label"><i class="bx bx-rename"></i> Nombre de la actividad <span class="text-danger">*</span></label>
+          <select class="form-select" id="nombre_actividad" name="nombre_actividad" required>
+            <?php if (count($actividades_faltantes) > 0): ?>
+              <option value="" selected disabled>Seleccione una actividad</option>
+              <?php foreach ($actividades_faltantes as $cod => $nombre): ?>
+                <option value="<?= htmlspecialchars($nombre) ?>"><?= htmlspecialchars(ucwords(strtolower($nombre))) ?></option>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <option value="" selected disabled>Todas las actividades ya están registradas</option>
+            <?php endif; ?>
+          </select>
+        </div>
         </div>
       </div>
 

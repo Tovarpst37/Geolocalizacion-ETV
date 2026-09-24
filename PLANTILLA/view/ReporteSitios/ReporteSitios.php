@@ -342,8 +342,8 @@ filtrarBarrios();
     }
 .tarjeta-azul    { background: linear-gradient(135deg, #2b5a8c, #4a86bd); }  /* Sitios Totales */
 .tarjeta-verde   { background: linear-gradient(135deg, #2f7dfa, #5b9bff); }  /* Sin Larvas */
-.tarjeta-naranja { background: linear-gradient(135deg, #5a7fa8, #86a5c7); }  /* Sin Registros */
-.tarjeta-rojo    { background: linear-gradient(135deg, #1b3b5f, #2f6690); }  /* Con Larvas */
+.tarjeta-naranja { background: linear-gradient(135deg, #5AA86A, #86a5c7); }  /* Sin Registros */
+.tarjeta-rojo    { background: linear-gradient(135deg, #5E5F1B, #BEDD38); }  /* Con Larvas */
 
 .tarjeta p,
 .tarjeta .numero,
