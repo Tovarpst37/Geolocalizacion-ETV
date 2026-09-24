@@ -412,7 +412,7 @@
   color: #ffffff;
 }
 </style>
-
+<?php include_once '../view/partials/function.php';?>
 <div class="zoo-page container-fluid px-2 px-md-3">
 
   <?php if (!empty($_SESSION['mensaje_exito'])): ?>
@@ -489,18 +489,22 @@
           </span>
 
           <div class="btn-group-custom">
-            <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-blue">
-              <i class="bx bx-edit-alt"></i> Editar
-            </a>
+            <?php if (condicion('EDITAR', 'Zoocriadero')): ?>
+              <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-blue">
+                <i class="bx bx-edit-alt"></i> Editar
+              </a>
+            <?php endif; ?>
 
-            <?php if ($isActivo): ?>
-              <button type="button" class="btn btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $z['id_zoocriadero']; ?>">
-                <i class="bx bx-block"></i> Inhabilitar
-              </button>
-            <?php else: ?>
-              <button type="button" class="btn btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalHabilitar<?php echo $z['id_zoocriadero']; ?>">
-                <i class="bx bx-check-circle"></i> Habilitar
-              </button>
+            <?php if (condicion('ELIMINAR', 'Zoocriadero')): ?>
+              <?php if ($isActivo): ?>
+                <button type="button" class="btn btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $z['id_zoocriadero']; ?>">
+                  <i class="bx bx-block"></i> Inhabilitar
+                </button>
+              <?php else: ?>
+                <button type="button" class="btn btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalHabilitar<?php echo $z['id_zoocriadero']; ?>">
+                  <i class="bx bx-check-circle"></i> Habilitar
+                </button>
+              <?php endif; ?>
             <?php endif; ?>
           </div>
         </div>
