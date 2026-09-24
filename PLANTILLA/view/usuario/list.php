@@ -3,6 +3,7 @@ include_once '../view/usuario/edit.php';
 include_once '../view/usuario/habilitar.php';
 include_once '../view/usuario/disable.php';
 include_once '../view/usuario/verMas.php';
+include_once '../view/partials/function.php';
 ?>
 <style>
 .usr-page {
@@ -353,68 +354,71 @@ include_once '../view/usuario/verMas.php';
         <!-- Acciones -->
         <div class="usr-actions-wrap">
           <div class="usr-btn-group">
+          <?php if (condicion('VER', 'Usuarios')): ?>
+              <button type="button"
+                  class="btn usr-btn-outline"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalVerMas"
+                  data-vm-id-usuario="<?php echo $usu['id_usuario']; ?>"
+                  data-vm-primer-nombre="<?php echo $usu['primer_nombre']; ?>"
+                  data-vm-segundo-nombre="<?php echo $usu['segundo_nombre']; ?>"
+                  data-vm-primer-apellido="<?php echo $usu['primer_apellido']; ?>"
+                  data-vm-segundo-apellido="<?php echo $usu['segundo_apellido']; ?>"
+                  data-vm-tipo-documento="<?php echo $usu['tipo_documento']; ?>"
+                  data-vm-documento="<?php echo $usu['documento']; ?>"
+                  data-vm-fecha-nacimiento="<?php echo $usu['fecha_nacimiento']; ?>"
+                  data-vm-correo="<?php echo $usu['correo']; ?>"
+                  data-vm-genero="<?php echo $usu['genero_usuario']; ?>"
+                  data-vm-rol="<?php echo $usu['rol_usuario']; ?>"
+                  data-vm-rh="<?php echo $usu['rh_usuario']; ?>">
+                  <i class="bi bi-eye"></i> Ver más
+              </button>
+          <?php endif; ?>
 
-            <?php if (in_array('VER', $_SESSION['permisos']['Usuarios'] ?? [])): ?>
-            <button type="button"
-                class="btn usr-btn-outline"
-                data-bs-toggle="modal"
-                data-bs-target="#modalVerMas"
-                data-vm-id-usuario="<?php echo $usu['id_usuario']; ?>"
-                data-vm-primer-nombre="<?php echo $usu['primer_nombre']; ?>"
-                data-vm-segundo-nombre="<?php echo $usu['segundo_nombre']; ?>"
-                data-vm-primer-apellido="<?php echo $usu['primer_apellido']; ?>"
-                data-vm-segundo-apellido="<?php echo $usu['segundo_apellido']; ?>"
-                data-vm-tipo-documento="<?php echo $usu['tipo_documento']; ?>"
-                data-vm-documento="<?php echo $usu['documento']; ?>"
-                data-vm-fecha-nacimiento="<?php echo $usu['fecha_nacimiento']; ?>"
-                data-vm-correo="<?php echo $usu['correo']; ?>"
-                data-vm-genero="<?php echo $usu['genero_usuario']; ?>"
-                data-vm-rol="<?php echo $usu['rol_usuario']; ?>"
-                data-vm-rh="<?php echo $usu['rh_usuario']; ?>">
-                <i class="bi bi-eye"></i> Ver más
-            </button>
-            <?php endif; ?>
+          <?php if (condicion('EDITAR', 'Usuarios')): ?>
+              <button type="button"
+                  class="btn usr-btn-blue"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalEditar"
+                  data-id-usuario="<?php echo $usu['id_usuario']; ?>"
+                  data-primer-nombre="<?php echo $usu['primer_nombre']; ?>"
+                  data-segundo-nombre="<?php echo $usu['segundo_nombre']; ?>"
+                  data-primer-apellido="<?php echo $usu['primer_apellido']; ?>"
+                  data-segundo-apellido="<?php echo $usu['segundo_apellido']; ?>"
+                  data-id-tipo-documento="<?php echo $usu['id_tipo_documento']; ?>"
+                  data-documento="<?php echo $usu['documento']; ?>"
+                  data-fecha-nacimiento="<?php echo $usu['fecha_nacimiento']; ?>"
+                  data-correo="<?php echo $usu['correo']; ?>"
+                  data-id-genero="<?php echo $usu['id_genero']; ?>"
+                  data-id-rol="<?php echo $usu['id_rol']; ?>"
+                  data-id-rh="<?php echo $usu['id_rh']; ?>">
+                  <i class="bi bi-pencil-square"></i> Editar
+              </button>
+          <?php endif; ?>
 
-            <?php if (in_array('EDITAR', $_SESSION['permisos']['Usuarios'] ?? [])): ?>
-            <button type="button"
-                class="btn usr-btn-blue"
-                data-bs-toggle="modal"
-                data-bs-target="#modalEditar"
-                data-id-usuario="<?php echo $usu['id_usuario']; ?>"
-                data-primer-nombre="<?php echo $usu['primer_nombre']; ?>"
-                data-segundo-nombre="<?php echo $usu['segundo_nombre']; ?>"
-                data-primer-apellido="<?php echo $usu['primer_apellido']; ?>"
-                data-segundo-apellido="<?php echo $usu['segundo_apellido']; ?>"
-                data-id-tipo-documento="<?php echo $usu['id_tipo_documento']; ?>"
-                data-documento="<?php echo $usu['documento']; ?>"
-                data-fecha-nacimiento="<?php echo $usu['fecha_nacimiento']; ?>"
-                data-correo="<?php echo $usu['correo']; ?>"
-                data-id-genero="<?php echo $usu['id_genero']; ?>"
-                data-id-rol="<?php echo $usu['id_rol']; ?>"
-                data-id-rh="<?php echo $usu['id_rh']; ?>">
-                <i class="bi bi-pencil-square"></i> Editar
-            </button>
-            <?php endif; ?>
-
-            <?php if ((int)$usu['id_usuario'] === (int)$_SESSION['id_usuarioU']): ?>
-                <span class="usr-self-lock" title="No puedes cambiar tu propio estado">
-                    <i class="bx bxs-x-circle" style="font-size: 26px;"></i>
-                </span>
-            <?php elseif (in_array('ELIMINAR', $_SESSION['permisos']['Usuarios'] ?? [])): ?>
-                <?php if ((int)$usu['id_estado'] === 1): ?>
-                    <button type="button" class="btn usr-btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalEstado"
-                        data-id-usuario="<?php echo $usu['id_usuario']; ?>"
-                        data-id-estado-actual="<?php echo $usu['id_estado']; ?>">
-                        <i class="bi bi-check-circle"></i> Habilitado
-                    </button>
-                <?php else: ?>
-                    <button type="button" class="btn usr-btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalEstadoH"
-                        data-id-usuario="<?php echo $usu['id_usuario']; ?>"
-                        data-id-estado-actual="<?php echo $usu['id_estado']; ?>">
-                        <i class="bi bi-x-circle"></i> Deshabilitado
-                    </button>
-                <?php endif; ?>
-            <?php endif; ?>
+          <?php if ((int)$usu['id_usuario'] === (int)$_SESSION['id_usuarioU']): ?>
+              <span class="usr-self-lock" title="No puedes cambiar tu propio estado">
+                  <i class="bx bxs-x-circle" style="font-size: 26px;"></i>
+              </span>
+          <?php elseif (condicion('ELIMINAR', 'Usuarios')): ?>
+              <?php if ((int)$usu['id_estado'] === 1): ?>
+                  <button type="button" class="btn usr-btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalEstado"
+                      data-id-usuario="<?php echo $usu['id_usuario']; ?>"
+                      data-id-estado-actual="<?php echo $usu['id_estado']; ?>">
+                      <i class="bi bi-check-circle"></i> Habilitado
+                  </button>
+              <?php else: ?>
+                  <button type="button" class="btn usr-btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalEstadoH"
+                      data-id-usuario="<?php echo $usu['id_usuario']; ?>"
+                      data-id-estado-actual="<?php echo $usu['id_estado']; ?>">
+                      <i class="bi bi-x-circle"></i> Deshabilitado
+                  </button>
+              <?php endif; ?>
+          <?php else: ?>
+              <span class="badge <?php echo ((int)$usu['id_estado'] === 1) ? 'bg-success' : 'bg-danger'; ?>">
+                  <?php echo ((int)$usu['id_estado'] === 1) ? 'Habilitado' : 'Deshabilitado'; ?>
+              </span>
+          <?php endif; ?>
 
           </div>
         </div>

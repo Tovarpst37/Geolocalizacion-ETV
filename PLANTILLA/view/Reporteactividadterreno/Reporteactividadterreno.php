@@ -10,6 +10,7 @@ $tiposActividad = [
     'seguimiento'  => 'Seguimiento',
     'resiembra'    => 'Resiembra',
 ];
+include_once '../view/partials/function.php';
 ?>
 <div class="caja">
     <h2 class="titulo-pagina">Reporte de Actividades de Terreno por Tipo</h2>
@@ -30,7 +31,7 @@ $tiposActividad = [
             </div>
             <div>
                 <button type="submit" class="btn-aplicar">Generar Reporte</button>
-                <?php if ($generar && !empty($actividades)): ?>
+                <?php if ($generar && !empty($actividades) && condicion('EXPORTAR', 'Reportes')): ?>
                     <button type="button" class="btn-reportes"
                         onclick="location.href='<?= getUrl('ReporteActividadTerreno', 'ReporteActividadTerreno', 'exportarActividadTerrenoExcel') ?>&tipo=<?= urlencode($filtroTipo) ?>'">
                         Exportar a Excel

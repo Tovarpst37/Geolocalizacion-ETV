@@ -408,6 +408,8 @@
 }
 </style>
 
+<?php include_once '../view/partials/function.php'; ?>
+
 <div class="zoo-page container-fluid px-2 px-md-3">
 
   <?php if (!empty($_SESSION['mensaje_exito'])): ?>
@@ -475,7 +477,6 @@
             <span><?php echo $z['direcciom']; ?></span>
           </p>
         </div>
-
         <!-- Estado y Botones -->
         <div class="zoo-actions-wrap">
           <span class="status-pill <?php echo $isActivo ? 'active' : 'inactive'; ?>">
@@ -484,29 +485,31 @@
           </span>
 
           <div class="btn-group-custom">
-          <?php if (in_array('EDITAR', $_SESSION['permisos']['Zoocriadero'] ?? [])): ?>
-            <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-blue">
-              <i class="bx bx-edit-alt"></i> Editar
-            </a>
-            <?php if ($isActivo): ?>
-              <button type="button" class="btn btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $z['id_zoocriadero']; ?>">
-                <i class="bx bx-block"></i> Inhabilitar
-              </button>
-            <?php else: ?>
-              <?php if (in_array('ELIMINAR', $_SESSION['permisos']['Zoocriadero'] ?? [])): ?>
+
+            <?php if (condicion('EDITAR', 'Zoocriadero')): ?>
+              <a href="<?php echo getUrl("Zoocriadero","Zoocriadero","getEditar",array('id'=>$z['id_zoocriadero']))?>" class="btn btn-blue">
+                <i class="bx bx-edit-alt"></i> Editar
+              </a>
+            <?php endif; ?>
+
+            <?php if (condicion('ELIMINAR', 'Zoocriadero')): ?>
+              <?php if ($isActivo): ?>
+                <button type="button" class="btn btn-red-soft" data-bs-toggle="modal" data-bs-target="#modalInhabilitar<?php echo $z['id_zoocriadero']; ?>">
+                  <i class="bx bx-block"></i> Inhabilitar
+                </button>
+              <?php else: ?>
                 <button type="button" class="btn btn-green-soft" data-bs-toggle="modal" data-bs-target="#modalHabilitar<?php echo $z['id_zoocriadero']; ?>">
                   <i class="bx bx-check-circle"></i> Habilitar
                 </button>
-              <?php endif;?>
+              <?php endif; ?>
             <?php endif; ?>
-          <?php endif;?>
+
           </div>
         </div>
 
       </div>
     <?php } ?>
   </div>
-
   <!-- Modales fuera del contenedor -->
   <?php foreach($zoocriaderos as $z){ 
     $isActivo = ($z['id_estado'] == 1);

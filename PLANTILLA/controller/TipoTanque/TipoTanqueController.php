@@ -17,7 +17,7 @@ class TipoTanqueController{
         VALUES ($id,'$nombre_tanque','$descripcion')";
 
         $ejecutable = $obj->insert($sql);
-        
+        redirect(getUrl("TipoTanque","TipoTanque","getList"));
     }
 
     public function getTipoTanque(){
@@ -28,17 +28,29 @@ class TipoTanqueController{
     public function getList(){
         $obj = new TipoTanqueModel();
         $sql = "SELECT * FROM tipo_tanque ORDER BY id_tipo_tanque;";
-        $tipo_tanque = $obj->select($sql);
-        
-        if(empty($tipo_tanque)){
+        $ejecutable = $obj->select($sql);
+        if(empty($ejecutable)){
             include_once '../view/TipoTanque/notExist.php';
         }else{
+            $tipo_tanque = $ejecutable;
             include_once '../view/TipoTanque/list.php';
         }
     }
 
     public function cambiar(){
+        $obj = new TipoTanqueModel();
 
+        $id = $_POST['id_tipo_tanque'];
+        $estado = $_POST['estado']; 
+
+        $sql = "UPDATE tipo_tanque
+                SET estado = $estado
+                WHERE id_tipo_tanque = $id";
+
+        $ejecutable = $obj->update($sql);
+
+        header("Location: " . getUrl("TipoTanque","TipoTanque","getList"));
+        exit;
     }
 
     public function editar(){
