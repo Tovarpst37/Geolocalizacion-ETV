@@ -129,6 +129,21 @@
   transform: scale(1.04);
 }
 
+/* Placeholder cuando el tanque no tiene imagen registrada */
+.tank-img-empty {
+  height: 11rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eef1f8;
+  border-radius: 12px;
+  color: #a3acba;
+}
+.tank-img-empty i {
+  font-size: 3.5rem;
+}
+
 /* Badge Flotante de Estado */
 .status-badge {
   position: absolute;
@@ -431,6 +446,10 @@
       foreach($array as $ob){
         $estadoActivo = strtolower($ob->getEstado()) === 'activo';
         $badgeClass = $estadoActivo ? 'bg-success' : 'bg-danger';
+
+        // --- Validación de imagen: evita el ícono de "imagen rota" cuando no hay foto ---
+        $tieneImagen = !empty($ob->getImg());
+        $rutaImg = "/Geolocalizacion/Geolocalizacion-ETV/PLANTILLA/web/assets/img/" . $ob->getImg();
     ?>
 
       <div class="col">
@@ -440,7 +459,14 @@
             <span class="status-badge <?php echo $badgeClass; ?>">
               <i class="bx bxs-circle fs-6"></i> Tanque <?php echo $ob->getEstado(); ?>
             </span>
-            <img src="/Geolocalizacion/Geolocalizacion-ETV/PLANTILLA/web/assets/img/<?php echo $ob->getImg();?>" alt="Tanque">
+            <?php if ($tieneImagen): ?>
+              <img src="<?php echo $rutaImg; ?>" alt="Tanque"
+                   onerror="this.parentElement.innerHTML = '<span class=\'status-badge <?php echo $badgeClass; ?>\'><i class=\'bx bxs-circle fs-6\'></i> Tanque <?php echo $ob->getEstado(); ?></span><div class=\'tank-img-empty\'><i class=\'bx bx-image-alt\'></i></div>';">
+            <?php else: ?>
+              <div class="tank-img-empty">
+                <i class="bx bx-image-alt"></i>
+              </div>
+            <?php endif; ?>
           </div>
 
           <!-- Cuerpo e Información -->
