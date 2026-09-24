@@ -208,8 +208,8 @@
             data-bs-toggle="modal"
             data-bs-target="#modalEditarTanque"
             data-id="<?php echo $tanque['id_tipo_tanque']; ?>"
-            data-nombre="<?php echo htmlspecialchars($tanque['nombre_tipo_tanque'], ENT_QUOTES); ?>"
-            data-descripcion="<?php echo htmlspecialchars($tanque['descripcion'], ENT_QUOTES); ?>"
+            data-nombre="<?= htmlspecialchars($item['nombre_tipo_tanque'] ?? '') ?>"
+            data-descripcion="<?= htmlspecialchars($item['descripcion_tipo_tanque'] ?? '') ?>"
           >
             <i class="bx bx-edit-alt"></i> Editar
           </button>
