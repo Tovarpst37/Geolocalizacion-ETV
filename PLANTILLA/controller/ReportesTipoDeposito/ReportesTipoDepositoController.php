@@ -39,12 +39,12 @@ class ReportesTipoDepositoController
                 return;
             }
 
-            $sql = "SELECT td.id_tipo_deposito, td.nombre AS tipo_deposito,
-                    COUNT(sd.id_sitio_deposito) AS cantidad
+           $sql = "SELECT td.id_tipo_deposito, td.nombre AS tipo_deposito,
+                COUNT(s.id_sitio) AS cantidad
                 FROM tipo_de_deposito td
-                LEFT JOIN sitio_deposito sd
-                    ON td.id_tipo_deposito = sd.id_tipo_deposito
-                    AND sd.id_estado = 1
+                LEFT JOIN sitio s
+                ON td.id_tipo_deposito = s.id_tipo_deposito
+                AND s.id_estado = 1
                 WHERE td.id_tipo_deposito = $1
                 GROUP BY td.id_tipo_deposito, td.nombre
                 ORDER BY td.nombre";
@@ -74,15 +74,15 @@ class ReportesTipoDepositoController
             return;
         }
 
-        $sql = "SELECT td.id_tipo_deposito, td.nombre AS tipo_deposito,
-                COUNT(sd.id_sitio_deposito) AS cantidad
-            FROM tipo_de_deposito td
-            LEFT JOIN sitio_deposito sd
-                ON td.id_tipo_deposito = sd.id_tipo_deposito
-                AND sd.id_estado = 1
-            WHERE td.id_tipo_deposito = $1
-            GROUP BY td.id_tipo_deposito, td.nombre
-            ORDER BY td.nombre";
+        $sql = "SELECT td.id_tipo_deposito,td.nombre AS tipo_deposito,
+               COUNT(s.id_sitio) AS cantidad
+               FROM tipo_de_deposito td
+               LEFT JOIN sitio s
+               ON td.id_tipo_deposito = s.id_tipo_deposito
+               AND s.id_estado = 1
+               WHERE td.id_tipo_deposito = $1
+              GROUP BY td.id_tipo_deposito, td.nombre
+              ORDER BY td.nombre";
 
         $datosReporte = $obj->select($sql, [(int) $filtroTipoDeposito]);
 
