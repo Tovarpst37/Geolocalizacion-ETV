@@ -1,1 +1,2 @@
 const expreS = /^[!@%$#?]$/;
+const expreSimbolo = /[!@%$#?]/;

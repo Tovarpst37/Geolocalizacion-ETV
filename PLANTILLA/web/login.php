@@ -1,0 +1,109 @@
+
+<?php
+include_once '../lib/helpers.php';
+include_once '../view/partials/head.php';
+?>
+<body>
+    <div class="container shadow-lg">
+        <div class="container-form">
+            <div class="container">
+                <form action="<?php echo getUrl("Acceso","Acceso","login",false,"ajax");?>" method="POST" id="loginForm" class="sign-in">
+                    <img src="../web/assets/img/login/alcaldia.png" alt="" id="alcaldia">
+                    <h2>Iniciar sesión</h2>
+                    <div class="container-input">
+                        <ion-icon name="person-circle-outline"></ion-icon>
+                            <input
+                                type="text"
+                                onpaste = "false return";
+                                inputmode="numeric"
+                                name="documento"
+                                id = "documento"
+                                placeholder="Numero de identificacion"
+                                required
+                            >
+                    </div>
+
+                    <small id="documentoError" class="text-danger d-none mb-3 d-block"></small>
+                
+                    <div class="container-input mb-3">
+                        <ion-icon name="key-outline"></ion-icon>
+                            <input
+                                type="password"
+                                onpaste = "return false";
+                                id="password"
+                                name="password"
+                                placeholder="Contraseña"
+                                required
+                            >
+                    </div>
+                    <?php 
+                        if(isset($_SESSION['error'])){
+                            echo "<p class='text-danger mb-3 d-block'>".htmlspecialchars($_SESSION['error'])."</p>";
+                            unset($_SESSION['error']);
+                        }
+                    ?>
+                    <!--mostarr error de contrasena-->
+                    <small id="passwordError" class="text-danger d-none mb-3 d-block"></small>
+
+                    <div class="justify-content-between">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="cb1" >
+                            <label class="form-check-label" for="cb1">Ver Contraseña</label>
+                        </div>
+                        <a href="recuperarcontrasena.php" class="forget-link text-decoration-none small" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            ¿Olvidaste tu Contraseña?
+                        </a>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="button">
+                            Iniciar sesión
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="container-form">
+        </div>
+        <div class="container-welcome">
+            <div class="welcome-sign-up welcome">
+                <img src="../web/assets/img/login/logo.png" alt="" id="logo">
+                <h1>!Bienvenido!</h1>
+                <p>Solo personal autorizado tiene permiso para acceder a las funciones del sitio.</p>
+            </div>
+        </div>
+    </div>
+    <?php
+    include_once '../view/partials/footer.php';
+    ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></script>
+    <script src="js/expre/letras.js"></script>
+    <script src="js/expre/numeros.js"></script>
+    <script src="js/expre/simbolos.js"></script>
+    <script src="js/document.js"></script>
+    <script src="js/password.js"></script>
+    <script src="js/checkbox.js"></script>
+    <script src="js/login.js"></script>
+    <!--Modal-->
+    <?php include_once '../web/recover.php';?>
+    <?php include_once '../web/codigoRecover.php';?>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+
+        if(params.get('paso') === 'codigo'){
+            const modalCodigo = document.getElementById('modalCodigo');
+            const modalCodigoInstance = new bootstrap.Modal(modalCodigo);
+            modalCodigoInstance.show();
+
+            modalCodigo.addEventListener('shown.bs.modal', () => {
+                document.getElementById('codigoInput').focus();
+            });
+        }
+    </script>
+    <script src="../web/js/codigoRecover.js"></script>
+</body>
+</html>
+

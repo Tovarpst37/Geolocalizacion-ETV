@@ -1,0 +1,69 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-center">
+        <div class="card shadow" style="width: 100%; max-width: 700px;">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Formulario</h4>
+            </div>
+
+            <div class="card-body p-4">
+                <form action="<?php echo getUrl("FormularioLa", "FormularioLa", "postInsert") ?>" method="POST">
+
+                    <div class="mb-3">
+                        <label for="codLa" class="form-label">Código del Tanque</label>
+                        <select class="form-select" id="codLa" name="codLa" required>
+                            <option value="" selected disabled>Selecciona un tanque</option>
+                            <?php foreach ($tanque as $seg): ?>
+                                <option value="<?php echo $seg['codigo_tanque']; ?>">
+                                    <?php echo $seg['codigo_tanque']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="docLa" class="form-label">Número de documento</label>
+                        <input type="text" class="form-control" id="docLa" name="docLa"
+                            value="<?php echo $documentoSesion; ?>" readonly required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fecha_horaLa" class="form-label">Fecha y hora de lavado</label>
+                        <span class="icono">
+                            <i class="fa-solid fa-calendar"></i>
+                        </span>
+                        <input type="datetime-local" class="form-control" id="fecha_horaLa" name="fecha_horaLa"
+                            min="<?php echo date('Y-m-d\T00:00', strtotime('-3 days')); ?>"
+                            max="<?php echo date('Y-m-d\T23:59', strtotime('+1 day')); ?>" onkeydown="return false;"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="porcAgua" class="form-label">Porcentaje de agua cambiada</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="porcAgua" name="porcAgua" placeholder="Ej. 20"
+                                min="0" max="100" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="estadoTanque" class="form-label">Estado del tanque</label>
+                        <input type="text" class="form-control" id="estadoTanque" name="estadoTanque"
+                            placeholder="Ingrese el estado del tanque" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="obLa" class="form-label">Observaciones</label>
+                        <input type="text" class="form-control" id="obLa" name="obLa"
+                            placeholder="Ingrese las observaciones" required>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="reset" class="btn btn-outline-secondary">Cancelar registro</button>
+                        <button type="submit" class="btn btn-primary">Guardar registro</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
