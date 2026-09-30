@@ -1,4 +1,5 @@
 <?php
+
 ob_start();
     include_once '../lib/helpers.php';
     include_once '../lib/persistlogin.php';
@@ -42,3 +43,7 @@ ob_start();
     <script src='../web/assets/js/scriptindex.js'></script>
 </body>
 </html>
+
+
+?>
+

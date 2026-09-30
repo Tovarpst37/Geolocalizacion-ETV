@@ -1,3 +1,4 @@
+
 const password = document.getElementById('password');
 const passwordError = document.getElementById('passwordError');
 
@@ -23,3 +24,4 @@ function validarPassword() {
         return false;
     }
 }
+
